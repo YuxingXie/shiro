@@ -329,7 +329,446 @@ throws AuthenticationException;&nbsp;
 自定义实现时一般继承 org.apache.shiro.authc.pam.AbstractAuthenticationStrategy 即可，具体可以参考代码 com.github.zhangkaitao.shiro.chapter2.authenticator.strategy 包下 OnlyOneAuthenticatorStrategy 和 AtLeastTwoAuthenticatorStrategy。
 到此基本的身份验证就搞定了，对于 AuthenticationToken 、AuthenticationInfo 和 Realm 的详细使用后续章节再陆续介绍。
 </div>
-<div id="cp4">cp4</div>
+<div id="cp4">
+<div class="content-top">
+<h1>Shiro 授权</h1>
+</div>
+<div class="kn-infomation">
+由&nbsp;<span>北公爵无欢</span>&nbsp;创建， 最后一次修改&nbsp;<span>2016-08-12</span>    
+</div>          
+</div>          
+<div class="content-bg">
+<div class="content-intro view-box "><div class="wkcontent"><h2>授权</h2>
+<p>授权，也叫访问控制，即在应用中控制谁能访问哪些资源（如访问页面/编辑数据/页面操作等）。在授权中需了解的几个关键对象：主体（Subject）、资源（Resource）、权限（Permission）、角色（Role）。  </p>
+<p><strong>主体</strong><br />
+主体，即访问应用的用户，在 Shiro 中使用 Subject 代表该用户。用户只有授权后才允许访问相应的资源。</p>
+<p><strong>资源</strong><br />
+在应用中用户可以访问的任何东西，比如访问 JSP 页面、查看/编辑某些数据、访问某个业务方法、打印文本等等都是资源。用户只要授权后才能访问。</p>
+<p><strong>权限</strong><br />
+安全策略中的原子授权单位，通过权限我们可以表示在应用中用户有没有操作某个资源的权力。即权限表示在应用中用户能不能访问某个资源，如：
+访问用户列表页面<br />
+查看/新增/修改/删除用户数据（即很多时候都是 CRUD（增查改删）式权限控制）<br />
+打印文档等等。。。</p>
+<p>如上可以看出，权限代表了用户有没有操作某个资源的权利，即反映在某个资源上的操作允不允许，不反映谁去执行这个操作。所以后续还需要把权限赋予给用户，即定义哪个用户允许在某个资源上做什么操作（权限），Shiro 不会去做这件事情，而是由实现人员提供。  </p>
+<p>Shiro 支持粗粒度权限（如用户模块的所有权限）和细粒度权限（操作某个用户的权限，即实例级别的），后续部分介绍。  </p>
+<p><strong>角色</strong><br />
+角色代表了操作集合，可以理解为权限的集合，一般情况下我们会赋予用户角色而不是权限，即这样用户可以拥有一组权限，赋予权限时比较方便。典型的如：项目经理、技术总监、CTO、开发工程师等都是角色，不同的角色拥有一组不同的权限。</p>
+<p><strong>隐式角色</strong>：<br />
+即直接通过角色来验证用户有没有操作权限，如在应用中 CTO、技术总监、开发工程师可以使用打印机，假设某天不允许开发工程师使用打印机，此时需要从应用中删除相应代码；再如在应用中 CTO、技术总监可以查看用户、查看权限；突然有一天不允许技术总监查看用户、查看权限了，需要在相关代码中把技术总监角色从判断逻辑中删除掉；即粒度是以角色为单位进行访问控制的，粒度较粗；如果进行修改可能造成多处代码修改。</p>
+<p><strong>显示角色</strong>：<br />
+在程序中通过权限控制谁能访问某个资源，角色聚合一组权限集合；这样假设哪个角色不能访问某个资源，只需要从角色代表的权限集合中移除即可；无须修改多处代码；即粒度是以资源/实例为单位的；粒度较细。</p>
+<p>请 google 搜索“RBAC”和“RBAC新解”分别了解“基于角色的访问控制”“基于资源的访问控制(Resource-Based Access Control)”。</p>
+<h2 class="head2">授权方式</h2>
+<p>Shiro 支持三种方式的授权：  </p>
+<p>编程式：通过写 if/else 授权代码块完成：</p>
+<pre><code>Subject subject = SecurityUtils.getSubject();
+if(subject.hasRole(“admin”)) {
+    //有权限
+} else {
+    //无权限
+}&amp;nbsp;</code></pre>
+<p>注解式：通过在执行的 Java 方法上放置相应的注解完成： </p>
+<pre><code>@RequiresRoles("admin")
+public void hello() {
+    //有权限
+}&amp;nbsp;</code></pre>
+<p>没有权限将抛出相应的异常；</p>
+<p>JSP/GSP 标签：在 JSP/GSP 页面通过相应的标签完成： </p>
+<pre><code>&lt;shiro:hasRole name="admin"&gt;
+&lt;!— 有权限 —&gt;
+&lt;/shiro:hasRole&gt;&amp;nbsp;</code></pre>
+<p>后续部分将详细介绍如何使用。</p>
+<h2 class="head2">授权</h2>
+<p><strong>基于角色的访问控制（隐式角色）</strong></p>
+<p>1、在 ini 配置文件配置用户拥有的角色（shiro-role.ini） </p>
+<pre><code>[users]
+zhang=123,role1,role2
+wang=123,role1&amp;nbsp;</code></pre>
+<p>规则即：“用户名=密码,角色1，角色2”，如果需要在应用中判断用户是否有相应角色，就需要在相应的 Realm 中返回角色信息，也就是说 Shiro 不负责维护用户-角色信息，需要应用提供，Shiro 只是提供相应的接口方便验证，后续会介绍如何动态的获取用户角色。</p>
+<p>2、测试用例（com.github.zhangkaitao.shiro.chapter3.RoleTest）</p>
+<pre><code>    @Test
+    public void testHasRole() {
+        login("classpath:shiro-role.ini", "zhang", "123");
+        //判断拥有角色：role1
+        Assert.assertTrue(subject().hasRole("role1"));
+        //判断拥有角色：role1 and role2
+        Assert.assertTrue(subject().hasAllRoles(Arrays.asList("role1", "role2")));
+        //判断拥有角色：role1 and role2 and !role3
+        boolean[] result = subject().hasRoles(Arrays.asList("role1", "role2", "role3"));
+        Assert.assertEquals(true, result[0]);
+        Assert.assertEquals(true, result[1]);
+        Assert.assertEquals(false, result[2]);
+    }&amp;nbsp;</code></pre>
+<p>Shiro 提供了 hasRole/hasRole 用于判断用户是否拥有某个角色/某些权限；但是没有提供如 hashAnyRole 用于判断是否有某些权限中的某一个。 </p>
+<pre><code>    @Test(expected = UnauthorizedException.class)
+    public void testCheckRole() {
+        login("classpath:shiro-role.ini", "zhang", "123");
+        //断言拥有角色：role1
+        subject().checkRole("role1");
+        //断言拥有角色：role1 and role3 失败抛出异常
+        subject().checkRoles("role1", "role3");
+    }&amp;nbsp;</code></pre>
+<p>Shiro 提供的 checkRole/checkRoles 和 hasRole/hasAllRoles 不同的地方是它在判断为假的情况下会抛出 UnauthorizedException 异常。</p>
+<p>到此基于角色的访问控制（即隐式角色）就完成了，这种方式的缺点就是如果很多地方进行了角色判断，但是有一天不需要了那么就需要修改相应代码把所有相关的地方进行删除；这就是粗粒度造成的问题。  </p>
+<p><strong>基于资源的访问控制（显示角色）</strong>  </p>
+<p>1、在 ini 配置文件配置用户拥有的角色及角色-权限关系（shiro-permission.ini）  </p>
+<pre><code>[users]
+zhang=123,role1,role2
+wang=123,role1
+[roles]
+role1=user:create,user:update
+role2=user:create,user:delete&amp;nbsp;</code></pre>
+<p>规则：“用户名=密码，角色 1，角色 2”“角色=权限 1，权限 2”，即首先根据用户名找到角色，然后根据角色再找到权限；即角色是权限集合；Shiro 同样不进行权限的维护，需要我们通过 Realm 返回相应的权限信息。只需要维护“用户——角色”之间的关系即可。  </p>
+<p>2、测试用例（com.github.zhangkaitao.shiro.chapter3.PermissionTest）  </p>
+<pre><code>    @Test
+    public void testIsPermitted() {
+        login("classpath:shiro-permission.ini", "zhang", "123");
+        //判断拥有权限：user:create
+        Assert.assertTrue(subject().isPermitted("user:create"));
+        //判断拥有权限：user:update and user:delete
+        Assert.assertTrue(subject().isPermittedAll("user:update", "user:delete"));
+        //判断没有权限：user:view
+        Assert.assertFalse(subject().isPermitted("user:view"));
+    }&amp;nbsp;</code></pre>
+<p>Shiro 提供了 isPermitted 和 isPermittedAll 用于判断用户是否拥有某个权限或所有权限，也没有提供如 isPermittedAny 用于判断拥有某一个权限的接口。</p>
+<pre><code>    @Test(expected = UnauthorizedException.class)
+    public void testCheckPermission () {
+        login("classpath:shiro-permission.ini", "zhang", "123");
+        //断言拥有权限：user:create
+        subject().checkPermission("user:create");
+        //断言拥有权限：user:delete and user:update
+        subject().checkPermissions("user:delete", "user:update");
+        //断言拥有权限：user:view 失败抛出异常
+        subject().checkPermissions("user:view");
+    }&amp;nbsp;</code></pre>
+<p>但是失败的情况下会抛出 UnauthorizedException 异常。</p>
+<p>到此基于资源的访问控制（显示角色）就完成了，也可以叫基于权限的访问控制，这种方式的一般规则是“资源标识符：操作”，即是资源级别的粒度；这种方式的好处就是如果要修改基本都是一个资源级别的修改，不会对其他模块代码产生影响，粒度小。但是实现起来可能稍微复杂点，需要维护“用户——角色，角色——权限（资源：操作）”之间的关系。   </p>
+<h2 class="head2">Permission</h2>
+<h3>字符串通配符权限</h3>
+<p>规则：“资源标识符：操作：对象实例 ID”  即对哪个资源的哪个实例可以进行什么操作。其默认支持通配符权限字符串，“:”表示资源/操作/实例的分割；“,”表示操作的分割；“*”表示任意资源/操作/实例。  </p>
+<p><strong>1、单个资源单个权限</strong></p>
+<p><code>subject().checkPermissions("system:user:update");</code></p>
+<p>用户拥有资源“system:user”的“update”权限。</p>
+<p><strong>2、单个资源多个权限</strong></p>
+<p><code>role41=system:user:update,system:user:delete</code></p>
+<p>然后通过如下代码判断</p>
+<p><code>subject().checkPermissions("system:user:update", "system:user:delete");</code></p>
+<p>用户拥有资源“system:user”的“update”和“delete”权限。如上可以简写成：</p>
+<p>ini 配置（表示角色4拥有 system:user 资源的 update 和 delete 权限）</p>
+<p><code>role42="system:user:update,delete"</code></p>
+<p>接着可以通过如下代码判断 </p>
+<p><code>subject().checkPermissions("system:user:update,delete");</code></p>
+<p>通过“system:user:update,delete”验证“system:user:update, system:user:delete”是没问题的，但是反过来是规则不成立。</p>
+<p><strong>3、单个资源全部权限</strong></p>
+<p>ini 配置 </p>
+<p><code>role51="system:user:create,update,delete,view"</code></p>
+<p>然后通过如下代码判断 </p>
+<p><code>subject().checkPermissions("system:user:create,delete,update:view");</code></p>
+<p>用户拥有资源“system:user”的“create”、“update”、“delete”和“view”所有权限。如上可以简写成：</p>
+<p>ini 配置文件（表示角色 5 拥有 system:user 的所有权限）</p>
+<p><code>role52=system:user:*</code></p>
+<p>也可以简写为（推荐上边的写法）：</p>
+<p><code>role53=system:user</code></p>
+<p>然后通过如下代码判断</p>
+<pre><code>subject().checkPermissions("system:user:*");
+subject().checkPermissions("system:user");&amp;nbsp;</code></pre>
+<p>通过“system:user:*”验证“system:user:create,delete,update:view”可以，但是反过来是不成立的。</p>
+<p><strong>4、所有资源全部权限</strong></p>
+<p>ini 配置 </p>
+<p><code>role61=*:view</code> </p>
+<p>然后通过如下代码判断</p>
+<p><code>subject().checkPermissions("user:view");</code></p>
+<p>用户拥有所有资源的“view”所有权限。假设判断的权限是“&quot;system:user:view”，那么需要“role5=<em>:</em>:view”这样写才行</p>
+<p><strong>5、实例级别的权限</strong></p>
+<ul>
+<li>单个实例单个权限</li>
+</ul>
+<p>ini 配置</p>
+<p><code>role71=user:view:1</code></p>
+<p>对资源 user 的 1 实例拥有 view 权限。</p>
+<p>然后通过如下代码判断  </p>
+<p><code>subject().checkPermissions("user:view:1");</code></p>
+<ul>
+<li>单个实例多个权限</li>
+</ul>
+<p>ini 配置  </p>
+<p><code>role72="user:update,delete:1"</code></p>
+<p>对资源 user 的 1 实例拥有 update、delete 权限。  </p>
+<p>然后通过如下代码判断</p>
+<pre><code>subject().checkPermissions("user:delete,update:1");
+subject().checkPermissions("user:update:1", "user:delete:1");&amp;nbsp;</code></pre>
+<ul>
+<li>单个实例所有权限</li>
+</ul>
+<p>ini 配置</p>
+<p><code>role73=user:*:1</code></p>
+<p>对资源 user 的 1 实例拥有所有权限。  </p>
+<p>然后通过如下代码判断  </p>
+<p><code>subject().checkPermissions("user:update:1", "user:delete:1", "user:view:1");</code></p>
+<ul>
+<li>所有实例单个权限 </li>
+</ul>
+<p>ini 配置</p>
+<p><code>role74=user:auth:*</code></p>
+<p>对资源 user 的 1 实例拥有所有权限。  </p>
+<p>然后通过如下代码判断  </p>
+<p><code>subject().checkPermissions("user:auth:1", "user:auth:2");</code></p>
+<ul>
+<li>所有实例所有权限</li>
+</ul>
+<p>ini 配置</p>
+<p><code>role75=user:*:*</code></p>
+<p>对资源 user 的 1 实例拥有所有权限。  </p>
+<p>然后通过如下代码判断   </p>
+<p><code>subject().checkPermissions("user:view:1", "user:auth:2");</code></p>
+<p><strong>6、Shiro 对权限字符串缺失部分的处理</strong></p>
+<p>如“user:view”等价于“<code>user:view:*</code>”；而“organization”等价于“<code>organization:*</code>”或者“<code>organization:*:*</code>”。可以这么理解，这种方式实现了前缀匹配。  </p>
+<p>另外如“<code>user:*</code>”可以匹配如“<code>user:delete</code>”、“<code>user:delete</code>”可以匹配如“<code>user:delete:1</code>”、“<code>user:*:1</code>”可以匹配如“user:view:1”、“user”可以匹配“<code>user:view</code>”或“<code>user:view:1</code>”等。即<code>*</code>可以匹配所有，不加<code>*</code>可以进行前缀匹配；但是如“<code>*:view</code>”不能匹配“<code>system:user:view</code>”，需要使用“<code>*:*:view</code>”，即后缀匹配必须指定前缀（多个冒号就需要多个<code>*</code>来匹配）。  </p>
+<p><strong>7、WildcardPermission</strong></p>
+<p>如下两种方式是等价的：</p>
+<pre><code>subject().checkPermission("menu:view:1");
+subject().checkPermission(new WildcardPermission("menu:view:1"));&amp;nbsp;</code></pre>
+<p>因此没什么必要的话使用字符串更方便。</p>
+<p><strong>8、性能问题</strong>  </p>
+<p>通配符匹配方式比字符串相等匹配来说是更复杂的，因此需要花费更长时间，但是一般系统的权限不会太多，且可以配合缓存来提供其性能，如果这样性能还达不到要求我们可以实现位操作算法实现性能更好的权限匹配。另外实例级别的权限验证如果数据量太大也不建议使用，可能造成查询权限及匹配变慢。可以考虑比如在sql查询时加上权限字符串之类的方式在查询时就完成了权限匹配。</p>
+<h2 class="head2">授权流程</h2>
+<p><img src="//img.w3cschool.cn/attachments/image/wk/shiro/6.png" alt="" /></p>
+<p>流程如下：  </p>
+<ol>
+<li>首先调用 <code>Subject.isPermitted*/hasRole*</code>接口，其会委托给 SecurityManager，而 SecurityManager 接着会委托给 Authorizer；</li>
+<li>Authorizer 是真正的授权者，如果我们调用如 isPermitted(“user:view”)，其首先会通过 PermissionResolver 把字符串转换成相应的 Permission 实例；</li>
+<li>在进行授权之前，其会调用相应的 Realm 获取 Subject 相应的角色/权限用于匹配传入的角色/权限；</li>
+<li>Authorizer 会判断 Realm 的角色/权限是否和传入的匹配，如果有多个 Realm，会委托给 ModularRealmAuthorizer 进行循环判断，如果匹配如 <code>isPermitted*/hasRole*</code> 会返回 true，否则返回 false 表示授权失败。</li>
+</ol>
+<p>ModularRealmAuthorizer 进行多 Realm 匹配流程：</p>
+<ul>
+<li>首先检查相应的 Realm 是否实现了实现了 Authorizer；</li>
+<li>如果实现了 Authorizer，那么接着调用其相应的 <code>isPermitted*/hasRole*</code> 接口进行匹配；</li>
+<li>如果有一个 Realm 匹配那么将返回 true，否则返回 false。</li>
+</ul>
+<p>如果 Realm 进行授权的话，应该继承 AuthorizingRealm，其流程是：  </p>
+<ul>
+<li>如果调用 <code>hasRole*</code>，则直接获取 AuthorizationInfo.getRoles() 与传入的角色比较即可；首先如果调用如 isPermitted(“user:view”)，首先通过 PermissionResolver 将权限字符串转换成相应的 Permission 实例，默认使用 WildcardPermissionResolver，即转换为通配符的 WildcardPermission；  </li>
+<li>通过 AuthorizationInfo.getObjectPermissions() 得到 Permission 实例集合；通过 AuthorizationInfo.getStringPermissions() 得到字符串集合并通过 PermissionResolver 解析为 Permission 实例；然后获取用户的角色，并通过 RolePermissionResolver 解析角色对应的权限集合（默认没有实现，可以自己提供）；  </li>
+<li>接着调用 Permission.implies(Permission p) 逐个与传入的权限比较，如果有匹配的则返回 true，否则 false。</li>
+</ul>
+<h2 class="head2">Authorizer、PermissionResolver及RolePermissionResolver</h2>
+<p>Authorizer 的职责是进行授权（访问控制），是 Shiro API 中授权核心的入口点，其提供了相应的角色/权限判断接口，具体请参考其 Javadoc。SecurityManager 继承了 Authorizer 接口，且提供了 ModularRealmAuthorizer 用于多 Realm 时的授权匹配。PermissionResolver 用于解析权限字符串到 Permission 实例，而 RolePermissionResolver 用于根据角色解析相应的权限集合。</p>
+<p>我们可以通过如下 ini 配置更改 Authorizer 实现：</p>
+<pre><code>authorizer=org.apache.shiro.authz.ModularRealmAuthorizer
+securityManager.authorizer=$authorizer&amp;nbsp;</code></pre>
+<p>对于 ModularRealmAuthorizer，相应的 AuthorizingSecurityManager 会在初始化完成后自动将相应的 realm 设置进去，我们也可以通过调用其 setRealms() 方法进行设置。对于实现自己的 authorizer 可以参考 ModularRealmAuthorizer 实现即可，在此就不提供示例了。</p>
+<p>设置 ModularRealmAuthorizer 的 permissionResolver，其会自动设置到相应的 Realm 上（其实现了 PermissionResolverAware 接口），如：</p>
+<pre><code>permissionResolver=org.apache.shiro.authz.permission.WildcardPermissionResolver
+authorizer.permissionResolver=$permissionResolver&amp;nbsp;</code></pre>
+<p>设置 ModularRealmAuthorizer 的 rolePermissionResolver，其会自动设置到相应的 Realm 上（其实现了 RolePermissionResolverAware 接口），如：  </p>
+<pre><code>rolePermissionResolver=com.github.zhangkaitao.shiro.chapter3.permission.MyRolePermissionResolver
+authorizer.rolePermissionResolver=$rolePermissionResolver&amp;nbsp;</code></pre>
+<p><strong>示例</strong></p>
+<p><strong>1、ini 配置（shiro-authorizer.ini）</strong></p>
+<pre><code>[main]
+\#自定义authorizer
+authorizer=org.apache.shiro.authz.ModularRealmAuthorizer
+\#自定义permissionResolver
+\#permissionResolver=org.apache.shiro.authz.permission.WildcardPermissionResolver
+permissionResolver=com.github.zhangkaitao.shiro.chapter3.permission.BitAndWildPermissionResolver
+authorizer.permissionResolver=$permissionResolver
+\#自定义rolePermissionResolver
+rolePermissionResolver=com.github.zhangkaitao.shiro.chapter3.permission.MyRolePermissionResolver
+authorizer.rolePermissionResolver=$rolePermissionResolver
+securityManager.authorizer=$authorizer</code></pre>
+<pre><code>\#自定义realm 一定要放在securityManager.authorizer赋值之后（因为调用setRealms会将realms设置给authorizer，并给各个Realm设置permissionResolver和rolePermissionResolver）
+realm=com.github.zhangkaitao.shiro.chapter3.realm.MyRealm
+securityManager.realms=$realm&amp;nbsp;</code></pre>
+<p>设置 securityManager 的 realms 一定要放到最后，因为在调用 SecurityManager.setRealms 时会将 realms 设置给 authorizer，并为各个 Realm 设置 permissionResolver 和 rolePermissionResolver。另外，不能使用 IniSecurityManagerFactory 创建的 IniRealm，因为其初始化顺序的问题可能造成后续的初始化 Permission 造成影响。</p>
+<p><strong>2、定义 BitAndWildPermissionResolver 及 BitPermission</strong></p>
+<p>BitPermission 用于实现位移方式的权限，如规则是：  </p>
+<p>权限字符串格式：+ 资源字符串 + 权限位 + 实例 ID；以 + 开头中间通过 + 分割；权限：0 表示所有权限；1 新增（二进制：0001）、2 修改（二进制：0010）、4 删除（二进制：0100）、8 查看（二进制：1000）；如 +user+10 表示对资源 user 拥有修改 / 查看权限。</p>
+<pre><code>public class BitPermission implements Permission {
+    private String resourceIdentify;
+    private int permissionBit;
+    private String instanceId;
+    public BitPermission(String permissionString) {
+        String[] array = permissionString.split("\\+");
+        if(array.length &gt; 1) {
+            resourceIdentify = array[1];
+        }
+        if(StringUtils.isEmpty(resourceIdentify)) {
+            resourceIdentify = "*";
+        }
+        if(array.length &gt; 2) {
+            permissionBit = Integer.valueOf(array[2]);
+        }
+        if(array.length &gt; 3) {
+            instanceId = array[3];
+        }
+        if(StringUtils.isEmpty(instanceId)) {
+            instanceId = "*";
+        }
+    }
+    @Override
+    public boolean implies(Permission p) {
+        if(!(p instanceof BitPermission)) {
+            return false;
+        }
+        BitPermission other = (BitPermission) p;
+        if(!("*".equals(this.resourceIdentify) || this.resourceIdentify.equals(other.resourceIdentify))) {
+            return false;
+        }
+        if(!(this.permissionBit ==0 || (this.permissionBit &amp; other.permissionBit) != 0)) {
+            return false;
+        }
+        if(!("*".equals(this.instanceId) || this.instanceId.equals(other.instanceId))) {
+            return false;
+        }
+        return true;
+    }
+}&amp;nbsp;</code></pre>
+<p>Permission 接口提供了 boolean implies(Permission p) 方法用于判断权限匹配的；  </p>
+<pre><code>public class BitAndWildPermissionResolver implements PermissionResolver {
+    @Override
+    public Permission resolvePermission(String permissionString) {
+        if(permissionString.startsWith("+")) {
+            return new BitPermission(permissionString);
+        }
+        return new WildcardPermission(permissionString);
+    }
+}&amp;nbsp;</code></pre>
+<p>BitAndWildPermissionResolver 实现了 PermissionResolver 接口，并根据权限字符串是否以 “+” 开头来解析权限字符串为 BitPermission 或 WildcardPermission。  </p>
+<p><strong>3、定义 MyRolePermissionResolver</strong></p>
+<p>RolePermissionResolver 用于根据角色字符串来解析得到权限集合。  </p>
+<pre><code>public class MyRolePermissionResolver implements RolePermissionResolver {
+    @Override
+    public Collection&lt;Permission&gt; resolvePermissionsInRole(String roleString) {
+        if("role1".equals(roleString)) {
+            return Arrays.asList((Permission)new WildcardPermission("menu:*"));
+        }
+        return null;
+    }
+}&amp;nbsp;</code></pre>
+<p>此处的实现很简单，如果用户拥有 role1，那么就返回一个 “<code>menu:*</code>” 的权限。  </p>
+<p><strong>4、自定义 Realm</strong></p>
+<pre><code>public class MyRealm extends AuthorizingRealm {
+    @Override
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
+        SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
+        authorizationInfo.addRole("role1");
+        authorizationInfo.addRole("role2");
+        authorizationInfo.addObjectPermission(new BitPermission("+user1+10"));
+        authorizationInfo.addObjectPermission(new WildcardPermission("user1:*"));
+        authorizationInfo.addStringPermission("+user2+10");
+        authorizationInfo.addStringPermission("user2:*");
+        return authorizationInfo;
+    }
+    @Override
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+        //和com.github.zhangkaitao.shiro.chapter2.realm.MyRealm1. getAuthenticationInfo代码一样，省略
+}
+}&amp;nbsp;</code></pre>
+<p>此时我们继承 AuthorizingRealm 而不是实现 Realm 接口；推荐使用 AuthorizingRealm，因为：
+AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token)：表示获取身份验证信息；AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals)：表示根据用户身份获取授权信息。这种方式的好处是当只需要身份验证时只需要获取身份验证信息而不需要获取授权信息。对于 AuthenticationInfo 和 AuthorizationInfo 请参考其 Javadoc 获取相关接口信息。  </p>
+<p>另外我们可以使用 JdbcRealm，需要做的操作如下：  </p>
+<ol>
+<li>执行 sql/ shiro-init-data.sql 插入相关的权限数据；  </li>
+<li>使用 shiro-jdbc-authorizer.ini 配置文件，需要设置 jdbcRealm.permissionsLookupEnabled 为 true 来开启权限查询。</li>
+</ol>
+<p>此次还要注意就是不能把我们自定义的如 “+user1+10” 配置到 INI 配置文件，即使有 IniRealm 完成，因为 IniRealm 在 new 完成后就会解析这些权限字符串，默认使用了WildcardPermissionResolver 完成，即此处是一个设计权限，如果采用生命周期（如使用初始化方法）的方式进行加载就可以解决我们自定义 permissionResolver 的问题。</p>
+<p><strong>5、测试用例</strong></p>
+<pre><code>public class AuthorizerTest extends BaseTest {
+    @Test
+    public void testIsPermitted() {
+        login("classpath:shiro-authorizer.ini", "zhang", "123");
+        //判断拥有权限：user:create
+        Assert.assertTrue(subject().isPermitted("user1:update"));
+        Assert.assertTrue(subject().isPermitted("user2:update"));
+        //通过二进制位的方式表示权限
+        Assert.assertTrue(subject().isPermitted("+user1+2"));//新增权限
+        Assert.assertTrue(subject().isPermitted("+user1+8"));//查看权限
+        Assert.assertTrue(subject().isPermitted("+user2+10"));//新增及查看
+        Assert.assertFalse(subject().isPermitted("+user1+4"));//没有删除权限
+        Assert.assertTrue(subject().isPermitted("menu:view"));//通过MyRolePermissionResolver解析得到的权限
+    }
+}&amp;nbsp;  </code></pre>
+<p>通过如上步骤可以实现自定义权限验证了。另外因为不支持 hasAnyRole/isPermittedAny 这种方式的授权，可以参考我的一篇《简单 shiro 扩展实现 NOT、AND、OR 权限验证 》进行简单的扩展完成这个需求，在这篇文章中通过重写 AuthorizingRealm 里的验证逻辑实现的。  </p></div></div>
+<div style="clear:both"></div>
+</div>
+<!--我要赞赏-->
+<div class="project-sq"></div>
+<!--我要赞赏结束-->
+<div class="content-links">
+<div class="previous-link">← <a href="/shiro/xgj31if4.html" title="上一篇：Shiro 身份验证">Shiro 身份验证</a></div>
+<div class="next-link"><a href="/shiro/h5it1if8.html" title="下一篇：Shiro InI 配置">Shiro InI 配置</a> →</div>
+</div>
+<!--写笔记-->
+<div class="project-operation">
+<a href="javascript:;" title="写笔记" class="note-btn" onclick="openNote()"><i class="icon-pencil"></i>写笔记</a>
+</div>
+<!--相关推荐|wiki推荐-->
+<!--相关推荐|wiki推荐 结束-->
+<!--横版广告放置-->
+<div class="abox-item">    <div class="content-abox">        <a href="//www.w3cschool.cn/adlog?w3ctype=workview&amp;url=https://www.w3cschool.cn/article/5461759" target="_blank"><img src="/attachments/image/20171120/1511159975177003.png" alt="W3Cschool学编程上微课-边学边练" /></a>    </div></div></div>
+<div class="navigation-box">
+<a href="/shiro/xgj31if4.html" title="上一篇：Shiro 身份验证" class="navigation navigation-prev"><i class="icon-chevron-left"></i></a>
+<a href="/shiro/h5it1if8.html" title="下一篇：Shiro InI 配置" class="navigation navigation-next"><i class="icon-chevron-right"></i></a>
+</div>
+  </div>
+<div id="pro-footer">
+<div class="s-footer">
+<div class="s-footer-bottom">
+<p>Copyright &copy; 2018 <a href="//www.w3cschool.cn" title="w3cschool">w3cschool.cn </a> All Rights Reserved. </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bottom-tools" style="bottom: 40px;">
+<a id="scrollUp" href="javascript:;" title="飞回顶部"></a>
+<a class="onlinenote" style="display: none;" title="在线笔记" href="javascript:;" data-module="page">在线笔记</a>
+<div class="qr-tool">二维码</div>
+<a id="feedback" class="webjy" title="建议反馈" href="javascript:;" data-module="page" onclick="showDialogBox(this)">建议反馈</a>    
+<div class="qr-img"><img src="//statics.w3cschool.cn/images/w3c/w3cschool.jpg" alt="二维码"></div>
+</div>
+
+<div class="feedback-Box" style="display: none;">
+<div class="feedback-Box-content" style="width: 800px;">
+<div class="feedback-Box-top">
+<span class="feedback-Box-title">意见反馈</span>
+<span onclick="closeDialogBox(this)" class="feedback-Box-close">X</span>
+</div>
+<ul>
+<li class="feedback-box" >
+<div id="feedbackRadio" type="radio" name="feedbackType" data-value="0" style=""> 意见反馈：</div>
+<textarea  name="reportInfo" id="elmaaa" class="feedback-text" rows="15" placeholder="请留下您宝贵的意见反馈吧。" style="width: 700px;height:200px;overflow:auto;" ></textarea>
+<p>联系方式：</p>
+<input type="text" placeholder="留个联系方式呗..." name="reportAddress" class="radio-text" id="reportAddress" style="height: 30px;width: 200px;">
+</li>
+</ul>
+<button class="search-s" onclick="dialogSubmit(this)" id="reportSubmit">提交</button>
+</div>
+</div>
+
+<div id="note-start" style="display: none"></div>
+
+<div id="detail" style="display:none;">
+<div id="note-Dialog" class="note-Dialog" >
+<div class="note-Box-content" >
+<div class="ntitlebox">
+<input type="text" placeholder="" name="ntitle" class="ntitle" id="ntitle" >
+</div>
+<div id="editorarea">
+<textarea  name="ncontent" id="ncontent" class="ncontent" rows="15" placeholder="" style="width: 700px;height:200px;overflow:auto;" ></textarea>
+</div>
+<p></p>
+<a class="closenote" href="/my/note" target="_blank" >查看完整版笔记</a>
+<button class="notesubmit"  id="notesubmit">保存</button>
+<button class="notebtn pull-right closenote" style="margin:20px 0" >关闭</button>
+</div>
+</div>
+</div>
+
+
+
+</div>
 <div id="cp5">cp5</div>
 <div id="cp6">cp6</div>
 <div id="cp7">cp7</div>
