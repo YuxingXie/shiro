@@ -51,8 +51,8 @@ Apache Shiro 是 Java 的一个安全框架。目前，使用 Apache Shiro 的�
 本教程只介绍基本的 Shiro 使用，不会过多分析源码等，重在使用。
 
 Shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 JavaSE 环境，也可以用在 JavaEE 环境。Shiro 可以帮助我们完成：认证、授权、加密、会话管理、与 Web 集成、缓存等。这不就是我们想要的嘛，而且 Shiro 的 API 也是非常简单；其基本功能点如下图所示：
-![](https://img.w3cschool.cn/attachments/image/wk/shiro/1.png)
 
+![](https://github.com/YuxingXie/shiro/raw/master/doc/1.png)
 * <B>Authentication</B>：身份认证 / 登录，验证用户是不是拥有相应的身份；
 * <B>Authorization</B>：授权，即权限验证，验证某个已认证的用户是否拥有某个权限；即判断用户是否能做事情，常见的如：验证某个用户是否拥有某个角色。或者细粒度的验证某个用户对某个资源是否具有某个权限；
 * <B>Session Manager</B>：会话管理，即用户登录后就是一次会话，在没有退出之前，它的所有信息都在会话中；会话可以是普通 JavaSE 环境的，也可以是如 Web 环境的；
