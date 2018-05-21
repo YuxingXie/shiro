@@ -189,6 +189,22 @@ Shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 J
 * 如果身份验证失败请捕获 AuthenticationException 或其子类，常见的如： DisabledAccountException（禁用的帐号）、LockedAccountException（锁定的帐号）、UnknownAccountException（错误的帐号）、ExcessiveAttemptsException（登录失败次数过多）、IncorrectCredentialsException （错误的凭证）、ExpiredCredentialsException（过期的凭证）等，具体请查看其继承关系；对于页面的错误消息展示，最好使用如 “用户名 / 密码错误” 而不是 “用户名错误”/“密码错误”，防止一些恶意用户非法扫描帐号库；
 * 最后可以调用 subject.logout 退出，其会自动委托给 SecurityManager.logout 方法退出。
 
+
+<b>从如上代码可总结出身份验证的步骤：</b>
+1.收集用户身份 / 凭证，即如用户名 / 密码；
+
+2.调用 Subject.login 进行登录，如果失败将得到相应的 AuthenticationException 异常，根据异常提示用户错误信息；否则登录成功；
+
+3.最后调用 Subject.logout 进行退出操作。
+
+如上测试的几个问题：
+
+1.用户名 / 密码硬编码在 ini 配置文件，以后需要改成如数据库存储，且密码需要加密存储；
+
+2.用户身份 Token 可能不仅仅是用户名 / 密码，也可能还有其他的，如登录时允许用户名 / 邮箱 / 手机号同时登录。
+
+<b>身份认证流程</b>
+
 <div id="cp6">cp6</div>
 <div id="cp7">cp7</div>
 <div id="cp8">cp8</div>
