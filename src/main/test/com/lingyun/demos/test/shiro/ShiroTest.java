@@ -21,7 +21,7 @@ public class ShiroTest {
         SecurityManager securityManager = factory.getInstance();
         SecurityUtils.setSecurityManager(securityManager);
 
-        //TODO 为什么是获得单个Subject而不是一个Subject集合?
+
         Subject currentUser = SecurityUtils.getSubject();
 
         Session session = currentUser.getSession();
@@ -35,11 +35,7 @@ public class ShiroTest {
         UsernamePasswordToken token = new UsernamePasswordToken("zhangsan", "zhangsan");
         token.setRememberMe(true);
         try {
-            /*
-            TODO
-            通过源码分析，比对密码是否正确是在SimpleCredentialsMatcher的
-            public boolean doCredentialsMatch(AuthenticationToken, AuthenticationInfo)签名方法中完成
-            */
+
             currentUser.login(token);
         } catch (UnknownAccountException uae) {
             System.out.println("用户名不存在:" + token.getPrincipal());
