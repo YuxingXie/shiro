@@ -19,7 +19,7 @@ public class LoginLogoutTest {
 //        new IniSecurityManagerFactory("classpath:shiro.ini");
         new IniSecurityManagerFactory("classpath:shiro-realm.ini");
         //2、得到SecurityManager实例 并绑定给SecurityUtils
-        org.apache.shiro.mgt.SecurityManager securityManager = factory.getInstance();
+        SecurityManager securityManager = factory.getInstance();
         SecurityUtils.setSecurityManager(securityManager);
         //3、得到Subject及创建用户名/密码身份验证Token（即用户身份/凭证）
         //TODO 为什么是获得单个Subject而不是一个Subject集合?
@@ -52,5 +52,21 @@ public class LoginLogoutTest {
     @Test
     public void  testCustomMultiRealm(){
 
-    }
+            Factory<SecurityManager> factory =
+                    new IniSecurityManagerFactory("classpath:shiro-multi-realm.ini");
+            SecurityManager securityManager = factory.getInstance();
+            SecurityUtils.setSecurityManager(securityManager);
+            Subject subject = SecurityUtils.getSubject();
+            UsernamePasswordToken token = new UsernamePasswordToken("zhang", "123");
+            try {
+                subject.login(token);
+
+            } catch (AuthenticationException e) {
+                e.printStackTrace();
+            }
+            Assert.assertEquals(true, subject.isAuthenticated()); //断言用户已经登录
+            //6、退出
+            subject.logout();
+        }
+
 }

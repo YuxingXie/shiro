@@ -272,7 +272,7 @@ org.apache.shiro.realm.Realm 接口如下：
             return new SimpleAuthenticationInfo(username, password, getName());
         }
     }
-2、ini 配置文件指定自定义 Realm 实现 (shiro-realm.ini)
+2、ini 配置文件指定自定义 Realm 实现 (shiro-realm.ini,注：原文书写错误已勘误)
 
     #声明一个realm
     myRealm1=com.github.zhangkaitao.shiro.chapter2.realm.MyRealm1
@@ -292,11 +292,16 @@ com.github.zhangkaitao.shiro.chapter2.LoginLogoutTest 的 testCustomRealm 测试
     myRealm1=com.github.zhangkaitao.shiro.chapter2.realm.MyRealm1
     myRealm2=com.github.zhangkaitao.shiro.chapter2.realm.MyRealm2
     #指定securityManager的realms实现
-    securityManager.realms=$myRealm1,$myRealm2;
+    securityManager.realms=$myRealm1,$myRealm2
     
 securityManager 会按照 realms 指定的顺序进行身份认证。此处我们使用显示指定顺序的方式指定了 Realm 的顺序，如果删除 “securityManager.realms=$myRealm1,$myRealm2”，那么securityManager 会按照 realm 声明的顺序进行使用（即无需设置 realms 属性，其会自动发现），当我们显示指定 realm 后，其他没有指定 realm 将被忽略，如 “securityManager.realms=$myRealm1”，那么 myRealm2 不会被自动设置进去。
 
-2、测试用例请参考 com.github.zhangkaitao.shiro.chapter2.LoginLogoutTest 的 testCustomMultiRealm 测试方法(<span style="color:red">读者注:资料并未提供这个方法</span>)。
+
+2、测试用例请参考 com.github.zhangkaitao.shiro.chapter2.LoginLogoutTest 的 testCustomMultiRealm 测试方法(读者注:资料并未提供这个方法，自己提供一个虚实现的Realm接口的类MyRealm2即可，默认情况下MyRealm2的方法不会影响验证)。
+ 
+#### Shiro 默认提供的 Realm
+![](https://github.com/YuxingXie/shiro/raw/master/doc/5.png)
+
 <div id="cp6">cp6</div>
 <div id="cp7">cp7</div>
 <div id="cp8">cp8</div>
