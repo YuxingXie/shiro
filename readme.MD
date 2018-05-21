@@ -1,5 +1,5 @@
 # from：[w3school](https://www.w3cschool.cn/shiro/)
-说明：文档全部原文抄录，类名、包名未做任何修改，源代码中增加了import语句，其它仅排版略做改动。如果知识点有心得或疑问，都在源代码中TODO注释。
+说明：文档全部原文抄录，类名、包名未做任何修改，源代码中增加了import语句，其它仅排版略做改动,并修正一些错误。如果知识点有心得或疑问，都在源代码中TODO注释。
 # 目录
 ## <a href='#cp1' target='_self'>Shiro 关于</a>
 ## <a href='#cp2' target='_self'>Shiro 简介</a>
@@ -272,6 +272,18 @@ org.apache.shiro.realm.Realm 接口如下：
             return new SimpleAuthenticationInfo(username, password, getName());
         }
     }
+2、ini 配置文件指定自定义 Realm 实现 (shiro-realm.ini)
+
+    #声明一个realm
+    myRealm1=com.github.zhangkaitao.shiro.chapter2.realm.MyRealm1
+    #指定securityManager的realms实现
+    securityManager.realms=$myRealm1
+    
+通过 $name 来引入之前的 realm 定义
+
+3、测试用例请参考
+com.github.zhangkaitao.shiro.chapter2.LoginLogoutTest 的 testCustomRealm 测试方法，只需要把之前的 shiro.ini 配置文件改成 shiro-realm.ini 即可。
+
 <div id="cp6">cp6</div>
 <div id="cp7">cp7</div>
 <div id="cp8">cp8</div>
