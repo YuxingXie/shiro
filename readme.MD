@@ -360,7 +360,10 @@ securityManager 会按照 realms 指定的顺序进行身份认证。此处我�
     #dataSource.password=
     jdbcRealm.dataSource=$dataSource
     securityManager.realms=$jdbcRealm
-    
+
+注：附上H2数据库在Intellij Idea中的配置如下图：
+
+![](https://github.com/YuxingXie/shiro/raw/master/doc/sh-1.png)
 1. 变量名 = 全限定类名会自动创建一个类实例
 2. 变量名. 属性 = 值 自动调用相应的 setter 方法进行赋值
 3. $ 变量名 引用之前的一个对象实例
