@@ -77,10 +77,19 @@ Shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 J
 * <B>SecurityManager</B>：安全管理器；即所有与安全有关的操作都会与 SecurityManager 交互；且它管理着所有 Subject；可以看出它是 Shiro 的核心，它负责与后边介绍的其他组件进行交互，如果学习过 SpringMVC，你可以把它看成 DispatcherServlet 前端控制器；
 * <B>Realm</B>：域，Shiro 从从 Realm 获取安全数据（如用户、角色、权限），就是说 SecurityManager 要验证用户身份，那么它需要从 Realm 获取相应的用户进行比较以确定用户身份是否合法；也需要从 Realm 得到用户相应的角色 / 权限进行验证用户是否能进行操作；可以把 Realm 看成 DataSource，即安全数据源。
 
+
 也就是说对于我们而言，最简单的一个 Shiro 应用：
 
 * ：应用代码通过 Subject 来进行认证和授权，而 Subject 又委托给 SecurityManager；
 * ：我们需要给 Shiro 的 SecurityManager 注入 Realm，从而让 SecurityManager 能得到合法的用户及其权限进行判断。
+
+
+从以上也可以看出，Shiro 不提供维护用户 / 权限，而是通过 Realm 让开发人员自己注入。
+
+接下来我们来从 Shiro 内部来看下 Shiro 的架构，如下图所示：
+
+![](https://github.com/YuxingXie/shiro/raw/master/doc/3.png)
+
 <div id="cp3"></div>
 <div id="cp6">cp6</div>
 <div id="cp7">cp7</div>
