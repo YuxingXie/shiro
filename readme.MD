@@ -378,6 +378,19 @@ public interface Authenticator {
     AuthenticationInfo authenticate(AuthenticationToken var1) throws AuthenticationException;
 }
 ```
+
+如果验证成功，将返回 AuthenticationInfo 验证信息；此信息中包含了身份及凭证；如果验证失败将抛出相应的 AuthenticationException 实现。
+
+SecurityManager 接口继承了 Authenticator(注：SecurityManager接口签名是public interface SecurityManager extends Authenticator, Authorizer, SessionManager)，另外还有一个 ModularRealmAuthenticator 实现，其委托给多个 Realm 进行验证，验证规则通过 AuthenticationStrategy 接口指定，默认提供的实现：
+
+<B>FirstSuccessfulStrategy</B>：只要有一个 Realm 验证成功即可，只返回第一个 Realm 身份验证成功的认证信息，其他的忽略；
+
+<B>AtLeastOneSuccessfulStrategy</B>：只要有一个 Realm 验证成功即可，和 FirstSuccessfulStrategy 不同，返回所有 Realm 身份验证成功的认证信息；
+
+<B>AllSuccessfulStrategy</B>：所有 Realm 验证成功才算成功，且返回所有 Realm 身份验证成功的认证信息，如果有一个失败就失败了。
+
+ModularRealmAuthenticator 默认使用 AtLeastOneSuccessfulStrategy 策略。
+
 <div id="cp6">cp6</div>
 <div id="cp7">cp7</div>
 <div id="cp8">cp8</div>
