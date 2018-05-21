@@ -414,3 +414,20 @@ myRealm3： 用户名 / 密码为 zhang/123 时成功，且返回身份 / 凭据
     securityManager.realms=$myRealm1,$myRealm3
     
 2、测试代码（com.github.zhangkaitao.shiro.chapter2.AuthenticatorTest）
+
+* 首先通用化登录逻辑
+
+```java
+private void login(String configFile) {
+        //1、获取SecurityManager工厂，此处使用Ini配置文件初始化SecurityManager
+        Factory<org.apache.shiro.mgt.SecurityManager> factory =
+                new IniSecurityManagerFactory(configFile);
+        //2、得到SecurityManager实例 并绑定给SecurityUtils
+        org.apache.shiro.mgt.SecurityManager securityManager = factory.getInstance();
+        SecurityUtils.setSecurityManager(securityManager);
+        //3、得到Subject及创建用户名/密码身份验证Token（即用户身份/凭证）
+        Subject subject = SecurityUtils.getSubject();
+        UsernamePasswordToken token = new UsernamePasswordToken("zhang", "123");
+        subject.login(token);
+    }
+```
