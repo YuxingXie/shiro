@@ -284,6 +284,19 @@ org.apache.shiro.realm.Realm 接口如下：
 3、测试用例请参考
 com.github.zhangkaitao.shiro.chapter2.LoginLogoutTest 的 testCustomRealm 测试方法，只需要把之前的 shiro.ini 配置文件改成 shiro-realm.ini 即可。
 
+#### 多 Realm 配置
+
+1、ini 配置文件（shiro-multi-realm.ini）
+
+    #声明一个realm
+    myRealm1=com.github.zhangkaitao.shiro.chapter2.realm.MyRealm1
+    myRealm2=com.github.zhangkaitao.shiro.chapter2.realm.MyRealm2
+    #指定securityManager的realms实现
+    securityManager.realms=$myRealm1,$myRealm2;
+    
+securityManager 会按照 realms 指定的顺序进行身份认证。此处我们使用显示指定顺序的方式指定了 Realm 的顺序，如果删除 “securityManager.realms=$myRealm1,$myRealm2”，那么securityManager 会按照 realm 声明的顺序进行使用（即无需设置 realms 属性，其会自动发现），当我们显示指定 realm 后，其他没有指定 realm 将被忽略，如 “securityManager.realms=$myRealm1”，那么 myRealm2 不会被自动设置进去。
+
+2、测试用例请参考 com.github.zhangkaitao.shiro.chapter2.LoginLogoutTest 的 testCustomMultiRealm 测试方法(<span style="color:red">读者注:资料并未提供这个方法</span>)。
 <div id="cp6">cp6</div>
 <div id="cp7">cp7</div>
 <div id="cp8">cp8</div>

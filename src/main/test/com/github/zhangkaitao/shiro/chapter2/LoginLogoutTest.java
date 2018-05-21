@@ -24,6 +24,8 @@ public class LoginLogoutTest {
         //3、得到Subject及创建用户名/密码身份验证Token（即用户身份/凭证）
         //TODO 为什么是获得单个Subject而不是一个Subject集合?
         Subject subject = SecurityUtils.getSubject();
+        //TODO 注意这里打印subject.getPrincipal()为null
+        System.out.println(subject.getPrincipal());
         UsernamePasswordToken token = new UsernamePasswordToken("zhang", "123");
         try {
             //4、登录，即身份验证
@@ -34,12 +36,21 @@ public class LoginLogoutTest {
 
             */
             subject.login(token);
+
+            //TODO 注意这里打印subject.getPrincipal()为zhang,说明在login之前，shiro可能并不能确定这个Subject是谁
+            System.out.println(subject.getPrincipal());
             //TODO 如何通过API获得realms ?
+
         } catch (AuthenticationException e) {
             //5、身份验证失败
         }
         Assert.assertEquals(true, subject.isAuthenticated()); //断言用户已经登录
         //6、退出
         subject.logout();
+    }
+
+    @Test
+    public void  testCustomMultiRealm(){
+
     }
 }
