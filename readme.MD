@@ -340,17 +340,23 @@ securityManager 会按照 realms 指定的顺序进行身份认证。此处我�
         <artifactId>druid</artifactId>
         <version>0.2.23</version>
     </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+      <version>4.3.13.RELEASE</version>
+    </dependency>
 
-本文将使用 mysql（注：h2,以后不再提醒） 数据库及 druid 连接池；
+本文将使用 mysql（注：h2,以后不再提醒） 数据库及druid(改为spring-jdbc)连接池；
 2、到数据库 shiro 下建三张表：users（用户名 / 密码）、user_roles（用户 / 角色）、roles_permissions（角色 / 权限），具体请参照 shiro-example-chapter2/sql/shiro.sql；并添加一个用户记录，用户名 / 密码为 zhang/123；
 
 3、ini 配置（shiro-jdbc-realm.ini）
 
     jdbcRealm=org.apache.shiro.realm.jdbc.JdbcRealm
-    dataSource=com.alibaba.druid.pool.DruidDataSource
+    #dataSource=com.alibaba.druid.pool.DruidDataSource
+    dataSource=org.springframework.jdbc.datasource.DriverManagerDataSource
     dataSource.driverClassName=org.h2.Driver
     dataSource.url=jdbc:h2:~/shiro;MVCC=TRUE
-    dataSource.username=sa
+    #dataSource.username=
     #dataSource.password=
     jdbcRealm.dataSource=$dataSource
     securityManager.realms=$jdbcRealm

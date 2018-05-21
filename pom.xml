@@ -42,10 +42,15 @@
       <version>1.4.196</version>
     </dependency>
 
+    <!--<dependency>-->
+      <!--<groupId>com.alibaba</groupId>-->
+      <!--<artifactId>druid</artifactId>-->
+      <!--<version>0.2.23</version>-->
+    <!--</dependency>-->
     <dependency>
-      <groupId>com.alibaba</groupId>
-      <artifactId>druid</artifactId>
-      <version>0.2.23</version>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+      <version>4.3.13.RELEASE</version>
     </dependency>
   </dependencies>
 
