@@ -374,8 +374,9 @@ securityManager 会按照 realms 指定的顺序进行身份认证。此处我�
 Authenticator 的职责是验证用户帐号，是 Shiro API 中身份验证核心的入口点：
 
 ```java
-public AuthenticationInfo authenticate(AuthenticationToken authenticationToken)
-            throws AuthenticationException;
+public interface Authenticator {
+    AuthenticationInfo authenticate(AuthenticationToken var1) throws AuthenticationException;
+}
 ```
 <div id="cp6">cp6</div>
 <div id="cp7">cp7</div>
