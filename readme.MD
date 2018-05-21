@@ -207,6 +207,7 @@ Shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 J
 
 <b>身份认证流程</b>
 
+![](https://github.com/YuxingXie/shiro/raw/master/doc/4.png)
 <div id="cp6">cp6</div>
 <div id="cp7">cp7</div>
 <div id="cp8">cp8</div>
