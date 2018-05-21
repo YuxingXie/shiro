@@ -1,5 +1,5 @@
 # from：[w3school](https://www.w3cschool.cn/shiro/)
-说明：文档全部原文抄录，类名、包名未做任何修改，仅排版略做改动。如果知识点有心得或疑问，都在源代码中TODO注释。
+说明：文档全部原文抄录，类名、包名未做任何修改，源代码中增加了import语句，其它仅排版略做改动。如果知识点有心得或疑问，都在源代码中TODO注释。
 # 目录
 ## <a href='#cp1' target='_self'>Shiro 关于</a>
 ## <a href='#cp2' target='_self'>Shiro 简介</a>
@@ -161,6 +161,17 @@ Shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 J
 
 2、测试用例（com.github.zhangkaitao.shiro.chapter2.LoginLogoutTest）
 
+    /*
+    import org.apache.shiro.SecurityUtils;
+    import org.apache.shiro.authc.AuthenticationException;
+    import org.apache.shiro.authc.UsernamePasswordToken;
+    import org.apache.shiro.config.IniSecurityManagerFactory;
+    import org.apache.shiro.mgt.SecurityManager;
+    import org.apache.shiro.subject.Subject;
+    import org.apache.shiro.util.Factory;
+    import org.junit.Assert;
+    import org.junit.Test;
+    */
     @Test
     public void testHelloworld() {
         //1、获取SecurityManager工厂，此处使用Ini配置文件初始化SecurityManager  
@@ -205,7 +216,7 @@ Shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 J
 
 2.用户身份 Token 可能不仅仅是用户名 / 密码，也可能还有其他的，如登录时允许用户名 / 邮箱 / 手机号同时登录。
 
-<b>身份认证流程</b>
+### 身份认证流程
 
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/4.png)
 
@@ -221,6 +232,46 @@ Shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 J
 
 5.Authenticator 会把相应的 token 传入 Realm，从 Realm 获取身份验证信息，如果没有返回 / 抛出异常表示身份验证失败了。此处可以配置多个 Realm，将按照相应的顺序及策略进行访问。
 
+### Realm
+
+Realm：域，Shiro 从从 Realm 获取安全数据（如用户、角色、权限），就是说 SecurityManager 要验证用户身份，那么它需要从 Realm 获取相应的用户进行比较以确定用户身份是否合法；也需要从 Realm 得到用户相应的角色 / 权限进行验证用户是否能进行操作；可以把 Realm 看成 DataSource，即安全数据源。如我们之前的 ini 配置方式将使用 org.apache.shiro.realm.text.IniRealm。
+
+org.apache.shiro.realm.Realm 接口如下：
+
+    tring getName(); //返回一个唯一的Realm名字
+    boolean supports(AuthenticationToken token); //判断此Realm是否支持此Token
+    AuthenticationInfo getAuthenticationInfo(AuthenticationToken token)
+     throws AuthenticationException;  //根据Token获取认证信息
+#### 单 Realm 配置
+1、自定义 Realm 实现（com.github.zhangkaitao.shiro.chapter2.realm.MyRealm1）：
+
+    import org.apache.shiro.authc.*;
+    import org.apache.shiro.realm.Realm;
+    
+    public class MyRealm1 implements Realm {
+        @Override
+        public String getName() {
+            return "myrealm1";
+        }
+        @Override
+        public boolean supports(AuthenticationToken token) {
+            //仅支持UsernamePasswordToken类型的Token
+            return token instanceof UsernamePasswordToken;
+        }
+        @Override
+        public AuthenticationInfo getAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+            String username = (String)token.getPrincipal();  //得到用户名
+            String password = new String((char[])token.getCredentials()); //得到密码
+            if(!"zhang".equals(username)) {
+                throw new UnknownAccountException(); //如果用户名错误
+            }
+            if(!"123".equals(password)) {
+                throw new IncorrectCredentialsException(); //如果密码错误
+            }
+            //如果身份认证验证成功，返回一个AuthenticationInfo实现；
+            return new SimpleAuthenticationInfo(username, password, getName());
+        }
+    }
 <div id="cp6">cp6</div>
 <div id="cp7">cp7</div>
 <div id="cp8">cp8</div>
