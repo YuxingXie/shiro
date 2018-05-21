@@ -391,6 +391,26 @@ SecurityManager 接口继承了 Authenticator(注：SecurityManager接口签名�
 
 ModularRealmAuthenticator 默认使用 AtLeastOneSuccessfulStrategy 策略。
 
-<div id="cp6">cp6</div>
-<div id="cp7">cp7</div>
-<div id="cp8">cp8</div>
+假设我们有三个 realm：
+
+myRealm1： 用户名 / 密码为 zhang/123 时成功，且返回身份 / 凭据为 zhang/123；
+
+myRealm2： 用户名 / 密码为 wang/123 时成功，且返回身份 / 凭据为 wang/123；
+
+myRealm3： 用户名 / 密码为 zhang/123 时成功，且返回身份 / 凭据为 zhang@163.com/123，和 myRealm1 不同的是返回时的身份变了；
+
+1、ini 配置文件 (shiro-authenticator-all-success.ini)
+
+    #指定securityManager的authenticator实现
+    authenticator=org.apache.shiro.authc.pam.ModularRealmAuthenticator
+    securityManager.authenticator=$authenticator
+    #指定securityManager.authenticator的authenticationStrategy
+    allSuccessfulStrategy=org.apache.shiro.authc.pam.AllSuccessfulStrategy
+    securityManager.authenticator.authenticationStrategy=$allSuccessfulStrategy
+
+    myRealm1=com.github.zhangkaitao.shiro.chapter2.realm.MyRealm1
+    myRealm2=com.github.zhangkaitao.shiro.chapter2.realm.MyRealm2
+    myRealm3=com.github.zhangkaitao.shiro.chapter2.realm.MyRealm3
+    securityManager.realms=$myRealm1,$myRealm3
+    
+2、测试代码（com.github.zhangkaitao.shiro.chapter2.AuthenticatorTest）
