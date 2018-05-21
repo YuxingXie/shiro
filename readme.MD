@@ -368,6 +368,15 @@ securityManager 会按照 realms 指定的顺序进行身份认证。此处我�
 2. 变量名. 属性 = 值 自动调用相应的 setter 方法进行赋值
 3. $ 变量名 引用之前的一个对象实例
 4. 测试代码请参照 com.github.zhangkaitao.shiro.chapter2.LoginLogoutTest 的 testJDBCRealm 方法，和之前的没什么区别。
+
+### Authenticator 及 AuthenticationStrategy
+
+Authenticator 的职责是验证用户帐号，是 Shiro API 中身份验证核心的入口点：
+
+```java
+public AuthenticationInfo authenticate(AuthenticationToken authenticationToken)
+            throws AuthenticationException;
+```
 <div id="cp6">cp6</div>
 <div id="cp7">cp7</div>
 <div id="cp8">cp8</div>
