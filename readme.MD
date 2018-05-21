@@ -1,5 +1,8 @@
 # from：[w3school](https://www.w3cschool.cn/shiro/)
 说明：文档全部原文抄录，类名、包名未做任何修改，源代码中增加了import语句，其它仅排版略做改动,并修正一些错误。如果知识点有心得或疑问，都在源代码中TODO注释。
+
+原文作者该教程的gitHub地址：[https://github.com/zhangkaitao/shiro-example](https://github.com/zhangkaitao/shiro-example)
+
 # 目录
 ## <a href='#cp1' target='_self'>Shiro 关于</a>
 ## <a href='#cp2' target='_self'>Shiro 简介</a>
@@ -310,6 +313,52 @@ securityManager 会按照 realms 指定的顺序进行身份认证。此处我�
 
 <b>org.apache.shiro.realm.jdbc.JdbcRealm</b>：通过 sql 查询相应的信息，如 “select password from users where username = ?” 获取用户密码，“select password, password_salt from users where username = ?” 获取用户密码及盐；“select role_name from user_roles where username = ?” 获取用户角色；“select permission from roles_permissions where role_name = ?” 获取角色对应的权限信息；也可以调用相应的 api 进行自定义 sql；
 
+#### JDBC Realm 使用 
+
+1、数据库及依赖
+
+    <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>5.1.25</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid</artifactId>
+                <version>0.2.23</version>
+            </dependency>
+            
+注:H2数据库更简单所以读者使用H2数据库,并且作者关于mysql的所有配置和代码改为h2的配置及代码，依赖如下
+    
+    <dependency>
+        <groupId>com.h2database</groupId>
+        <artifactId>h2</artifactId>
+        <version>1.4.196</version>
+    </dependency>
+    <dependency>
+        <groupId>com.alibaba</groupId>
+        <artifactId>druid</artifactId>
+        <version>0.2.23</version>
+    </dependency>
+
+本文将使用 mysql（注：h2,以后不再提醒） 数据库及 druid 连接池；
+2、到数据库 shiro 下建三张表：users（用户名 / 密码）、user_roles（用户 / 角色）、roles_permissions（角色 / 权限），具体请参照 shiro-example-chapter2/sql/shiro.sql；并添加一个用户记录，用户名 / 密码为 zhang/123；
+
+3、ini 配置（shiro-jdbc-realm.ini）
+
+    jdbcRealm=org.apache.shiro.realm.jdbc.JdbcRealm
+    dataSource=com.alibaba.druid.pool.DruidDataSource
+    dataSource.driverClassName=org.h2.Driver
+    dataSource.url=jdbc:h2:~/shiro;MVCC=TRUE
+    dataSource.username=sa
+    #dataSource.password=
+    jdbcRealm.dataSource=$dataSource
+    securityManager.realms=$jdbcRealm
+    
+1. 变量名 = 全限定类名会自动创建一个类实例
+2. 变量名. 属性 = 值 自动调用相应的 setter 方法进行赋值
+3. $ 变量名 引用之前的一个对象实例
+4. 测试代码请参照 com.github.zhangkaitao.shiro.chapter2.LoginLogoutTest 的 testJDBCRealm 方法，和之前的没什么区别。
 <div id="cp6">cp6</div>
 <div id="cp7">cp7</div>
 <div id="cp8">cp8</div>
