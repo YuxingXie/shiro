@@ -1,4 +1,5 @@
 # from：[w3school](https://www.w3cschool.cn/shiro/)
+说明：文档全部原文抄录，类名、包名未做任何修改，仅排版略做改动。如果知识点有心得或疑问，都在源代码中TODO注释。
 # 目录
 ## <a href='#cp1' target='_self'>Shiro 关于</a>
 ## <a href='#cp2' target='_self'>Shiro 简介</a>
@@ -191,6 +192,7 @@ Shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 J
 
 
 <b>从如上代码可总结出身份验证的步骤：</b>
+
 1.收集用户身份 / 凭证，即如用户名 / 密码；
 
 2.调用 Subject.login 进行登录，如果失败将得到相应的 AuthenticationException 异常，根据异常提示用户错误信息；否则登录成功；
