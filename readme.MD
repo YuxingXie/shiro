@@ -984,3 +984,51 @@ public class MyRolePermissionResolver implements RolePermissionResolver {
     }
 }
 ```
+
+此处的实现很简单，如果用户拥有 role1，那么就返回一个 “menu:*” 的权限。
+
+#### 4、自定义 Realm
+(注:AuthorizingRealm即要求身份信息又要求授权信息)
+```java
+public class MyRealm extends AuthorizingRealm {
+
+    @Override
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
+        SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
+        authorizationInfo.addRole("role1");
+        authorizationInfo.addRole("role2");
+        authorizationInfo.addObjectPermission(new BitPermission("+user1+10"));
+        authorizationInfo.addObjectPermission(new WildcardPermission("user1:*"));
+        authorizationInfo.addStringPermission("+user2+10");
+        authorizationInfo.addStringPermission("user2:*");
+        return authorizationInfo;
+    }
+
+    @Override
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+        String username = (String)token.getPrincipal();  //得到用户名
+        String password = new String((char[])token.getCredentials()); //得到密码
+        if(!"zhang".equals(username)) {
+            throw new UnknownAccountException(); //如果用户名错误
+        }
+        if(!"123".equals(password)) {
+            throw new IncorrectCredentialsException(); //如果密码错误
+        }
+        //如果身份认证验证成功，返回一个AuthenticationInfo实现；
+        return new SimpleAuthenticationInfo(username, password, getName());
+    }
+}
+```
+
+此时我们继承 AuthorizingRealm 而不是实现 Realm 接口；推荐使用 AuthorizingRealm，因为： AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token)：
+表示获取身份验证信息；AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals)：表示根据用户身份获取授权信息。这种方式的好处是当只需要身份验证时
+只需要获取身份验证信息而不需要获取授权信息。对于 AuthenticationInfo 和 AuthorizationInfo 请参考其 Javadoc 获取相关接口信息。
+
+另外我们可以使用 JdbcRealm，需要做的操作如下：
+
+1. 执行 sql/ shiro-init-data.sql 插入相关的权限数据；
+
+2. 使用 shiro-jdbc-authorizer.ini 配置文件，需要设置 jdbcRealm.permissionsLookupEnabled 为 true 来开启权限查询。
+
+此次还要注意就是不能把我们自定义的如 “+user1+10” 配置到 INI 配置文件，即使有 IniRealm 完成，因为 IniRealm 在 new 完成后就会解析这些权限字符串，默认使用了
+WildcardPermissionResolver 完成，即此处是一个设计权限，如果采用生命周期（如使用初始化方法）的方式进行加载就可以解决我们自定义 permissionResolver 的问题。
