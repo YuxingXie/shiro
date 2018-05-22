@@ -828,3 +828,9 @@ ini 配置
 
 4. Authorizer 会判断 Realm 的角色/权限是否和传入的匹配，如果有多个 Realm，会委托给 ModularRealmAuthorizer 进行循环判断，如果匹配如 isPermitted*/hasRole* 
 会返回 true，否则返回 false 表示授权失败。
+
+ModularRealmAuthorizer 进行多 Realm 匹配流程：
+
+* 首先检查相应的 Realm 是否实现了实现了 Authorizer；
+* 如果实现了 Authorizer，那么接着调用其相应的 isPermitted*/hasRole* 接口进行匹配；
+* 如果有一个 Realm 匹配那么将返回 true，否则返回 false。
