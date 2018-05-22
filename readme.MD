@@ -535,3 +535,23 @@ public class SomeClass{
 }
 
 ```
+
+注解式：通过在执行的 Java 方法上放置相应的注解完成：
+
+```java
+public class SomeClass{
+    @RequiresRoles("admin")
+    public void hello() {
+        //有权限
+    }
+}
+
+```
+
+没有权限将抛出相应的异常；
+JSP/GSP 标签：在 JSP/GSP 页面通过相应的标签完成：
+```html
+<shiro:hasRole name="admin">
+<!— 有权限 —>
+</shiro:hasRole>
+```
