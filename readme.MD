@@ -967,3 +967,20 @@ public class BitAndWildPermissionResolver implements PermissionResolver {
     }
 }
 ```
+
+BitAndWildPermissionResolver 实现了 PermissionResolver 接口，并根据权限字符串是否以 “+” 开头来解析权限字符串为 BitPermission 或 WildcardPermission。
+
+#### 3、定义 MyRolePermissionResolver
+
+RolePermissionResolver 用于根据角色字符串来解析得到权限集合。
+```java
+public class MyRolePermissionResolver implements RolePermissionResolver {
+    @Override
+    public Collection<Permission> resolvePermissionsInRole(String roleString) {
+        if("role1".equals(roleString)) {
+            return Arrays.asList((Permission)new WildcardPermission("menu:*"));
+        }
+        return null;
+    }
+}
+```
