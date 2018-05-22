@@ -590,3 +590,18 @@ public class RoleTest extends BaseTest {
     }
 }
 ```
+
+Shiro 提供了 hasRole/hasRole 用于判断用户是否拥有某个角色/某些权限；但是没有提供如 hashAnyRole 用于判断是否有某些权限中的某一个。
+```java
+public class RoleTest extends BaseTest {
+    //...other code...
+    @Test(expected = UnauthorizedException.class)
+    public void testCheckRole() {
+        login("classpath:ch3/shiro-role.ini", "zhang", "123");
+        //断言拥有角色：role1
+        subject().checkRole("role1");
+        //断言拥有角色：role1 and role3 失败抛出异常
+        subject().checkRoles("role1", "role3");
+    }
+}
+```
