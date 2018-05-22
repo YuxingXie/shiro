@@ -1026,9 +1026,33 @@ public class MyRealm extends AuthorizingRealm {
 
 另外我们可以使用 JdbcRealm，需要做的操作如下：
 
-1. 执行 sql/ shiro-init-data.sql 插入相关的权限数据；
+1. 执行 sql/ch3/shiro-init-data.sql 插入相关的权限数据；
 
 2. 使用 shiro-jdbc-authorizer.ini 配置文件，需要设置 jdbcRealm.permissionsLookupEnabled 为 true 来开启权限查询。
 
 此次还要注意就是不能把我们自定义的如 “+user1+10” 配置到 INI 配置文件，即使有 IniRealm 完成，因为 IniRealm 在 new 完成后就会解析这些权限字符串，默认使用了
 WildcardPermissionResolver 完成，即此处是一个设计权限，如果采用生命周期（如使用初始化方法）的方式进行加载就可以解决我们自定义 permissionResolver 的问题。
+
+#### 5、测试用例
+(注：一直疑惑JdbcRealm如何识得表名和字段名，进源码看原来有默认查询语句，所以表结构表名按他的默认命名就可以了，但如若采用spring-data-jpa类似的ORM则JdbcRealm可能不适用了。)
+```java
+public class AuthorizerTest extends BaseTest {
+
+    @Test
+    public void testIsPermitted() {
+        login("classpath:ch3/shiro-authorizer.ini", "zhang", "123");
+        //判断拥有权限：user:create
+        Assert.assertTrue(subject().isPermitted("user1:update"));
+        Assert.assertTrue(subject().isPermitted("user2:update"));
+        //通过二进制位的方式表示权限
+        Assert.assertTrue(subject().isPermitted("+user1+2"));//新增权限
+        Assert.assertTrue(subject().isPermitted("+user1+8"));//查看权限
+        Assert.assertTrue(subject().isPermitted("+user2+10"));//新增及查看
+
+        Assert.assertFalse(subject().isPermitted("+user1+4"));//没有删除权限
+
+        Assert.assertTrue(subject().isPermitted("menu:view"));//通过MyRolePermissionResolver解析得到的权限
+    }
+
+}
+```
