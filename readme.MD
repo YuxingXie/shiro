@@ -950,13 +950,20 @@ public class BitPermission implements Permission {
         return true;
     }
 
+    //other codes
+}
+```
+
+Permission 接口提供了 boolean implies(Permission p) 方法用于判断权限匹配的；
+
+```java
+public class BitAndWildPermissionResolver implements PermissionResolver {
     @Override
-    public String toString() {
-        return "BitPermission{" +
-                "resourceIdentify='" + resourceIdentify + '\'' +
-                ", permissionBit=" + permissionBit +
-                ", instanceId='" + instanceId + '\'' +
-                '}';
+    public Permission resolvePermission(String permissionString) {
+        if(permissionString.startsWith("+")) {
+            return new BitPermission(permissionString);
+        }
+        return new WildcardPermission(permissionString);
     }
 }
 ```
