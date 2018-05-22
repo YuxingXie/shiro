@@ -730,6 +730,7 @@ ini 配置
 用户拥有所有资源的“view”所有权限。假设判断的权限是“"system:user:view”，那么需要“role5=::view”这样写才行
 
 #### 5、实例级别的权限
+
 * 单个实例单个权限
 
 ini 配置
@@ -741,3 +742,78 @@ ini 配置
 然后通过如下代码判断
 
     subject().checkPermissions("user:view:1");
+    
+* 单个实例多个权限
+
+ini 配置
+
+    role72="user:update,delete:1"
+    
+对资源 user 的 1 实例拥有 update、delete 权限。
+
+然后通过如下代码判断
+
+    subject().checkPermissions("user:delete,update:1");
+    subject().checkPermissions("user:update:1", "user:delete:1");
+
+* 单个实例所有权限
+
+ini 配置
+
+    role73=user:*:1
+    
+对资源 user 的 1 实例拥有所有权限。
+
+然后通过如下代码判断
+
+    subject().checkPermissions("user:update:1", "user:delete:1", "user:view:1");
+
+* 所有实例单个权限
+
+ini 配置
+
+    role74=user:auth:*
+
+对资源 user 的 1 实例拥有所有权限。
+
+然后通过如下代码判断
+
+    subject().checkPermissions("user:auth:1", "user:auth:2");
+
+
+* 所有实例所有权限
+
+ini 配置
+
+    role75=user:*:*
+
+对资源 user 的 1 实例拥有所有权限。
+
+然后通过如下代码判断
+
+    subject().checkPermissions("user:view:1", "user:auth:2");
+    
+#### 6、Shiro 对权限字符串缺失部分的处理
+
+如“user:view”等价于“user:view:*”；而“organization”等价于“organization:*”或者“organization:*:*”。可以这么理解，这种方式实现了前缀匹配。
+
+另外如“user:*”可以匹配如“user:delete”、“user:delete”可以匹配如“user:delete:1”、“user:*:1”可以匹配如“user:view:1”、“user”可以匹配
+“user:view”或“user:view:1”等。即*可以匹配所有，不加*可以进行前缀匹配；但是如“*:view”不能匹配“system:user:view”，需要使用“*:*:view”，即后缀匹配必须指定前缀（
+多个冒号就需要多个*来匹配）。    
+(注：总结为，*作为前缀只可匹配一个冒号，而作为后缀可以匹配所有，作为后缀是可以不加*)
+
+#### 7、WildcardPermission
+
+如下两种方式是等价的：
+
+    subject().checkPermission("menu:view:1");
+    subject().checkPermission(new WildcardPermission("menu:view:1"));
+    
+因此没什么必要的话使用字符串更方便。
+
+#### 8、性能问题
+通配符匹配方式比字符串相等匹配来说是更复杂的，因此需要花费更长时间，但是一般系统的权限不会太多，且可以配合缓存来提供其性能，如果这样性能还达不到要求我们可以实现位操作算法实现性能
+更好的权限匹配。另外实例级别的权限验证如果数据量太大也不建议使用，可能造成查询权限及匹配变慢。可以考虑比如在sql查询时加上权限字符串之类的方式在查询时就完成了权限匹配。
+
+### 授权流程
+![](https://github.com/YuxingXie/shiro/raw/master/doc/6.png)
