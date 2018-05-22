@@ -623,3 +623,17 @@ Shiro 提供的 checkRole/checkRoles 和 hasRole/hasAllRoles 不同的地方是�
 规则：“用户名=密码，角色 1，角色 2”“角色=权限 1，权限 2”，即首先根据用户名找到角色，然后根据角色再找到权限；即角色是权限集合；Shiro 同样不进行权限的维护，需要我们通过 Realm 返回相应的权限信息。只需要维护“用户——角色”之间的关系即可。
 
 2、测试用例（com.github.zhangkaitao.shiro.chapter3.PermissionTest）
+```java
+public class PermissionTest extends BaseTest {
+    @Test
+    public void testIsPermitted() {
+        login("classpath:ch3/shiro-permission.ini", "zhang", "123");
+        //判断拥有权限：user:create
+        Assert.assertTrue(subject().isPermitted("user:create"));
+        //判断拥有权限：user:update and user:delete
+        Assert.assertTrue(subject().isPermittedAll("user:update", "user:delete"));
+        //判断没有权限：user:view
+        Assert.assertFalse(subject().isPermitted("user:view"));
+    }
+}
+```
