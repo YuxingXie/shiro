@@ -2,16 +2,10 @@ package com.github.zhangkaitao.shiro.chapter2;
 
 import junit.framework.Assert;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
-import org.apache.shiro.authz.ModularRealmAuthorizer;
 import org.apache.shiro.config.IniSecurityManagerFactory;
-import org.apache.shiro.mgt.SessionsSecurityManager;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
-import org.apache.shiro.util.Destroyable;
 import org.apache.shiro.util.Factory;
 import org.apache.shiro.util.ThreadContext;
 import org.junit.After;
@@ -35,8 +29,10 @@ public class AuthenticatorTest {
         Assert.assertEquals(2, principalCollection.asList().size());
     }
 
-    @Test(expected = UnknownAccountException.class)
+//    @Test(expected = UnknownAccountException.class)
+    @Test
     public void testAllSuccessfulStrategyWithFail() {
+        //todo ini中指定了securityManager.authenticator的authenticationStrategy为org.apache.shiro.authc.pam.AllSuccessfulStrategy，必须全部Realms验证成功
         login("classpath:shiro-authenticator-all-fail.ini");
     }
 
@@ -79,7 +75,7 @@ public class AuthenticatorTest {
         PrincipalCollection principalCollection = subject.getPrincipals();
         Assert.assertEquals(1, principalCollection.asList().size());
     }
-
+    //todo 原文方法名为login，改为zhangLogin更好
     private void login(String configFile) {
         //1、获取SecurityManager工厂，此处使用Ini配置文件初始化SecurityManager
         Factory<org.apache.shiro.mgt.SecurityManager> factory =

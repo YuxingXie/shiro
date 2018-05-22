@@ -1,5 +1,6 @@
 # from：[w3school](https://www.w3cschool.cn/shiro/)
-说明：文档全部原文抄录，类名、包名未做任何修改，源代码中增加了import语句，其它仅排版略做改动,并修正一些错误。如果知识点有心得或疑问，都在源代码中TODO注释。
+说明：文档尽量原文抄录，类名、包名未做任何修改，源代码中增加了import语句，为了显示语法高亮，
+某些代码片段增加了类或接口名；其它仅排版略做改动,并修正一些错误。如果知识点有心得或疑问，都在源代码中TODO注释。
 
 原文作者该教程的gitHub地址：[https://github.com/zhangkaitao/shiro-example](https://github.com/zhangkaitao/shiro-example)
 
@@ -419,7 +420,7 @@ myRealm3： 用户名 / 密码为 zhang/123 时成功，且返回身份 / 凭据
 
 ```java
 public class AuthenticatorTest {
-    //...
+    //...other code...
     private void login(String configFile) {
         //1、获取SecurityManager工厂，此处使用Ini配置文件初始化SecurityManager
         Factory<org.apache.shiro.mgt.SecurityManager> factory =
@@ -432,6 +433,61 @@ public class AuthenticatorTest {
         UsernamePasswordToken token = new UsernamePasswordToken("zhang", "123");
         subject.login(token);
     }
-    //...
+    //...other code...
 }
 ```
+* 测试 AllSuccessfulStrategy 成功：
+```java
+public class AuthenticatorTest {
+    //...other code...
+    @Test
+    public void testAllSuccessfulStrategyWithSuccess() {
+        login("classpath:shiro-authenticator-all-success.ini");
+        Subject subject = SecurityUtils.getSubject();
+        //得到一个身份集合，其包含了Realm验证成功的身份信息
+        PrincipalCollection principalCollection = subject.getPrincipals();
+        Assert.assertEquals(2, principalCollection.asList().size());
+    }
+    //...other code...
+}
+```
+即 PrincipalCollection 包含了 zhang 和 zhang@163.com 身份信息。
+
+* 测试 AllSuccessfulStrategy 失败：
+```java
+public class AuthenticatorTest {
+    //...other code...
+    @Test(expected = UnknownAccountException.class)
+    public void testAllSuccessfulStrategyWithFail() {
+        login("classpath:shiro-authenticator-all-fail.ini");
+        Subject subject = SecurityUtils.getSubject();
+    }
+    //...other code...
+}
+```
+shiro-authenticator-all-fail.ini 与 shiro-authenticator-all-success.ini 不同的配置是使用了 securityManager.realms=$myRealm1，$myRealm2；即 myRealm 验证失败。
+
+对于 AtLeastOneSuccessfulStrategy 和 FirstSuccessfulStrategy 的区别，请参照 testAtLeastOneSuccessfulStrategyWithSuccess 和 testFirstOneSuccessfulStrategyWithSuccess 测试方法。唯一不同点一个是返回所有验证成功的 Realm 的认证信息；另一个是只返回第一个验证成功的 Realm 的认证信息。
+
+自定义 AuthenticationStrategy 实现，首先看其 API：
+```java
+public interface AuthenticationStrategy {
+    
+    //在所有Realm验证之前调用
+    AuthenticationInfo beforeAllAttempts(Collection<? extends Realm> var1, AuthenticationToken var2) throws AuthenticationException;
+
+    //在每个Realm之前调用
+    AuthenticationInfo beforeAttempt(Realm var1, AuthenticationToken var2, AuthenticationInfo var3) throws AuthenticationException;
+
+    //在每个Realm之后调用
+    AuthenticationInfo afterAttempt(Realm var1, AuthenticationToken var2, AuthenticationInfo var3, AuthenticationInfo var4, Throwable var5) throws AuthenticationException;
+
+    //在所有Realm之后调用
+    AuthenticationInfo afterAllAttempts(AuthenticationToken var1, AuthenticationInfo var2) throws AuthenticationException;
+}
+```
+因为每个 AuthenticationStrategy 实例都是无状态的，所有每次都通过接口将相应的认证信息传入下一次流程；通过如上接口可以进行如合并 / 返回第一个验证成功的认证信息。
+
+自定义实现时一般继承 org.apache.shiro.authc.pam.AbstractAuthenticationStrategy 即可，具体可以参考代码 com.github.zhangkaitao.shiro.chapter2.authenticator.strategy 包下 OnlyOneAuthenticatorStrategy 和 AtLeastTwoAuthenticatorStrategy。
+
+到此基本的身份验证就搞定了，对于 AuthenticationToken 、AuthenticationInfo 和 Realm 的详细使用后续章节再陆续介绍。

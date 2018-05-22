@@ -1,10 +1,5 @@
 package com.github.zhangkaitao.shiro.chapter2.realm;
 
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationInfo;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.realm.Realm;
-
 import org.apache.shiro.authc.*;
 import org.apache.shiro.realm.Realm;
 
@@ -13,16 +8,11 @@ import org.apache.shiro.realm.Realm;
  * <p>Date: 14-1-25
  * <p>Version: 1.0
  */
-public class MyRealm2 implements Realm {
+public class MyRealm3 implements Realm {
 
     @Override
     public String getName() {
-        /**
-         *todo
-         * ini文件中myRealm2=com.github.zhangkaitao.shiro.chapter2.realm.MyRealm2的key:myRealm2并不代表realm的name，这个才是
-         * ini中的key可以理解为shiro使用的Realm的bean名
-         */
-        return "myrealm2";
+        return "myrealm3";
     }
 
     @Override
@@ -35,13 +25,13 @@ public class MyRealm2 implements Realm {
 
         String username = (String)token.getPrincipal();  //得到用户名
         String password = new String((char[])token.getCredentials()); //得到密码
-        if(!"wang".equals(username)) {
+        if(!"zhang".equals(username)) {
             throw new UnknownAccountException(); //如果用户名错误
         }
         if(!"123".equals(password)) {
             throw new IncorrectCredentialsException(); //如果密码错误
         }
         //如果身份认证验证成功，返回一个AuthenticationInfo实现；
-        return new SimpleAuthenticationInfo(username, password, getName());
+        return new SimpleAuthenticationInfo(username + "@163.com", password, getName());
     }
 }
