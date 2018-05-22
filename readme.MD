@@ -515,4 +515,23 @@ Shiro 支持粗粒度权限（如用户模块的所有权限）和细粒度权�
 即直接通过角色来验证用户有没有操作权限，如在应用中 CTO、技术总监、开发工程师可以使用打印机，假设某天不允许开发工程师使用打印机，此时需要从应用中删除相应代码；再如在应用中 CTO、技术总监可以查看用户、查看权限；突然有一天不允许技术总监查看用户、查看权限了，需要在相关代码中把技术总监角色从判断逻辑中删除掉；即粒度是以角色为单位进行访问控制的，粒度较粗；如果进行修改可能造成多处代码修改。
 #### 显示角色：
 在程序中通过权限控制谁能访问某个资源，角色聚合一组权限集合；这样假设哪个角色不能访问某个资源，只需要从角色代表的权限集合中移除即可；无须修改多处代码；即粒度是以资源/实例为单位的；粒度较细。
-请 google 搜索“RBAC”和“RBAC新解”分别了解“基于角色的访问控制”“基于资源的访问控制(Resource-Based Access Control)”。
+请 google 搜索“RBAC”和“RBAC新解”分别了解“基于角色的访问控制(Role-Based Access Control)”“基于资源的访问控制(Resource-Based Access Control)”。
+
+### 授权方式
+
+Shiro 支持三种方式的授权：
+
+编程式：通过写 if/else 授权代码块完成：
+```java
+public class SomeClass{
+    public void someMethod(){
+        Subject subject = SecurityUtils.getSubject();
+        if(subject.hasRole("admin")) {
+            //有权限
+        } else {
+            //无权限
+        }
+    }
+}
+
+```
