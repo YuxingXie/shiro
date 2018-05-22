@@ -617,6 +617,7 @@ Shiro 提供的 checkRole/checkRoles 和 hasRole/hasAllRoles 不同的地方是�
     zhang=123,role1,role2
     wang=123,role1
     [roles]
+    #(注:user被称为资源标识符，create、update、delete称为操作)
     role1=user:create,user:update
     role2=user:create,user:delete
     
@@ -625,6 +626,7 @@ Shiro 提供的 checkRole/checkRoles 和 hasRole/hasAllRoles 不同的地方是�
 2、测试用例（com.github.zhangkaitao.shiro.chapter3.PermissionTest）
 ```java
 public class PermissionTest extends BaseTest {
+    //...other code...
     @Test
     public void testIsPermitted() {
         login("classpath:ch3/shiro-permission.ini", "zhang", "123");
@@ -637,3 +639,32 @@ public class PermissionTest extends BaseTest {
     }
 }
 ```
+
+Shiro 提供了 isPermitted 和 isPermittedAll 用于判断用户是否拥有某个权限或所有权限，也没有提供如 isPermittedAny 用于判断拥有某一个权限的接口。
+
+```java
+public class PermissionTest extends BaseTest {
+    //...other code...
+    @Test(expected = UnauthorizedException.class)
+    public void testCheckPermission() {
+        login("classpath:ch3/shiro-permission.ini", "zhang", "123");
+        //断言拥有权限：user:create
+        subject().checkPermission("user:create");
+        //断言拥有权限：user:delete and user:update
+        subject().checkPermissions("user:delete", "user:update");
+        //断言拥有权限：user:view 失败抛出异常
+        subject().checkPermissions("user:view");
+    }
+}
+```
+
+但是失败的情况下会抛出 UnauthorizedException 异常。
+
+到此基于资源的访问控制（显示角色）就完成了，也可以叫基于权限的访问控制，这种方式的一般规则是“资源标识符：操作”，
+即是资源级别的粒度；这种方式的好处就是如果要修改基本都是一个资源级别的修改，不会对其他模块代码产生影响，粒度小。
+但是实现起来可能稍微复杂点，需要维护“用户——角色，角色——权限（资源：操作）”之间的关系。
+(注：总结Permission的三要素即Subject、Resource和Operation)
+### Permission
+#### 字符串通配符权限
+规则：“资源标识符:操作：对象实例 ID” 即对哪个资源的哪个实例可以进行什么操作。其默认支持通配符权限字符串，“:”表示资源/操作/实例的分割；
+“,”表示操作的分割；“*”表示任意资源/操作/实例。
