@@ -717,3 +717,27 @@ ini 配置文件（表示角色 5 拥有 system:user 的所有权限）
     subject().checkPermissions("system:user:*");
     subject().checkPermissions("system:user");
 通过“system:user:*”验证“system:user:create,delete,update:view”可以，但是反过来是不成立的。
+
+#### 4、所有资源全部权限
+ini 配置
+
+    role61=*:view
+    
+然后通过如下代码判断
+
+    subject().checkPermissions("user:view");
+    
+用户拥有所有资源的“view”所有权限。假设判断的权限是“"system:user:view”，那么需要“role5=::view”这样写才行
+
+#### 5、实例级别的权限
+* 单个实例单个权限
+
+ini 配置
+
+    role71=user:view:1
+
+对资源 user 的 1 实例拥有 view 权限。
+
+然后通过如下代码判断
+
+    subject().checkPermissions("user:view:1");
