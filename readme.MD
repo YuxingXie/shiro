@@ -608,3 +608,18 @@ public class RoleTest extends BaseTest {
 Shiro 提供的 checkRole/checkRoles 和 hasRole/hasAllRoles 不同的地方是它在判断为假的情况下会抛出 UnauthorizedException 异常。
 
 到此基于角色的访问控制（即隐式角色）就完成了，这种方式的缺点就是如果很多地方进行了角色判断，但是有一天不需要了那么就需要修改相应代码把所有相关的地方进行删除；这就是粗粒度造成的问题。
+
+#### 基于资源的访问控制（显示角色）
+
+1、在 ini 配置文件配置用户拥有的角色及角色-权限关系（shiro-permission.ini）
+
+    [users]
+    zhang=123,role1,role2
+    wang=123,role1
+    [roles]
+    role1=user:create,user:update
+    role2=user:create,user:delete
+    
+规则：“用户名=密码，角色 1，角色 2”“角色=权限 1，权限 2”，即首先根据用户名找到角色，然后根据角色再找到权限；即角色是权限集合；Shiro 同样不进行权限的维护，需要我们通过 Realm 返回相应的权限信息。只需要维护“用户——角色”之间的关系即可。
+
+2、测试用例（com.github.zhangkaitao.shiro.chapter3.PermissionTest）
