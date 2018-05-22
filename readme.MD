@@ -666,5 +666,54 @@ public class PermissionTest extends BaseTest {
 (注：总结Permission的三要素即Subject、Resource和Operation)
 ### Permission
 #### 字符串通配符权限
-规则：“资源标识符:操作：对象实例 ID” 即对哪个资源的哪个实例可以进行什么操作。其默认支持通配符权限字符串，“:”表示资源/操作/实例的分割；
+规则：“资源标识符:操作:对象实例 ID” 即对哪个资源的哪个实例可以进行什么操作。其默认支持通配符权限字符串，“:”表示资源/操作/实例的分割；
 “,”表示操作的分割；“*”表示任意资源/操作/实例。
+#### 1、单个资源单个权限
+
+    subject().checkPermissions("system:user:update");
+
+用户拥有资源“system:user”的“update”权限。
+
+#### 2、单个资源多个权限
+    role41=system:user:update,system:user:delete
+
+然后通过如下代码判断
+
+    subject().checkPermissions("system:user:update", "system:user:delete");
+    
+用户拥有资源“system:user”的“update”和“delete”权限。如上可以简写成：
+
+ini 配置（表示角色4拥有 system:user 资源的 update 和 delete 权限）
+
+    role42="system:user:update,delete"
+    
+接着可以通过如下代码判断
+
+    subject().checkPermissions("system:user:update,delete");
+    
+通过“system:user:update,delete”验证“system:user:update, system:user:delete”是没问题的，但是反过来是规则不成立。
+
+#### 3、单个资源全部权限
+ini 配置
+
+    role51="system:user:create,update,delete,view"
+    
+然后通过如下代码判断
+
+    subject().checkPermissions("system:user:create,delete,update:view");
+    
+用户拥有资源“system:user”的“create”、“update”、“delete”和“view”所有权限。如上可以简写成：
+
+ini 配置文件（表示角色 5 拥有 system:user 的所有权限）
+
+    role52=system:user:*
+    
+也可以简写为（推荐上边的写法）：
+
+    role53=system:user
+    
+然后通过如下代码判断
+
+    subject().checkPermissions("system:user:*");
+    subject().checkPermissions("system:user");
+通过“system:user:*”验证“system:user:create,delete,update:view”可以，但是反过来是不成立的。
