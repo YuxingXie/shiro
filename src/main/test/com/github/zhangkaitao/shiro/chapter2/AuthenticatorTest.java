@@ -2,6 +2,7 @@ package com.github.zhangkaitao.shiro.chapter2;
 
 import junit.framework.Assert;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.config.IniSecurityManagerFactory;
 import org.apache.shiro.subject.PrincipalCollection;
@@ -29,8 +30,8 @@ public class AuthenticatorTest {
         Assert.assertEquals(2, principalCollection.asList().size());
     }
 
-//    @Test(expected = UnknownAccountException.class)
-    @Test
+    @Test(expected = UnknownAccountException.class)
+//    @Test
     public void testAllSuccessfulStrategyWithFail() {
         //todo ini中指定了securityManager.authenticator的authenticationStrategy为org.apache.shiro.authc.pam.AllSuccessfulStrategy，必须全部Realms验证成功
         login("classpath:shiro-authenticator-all-fail.ini");
