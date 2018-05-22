@@ -418,7 +418,9 @@ myRealm3： 用户名 / 密码为 zhang/123 时成功，且返回身份 / 凭据
 * 首先通用化登录逻辑
 
 ```java
-private void login(String configFile) {
+public class AuthenticatorTest {
+    //...
+    private void login(String configFile) {
         //1、获取SecurityManager工厂，此处使用Ini配置文件初始化SecurityManager
         Factory<org.apache.shiro.mgt.SecurityManager> factory =
                 new IniSecurityManagerFactory(configFile);
@@ -430,4 +432,6 @@ private void login(String configFile) {
         UsernamePasswordToken token = new UsernamePasswordToken("zhang", "123");
         subject.login(token);
     }
+    //...
+}
 ```
