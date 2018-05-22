@@ -834,3 +834,36 @@ ModularRealmAuthorizer 进行多 Realm 匹配流程：
 * 首先检查相应的 Realm 是否实现了实现了 Authorizer；
 * 如果实现了 Authorizer，那么接着调用其相应的 isPermitted*/hasRole* 接口进行匹配；
 * 如果有一个 Realm 匹配那么将返回 true，否则返回 false。
+
+如果 Realm 进行授权的话，应该继承 AuthorizingRealm，其流程是：
+
+* 如果调用 hasRole*，则直接获取 AuthorizationInfo.getRoles() 与传入的角色比较即可；首先如果调用如 isPermitted(“user:view”)，首先通过 PermissionResolver 
+将权限字符串转换成相应的 Permission 实例，默认使用 WildcardPermissionResolver，即转换为通配符的 WildcardPermission；
+
+* 通过 AuthorizationInfo.getObjectPermissions() 得到 Permission 实例集合；通过 AuthorizationInfo.getStringPermissions() 得到字符串集合并通过 
+PermissionResolver 解析为 Permission 实例；然后获取用户的角色，并通过 RolePermissionResolver 解析角色对应的权限集合（默认没有实现，可以自己提供）；
+
+* 接着调用 Permission.implies(Permission p) 逐个与传入的权限比较，如果有匹配的则返回 true，否则 false。
+
+### Authorizer、PermissionResolver及RolePermissionResolver
+
+Authorizer 的职责是进行授权（访问控制），是 Shiro API 中授权核心的入口点，其提供了相应的角色/权限判断接口，具体请参考其 Javadoc。SecurityManager 继承了 Authorizer 接口，且提供了 ModularRealmAuthorizer 用于多 Realm 时的授权匹配。PermissionResolver 用于解析权限字符串到 Permission 实例，而 RolePermissionResolver 用于根据角色解析相应的权限集合。
+
+我们可以通过如下 ini 配置更改 Authorizer 实现：
+
+    authorizer=org.apache.shiro.authz.ModularRealmAuthorizer
+    securityManager.authorizer=$authorizer
+
+对于 ModularRealmAuthorizer，相应的 AuthorizingSecurityManager 会在初始化完成后自动将相应的 realm 设置进去，我们也可以通过调用其 setRealms() 方法进行设置。
+对于实现自己的 authorizer 可以参考 ModularRealmAuthorizer 实现即可，在此就不提供示例了。
+
+设置 ModularRealmAuthorizer 的 permissionResolver，其会自动设置到相应的 Realm 上（其实现了 PermissionResolverAware 接口），如：
+
+    permissionResolver=org.apache.shiro.authz.permission.WildcardPermissionResolver
+    authorizer.permissionResolver=$permissionResolver
+    
+设置 ModularRealmAuthorizer 的 rolePermissionResolver，其会自动设置到相应的 Realm 上（其实现了 RolePermissionResolverAware 接口），如：
+
+    rolePermissionResolver=com.github.zhangkaitao.shiro.chapter3.permission.MyRolePermissionResolver
+    authorizer.rolePermissionResolver=$rolePermissionResolver
+
