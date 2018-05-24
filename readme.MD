@@ -18,7 +18,11 @@
 >> ### <a href='#cp1-2' target='_self' id='ccp1-2'>适用人群</a>
 >> ### <a href='#cp1-3' target='_self' id='ccp1-2'>学习前提</a>
 > ## <a href='#cp2' target='_self' id='ccp2'>Shiro 简介</a>
+>> ### <a href='#cp2-1' target='_self' id='ccp2-1'>Shiro 简介</a>
 > ## <a href='#cp3' target='_self' id='ccp3'>Shiro 身份验证</a>
+>> ## <a href='#cp3-1' target='_self' id='ccp3-1'>Shiro 身份验证</a>
+>> ## <a href='#cp3-2' target='_self' id='ccp3-2'>Shiro 身份验证</a>
+>> ## <a href='#cp3-3' target='_self' id='ccp3-3'>Shiro 身份验证</a>
 > ## <a href='#cp4' target='_self' id='ccp4'>Shiro 授权</a>
 > ## <a href='#cp5' target='_self' id='ccp5'>Shiro InI 配置</a>
 > ## <a href='#cp6' target='_self' id='ccp6'>Shiro 编码加密</a>
@@ -68,7 +72,9 @@ Java 企业级安全应用开发人员。
 
 ## Shiro 简介 <a href="#ccp2">目录</a>
 
-### 简介
+<div id="cp2-1"></div>
+
+### 简介 <a href="#ccp2-1">目录</a>
 Apache Shiro 是 Java 的一个安全框架。目前，使用 Apache Shiro 的人越来越多，因为它相当简单，对比 Spring Security，可能没有 Spring Security 做的功能强大，但是在实际工作时可能并不需要那么复杂的东西，所以使用小而简单的 Shiro 就足够了。对于它俩到底哪个好，这个不必纠结，能更简单的解决项目问题就好了。
 本教程只介绍基本的 Shiro 使用，不会过多分析源码等，重在使用。
 
@@ -136,7 +142,9 @@ Shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 J
 
 ## Shiro 身份验证 <a href='#ccp3'>目录</a>
 
-### 身份验证
+<div id="cp3-1"></div>
+
+### 身份验证 <a href='#ccp3-1'>目录</a>
 
 身份验证，即在应用中谁能证明他就是他本人。一般提供如他们的身份 ID 一些标识信息来表明他就是他本人，如提供身份证，用户名 / 密码来证明。
 
@@ -149,7 +157,9 @@ Shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 J
 
 另外两个相关的概念是之前提到的 Subject 及 Realm，分别是主体及验证主体的数据源。
 
-### 环境准备
+<div id="cp3-2"></div>
+
+### 环境准备 <a href='#ccp3-2'>目录</a>
 本文使用 Maven 构建，因此需要一点 Maven 知识。首先准备环境依赖：
     
     <dependencies>
@@ -171,7 +181,9 @@ Shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 J
     </dependencies>
 添加 junit、common-logging 及 shiro-core 依赖即可。
 
-### 登录 / 退出
+<div id="cp3-3"></div>
+
+### 登录 / 退出 <a href='#ccp3-3'>目录</a>
 1、首先准备一些用户身份 / 凭据（shiro.ini）
 
     
@@ -237,7 +249,9 @@ Shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 J
 
 2.用户身份 Token 可能不仅仅是用户名 / 密码，也可能还有其他的，如登录时允许用户名 / 邮箱 / 手机号同时登录。
 
-### 身份认证流程
+<div id='cp3-2'>目录</div>
+
+### 身份认证流程 <a href='#ccp3-3'>目录</a>
 
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/4.png)
 
