@@ -1121,4 +1121,9 @@ public class AuthorizerTest extends BaseTest {
 ```
 
 通过如上步骤可以实现自定义权限验证了。另外因为不支持 hasAnyRole/isPermittedAny 这种方式的授权，可以参考我的一篇
-[《简单 shiro 扩展实现 NOT、AND、OR 权限验证 》](http://jinnianshilongnian.iteye.com/blog/1864800)进行简单的扩展完成这个需求，在这篇文章中通过重写 AuthorizingRealm 里的验证逻辑实现的。
+[《简单 shiro 扩展实现 NOT、AND、OR 权限验证 》](http://jinnianshilongnian.iteye.com/blog/1864800)进行简单的扩展完成这个需求，在这篇文章中通过重写
+AuthorizingRealm 里的验证逻辑实现的。
+
+<div id="cp5"></div>
+
+## Shiro InI 配置
