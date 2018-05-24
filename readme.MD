@@ -301,7 +301,7 @@ com.github.zhangkaitao.shiro.chapter2.LoginLogoutTest 的 testCustomRealm 测试
 securityManager 会按照 realms 指定的顺序进行身份认证。此处我们使用显示指定顺序的方式指定了 Realm 的顺序，如果删除 “securityManager.realms=$myRealm1,$myRealm2”，那么securityManager 会按照 realm 声明的顺序进行使用（即无需设置 realms 属性，其会自动发现），当我们显示指定 realm 后，其他没有指定 realm 将被忽略，如 “securityManager.realms=$myRealm1”，那么 myRealm2 不会被自动设置进去。
 
 
-2、测试用例请参考 com.github.zhangkaitao.shiro.chapter2.LoginLogoutTest 的 testCustomMultiRealm 测试方法(读者注:资料并未提供这个方法，自己提供一个虚实现的Realm接口的类MyRealm2即可，默认情况下MyRealm2的方法不会影响验证)。
+2、测试用例请参考 com.github.zhangkaitao.shiro.chapter2.LoginLogoutTest 的 testCustomMultiRealm 测试方法。
  
 #### Shiro 默认提供的 Realm
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/5.png)
@@ -329,7 +329,7 @@ securityManager 会按照 realms 指定的顺序进行身份认证。此处我�
                 <version>0.2.23</version>
             </dependency>
             
-注:H2数据库更简单所以读者使用H2数据库,并且作者关于mysql的所有配置和代码改为h2的配置及代码，依赖如下
+<a href="#">注:H2数据库更简单所以读者使用H2数据库,并且作者关于mysql的所有配置和代码改为h2的配置及代码，依赖如下</a>
     
     <dependency>
         <groupId>com.h2database</groupId>
@@ -347,7 +347,7 @@ securityManager 会按照 realms 指定的顺序进行身份认证。此处我�
       <version>4.3.13.RELEASE</version>
     </dependency>
 
-本文将使用 mysql（注：h2,以后不再提醒） 数据库及druid(改为spring-jdbc)连接池；
+本文将使用 mysql<a herf="#">(注：h2,以后不再提醒)</a> 数据库及druid(改为spring-jdbc)连接池；
 2、到数据库 shiro 下建三张表：users（用户名 / 密码）、user_roles（用户 / 角色）、roles_permissions（角色 / 权限），具体请参照 shiro-example-chapter2/sql/shiro.sql；并添加一个用户记录，用户名 / 密码为 zhang/123；
 
 3、ini 配置（shiro-jdbc-realm.ini）
@@ -362,7 +362,7 @@ securityManager 会按照 realms 指定的顺序进行身份认证。此处我�
     jdbcRealm.dataSource=$dataSource
     securityManager.realms=$jdbcRealm
 
-注：附上H2数据库在Intellij Idea中的配置如下图：
+<a href="#">注：附上H2数据库在Intellij Idea中的配置如下图：</a>
 
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/sh-1.png)
 1. 变量名 = 全限定类名会自动创建一个类实例
@@ -382,7 +382,7 @@ public interface Authenticator {
 
 如果验证成功，将返回 AuthenticationInfo 验证信息；此信息中包含了身份及凭证；如果验证失败将抛出相应的 AuthenticationException 实现。
 
-SecurityManager 接口继承了 Authenticator<a href="javascript:void(0)">(注：SecurityManager接口签名是public interface SecurityManager extends Authenticator, Authorizer, SessionManager)</a>，另外还有一个 ModularRealmAuthenticator 实现，其委托给多个 Realm 进行验证，验证规则通过 AuthenticationStrategy 接口指定，默认提供的实现：
+SecurityManager 接口继承了 Authenticator<a href="#">(注：SecurityManager接口签名是public interface SecurityManager extends Authenticator, Authorizer, SessionManager)</a>，另外还有一个 ModularRealmAuthenticator 实现，其委托给多个 Realm 进行验证，验证规则通过 AuthenticationStrategy 接口指定，默认提供的实现：
 
 <B>FirstSuccessfulStrategy</B>：只要有一个 Realm 验证成功即可，只返回第一个 Realm 身份验证成功的认证信息，其他的忽略；
 
@@ -613,7 +613,7 @@ Shiro 提供的 checkRole/checkRoles 和 hasRole/hasAllRoles 不同的地方是�
 
 1、在 ini 配置文件配置用户拥有的角色及角色-权限关系（shiro-permission.ini）
 
-<a href="javascript:void(0)">(注:user被称为资源标识符，create、update、delete称为操作)</a>
+<a href="#">(注:user被称为资源标识符，create、update、delete称为操作)</a>
 
     [users]
     zhang=123,role1,role2
@@ -664,7 +664,7 @@ public class PermissionTest extends BaseTest {
 到此基于资源的访问控制（显示角色）就完成了，也可以叫基于权限的访问控制，这种方式的一般规则是“资源标识符：操作”，
 即是资源级别的粒度；这种方式的好处就是如果要修改基本都是一个资源级别的修改，不会对其他模块代码产生影响，粒度小。
 但是实现起来可能稍微复杂点，需要维护“用户——角色，角色——权限（资源：操作）”之间的关系。
-<a href="javascript:void(0)">(注：总结授权的三要素即Subject、Role、Permission，其中Permission=Resource+Operation)</a>
+<a href="#">(注：总结授权的三要素即Subject、Role、Permission，其中Permission=Resource+Operation)</a>
 ### Permission
 #### 字符串通配符权限
 规则：“资源标识符:操作:对象实例 ID” 即对哪个资源的哪个实例可以进行什么操作。其默认支持通配符权限字符串，“:”表示资源/操作/实例的分割；
@@ -767,7 +767,7 @@ ini 配置
 
 * 单个实例所有权限
 
-<a href="javascript:void(0)">(注:一直不理解这里的实例代表的含义。如果表示某个Subject的Id，而Subject接口并未提供类似getInstanceId之类的方法，如何区分Subject是哪个实例？)</a>
+<a href="#">(注:一直不理解这里的实例代表的含义。如果表示某个Subject的Id，而Subject接口并未提供类似getInstanceId之类的方法，如何区分Subject是哪个实例？)</a>
 
 ini 配置
 
@@ -811,7 +811,7 @@ ini 配置
 另外如“user:*”可以匹配如“user:delete”、“user:delete”可以匹配如“user:delete:1”、“user:*:1”可以匹配如“user:view:1”、“user”可以匹配
 “user:view”或“user:view:1”等。即*可以匹配所有，不加*可以进行前缀匹配；但是如“*:view”不能匹配“system:user:view”，需要使用“*:*:view”，即后缀匹配必须指定前缀（
 多个冒号就需要多个*来匹配）。    
-<a href="javascript:void(0)">(注：总结为，*作为前缀只可匹配一个冒号，而作为后缀可以匹配所有，作为后缀是可以不加*)</a>
+<a href="#">(注：总结为，*作为前缀只可匹配一个冒号，而作为后缀可以匹配所有，作为后缀是可以不加*)</a>
 
 #### 7、WildcardPermission
 
@@ -1000,7 +1000,7 @@ public class MyRolePermissionResolver implements RolePermissionResolver {
 
 #### 4、自定义 Realm
 
-<a href="javascript:void(0)">(注:AuthorizingRealm即要求身份信息又要求授权信息)</a>
+<a href="#">(注:AuthorizingRealm即要求身份信息又要求授权信息)</a>
 ```java
 public class MyRealm extends AuthorizingRealm {
 
@@ -1046,7 +1046,7 @@ public class MyRealm extends AuthorizingRealm {
 WildcardPermissionResolver 完成，即此处是一个设计权限，如果采用生命周期（如使用初始化方法）的方式进行加载就可以解决我们自定义 permissionResolver 的问题。
 
 #### 5、测试用例
-<a href="javascript:void(0)">(注：一直疑惑JdbcRealm如何识得表名和字段名，进源码看原来有默认查询语句，所以表结构表名按他的默认命名就可以了，但如若采用spring-data-jpa类似的ORM则JdbcRealm可能不适用了。)</a>
+<a href="#">(注：一直疑惑JdbcRealm如何识得表名和字段名，进源码看原来有默认查询语句，所以表结构表名按他的默认命名就可以了，但如若采用spring-data-jpa类似的ORM则JdbcRealm可能不适用了。)</a>
 ```java
 public class AuthorizerTest extends BaseTest {
 
