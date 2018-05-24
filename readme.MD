@@ -6,7 +6,7 @@
 
 # 目录
 ## <a href='#cp1' target='_self'>Shiro 关于</a>
-## <a href='#cp2' target='_self'>Shiro 简介</a>
+## <a href='#cp2' target='_self' id='ccp2'>Shiro 简介</a>
 ## <a href='#cp3' target='_self'>Shiro 身份验证</a>
 ## <a href='#cp4' target='_self'>Shiro 授权</a>
 ## <a href='#cp5' target='_self'>Shiro InI 配置</a>
@@ -47,7 +47,7 @@ Java 企业级安全应用开发人员。
 
 相比较 Spring Security，Shiro 小巧的多，但是学习本教程前，你还是需要了解 Java 开发语言。
 
-<div id="cp2"></div>
+<div id="cp2"><a href="#ccp2">目录</a></div>
 
 ## Shiro 简介
 
