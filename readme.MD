@@ -24,8 +24,8 @@
 >> ### <a href='#cp3-2' target='_self' id='ccp3-2'>环境准备</a>
 >> ### <a href='#cp3-3' target='_self' id='ccp3-3'>登录/退出</a>
 > ## <a href='#cp4' target='_self' id='ccp4'>Shiro 授权</a>
->> ### <a href='#cp4-1' target='_self' id='ccp4-1'>授权</a>
->> ### <a href='#cp4-2' target='_self' id='ccp4-2'>授权方式</a>
+>> ### <a href='#cp4-1' target='_self' id='ccp4-1'>何谓授权</a>
+>> ### <a href='#cp4-2' target='_self' id='ccp4-2'>角色</a>
 >> ### <a href='#cp4-3' target='_self' id='ccp4-3'>授权</a>
 >> ### <a href='#cp4-4' target='_self' id='ccp4-4'>Permission</a>
 >> ### <a href='#cp4-5' target='_self' id='ccp4-5'>授权流程</a>
@@ -557,7 +557,7 @@ Shiro 支持粗粒度权限（如用户模块的所有权限）和细粒度权�
 请 google 搜索“RBAC”和“RBAC新解”分别了解“基于角色的访问控制(Role-Based Access Control)”“基于资源的访问控制(Resource-Based Access Control)”。
 <div id='cp4-2'></div>
 
-### 授权方式 <a href='#ccp4-2'>目录</a>
+### 角色 <a href='#ccp4-2'>目录</a>
 
 Shiro 支持三种方式的授权：
 
