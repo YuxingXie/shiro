@@ -908,9 +908,11 @@ PermissionResolver 解析为 Permission 实例；然后获取用户的角色，�
 Authorizer 的职责是进行授权（访问控制），是 Shiro API 中授权核心的入口点，其提供了相应的角色/权限判断接口，具体请参考其 Javadoc。SecurityManager 继承了 Authorizer 接口，且提供了 ModularRealmAuthorizer 用于多 Realm 时的授权匹配。PermissionResolver 用于解析权限字符串到 Permission 实例，而 RolePermissionResolver 用于根据角色解析相应的权限集合。
 
 我们可以通过如下 ini 配置更改 Authorizer 实现：
-
-    authorizer=org.apache.shiro.authz.ModularRealmAuthorizer
-    securityManager.authorizer=$authorizer
+```ini
+authorizer=org.apache.shiro.authz.ModularRealmAuthorizer
+securityManager.authorizer=$authorizer
+```
+    
 
 对于 ModularRealmAuthorizer，相应的 AuthorizingSecurityManager 会在初始化完成后自动将相应的 realm 设置进去，我们也可以通过调用其 setRealms() 方法进行设置。
 对于实现自己的 authorizer 可以参考 ModularRealmAuthorizer 实现即可，在此就不提供示例了。
@@ -930,21 +932,21 @@ Authorizer 的职责是进行授权（访问控制），是 Shiro API 中授权�
  1、ini 配置（shiro-authorizer.ini）
 ```ini
 [main]
-     #自定义authorizer
-     authorizer=org.apache.shiro.authz.ModularRealmAuthorizer
-     #自定义permissionResolver
-     #permissionResolver=org.apache.shiro.authz.permission.WildcardPermissionResolver
-     permissionResolver=com.github.zhangkaitao.shiro.chapter3.permission.BitAndWildPermissionResolver
-     authorizer.permissionResolver=$permissionResolver
-     #自定义rolePermissionResolver
-     rolePermissionResolver=com.github.zhangkaitao.shiro.chapter3.permission.MyRolePermissionResolver
-     authorizer.rolePermissionResolver=$rolePermissionResolver
-     
-     securityManager.authorizer=$authorizer
-     
-     #自定义realm 一定要放在securityManager.authorizer赋值之后（因为调用setRealms会将realms设置给authorizer，并给各个Realm设置permissionResolver和rolePermissionResolver）
-     realm=com.github.zhangkaitao.shiro.chapter3.realm.MyRealm
-     securityManager.realms=$realm
+#自定义authorizer
+authorizer=org.apache.shiro.authz.ModularRealmAuthorizer
+#自定义permissionResolver
+#permissionResolver=org.apache.shiro.authz.permission.WildcardPermissionResolver
+permissionResolver=com.github.zhangkaitao.shiro.chapter3.permission.BitAndWildPermissionResolver
+authorizer.permissionResolver=$permissionResolver
+#自定义rolePermissionResolver
+rolePermissionResolver=com.github.zhangkaitao.shiro.chapter3.permission.MyRolePermissionResolver
+authorizer.rolePermissionResolver=$rolePermissionResolver
+
+securityManager.authorizer=$authorizer
+
+#自定义realm 一定要放在securityManager.authorizer赋值之后（因为调用setRealms会将realms设置给authorizer，并给各个Realm设置permissionResolver和rolePermissionResolver）
+realm=com.github.zhangkaitao.shiro.chapter3.realm.MyRealm
+securityManager.realms=$realm
 ``` 
      
 
