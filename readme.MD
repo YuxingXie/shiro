@@ -1351,7 +1351,11 @@ role2=*
 ```
 
 如果只有角色没有对应的权限，可以不配 roles，具体规则请参考授权章节。
-[urls] 部分
-配置 url 及相应的拦截器之间的关系，格式：“url = 拦截器 [参数]，拦截器 [参数]，如：
+
+#### \[urls\] 部分
+
+配置 url 及相应的拦截器之间的关系，格式：“url = 拦截器 \[参数\]，拦截器 \[参数\]，如：
+```ini
 [urls]
-/admin/** = authc, roles[admin], perms["permission1"]&nbsp;
+/admin/** = authc, roles[admin], perms["permission1"]
+```
