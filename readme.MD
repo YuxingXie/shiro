@@ -31,6 +31,8 @@
 >> ### <a href='#cp4-5' target='_self' id='ccp4-5'>授权流程</a>
 >> ### <a href='#cp4-6' target='_self' id='ccp4-6'>Authorizer、PermissionResolver及RolePermissionResolver</a>
 > ## <a href='#cp5' target='_self' id='ccp5'>Shiro InI 配置</a>
+>> ### <a href='#cp5-1' target='_self' id='ccp5-1'>INI 配置</a>
+>> ### <a href='#cp5-2' target='_self' id='ccp5-2'>根对象 SecurityManager</a>
 > ## <a href='#cp6' target='_self' id='ccp6'>Shiro 编码加密</a>
 > ## <a href='#cp7' target='_self' id='ccp7'>Shiro Realm</a>
 > ## <a href='#cp8' target='_self' id='ccp8'>Shiro Web 集成</a>
@@ -1127,3 +1129,19 @@ AuthorizingRealm 里的验证逻辑实现的。
 <div id="cp5"></div>
 
 ## Shiro InI 配置 <a href='#ccp5'>目录</a>
+
+<div id="cp5-1"></div>
+
+### INI 配置 <a href='#ccp5-1'>目录</a>
+
+之前章节我们已经接触过一些 INI 配置规则了，如果大家使用过如 Spring 之类的 IoC/DI 容器的话，Shiro 提供的 INI 配置也是非常类似的，即可以理解为是一个 IoC/DI 容器，
+但是区别在于它从一个根对象 securityManager 开始。
+
+
+<div id="cp5-2"></div>
+
+### 根对象 SecurityManager <a href='#ccp5-2'>目录</a>
+
+从之前的 Shiro 架构图可以看出，Shiro 是从根对象 SecurityManager 进行身份验证和授权的；也就是所有操作都是自它开始的，这个对象是线程安全且真个应用只需要一个即可，因此 Shiro 提供了 SecurityUtils 让我们绑定它为全局的，方便后续操作。
+因为 Shiro 的类都是 POJO 的，因此都很容易放到任何 IoC 容器管理。但是和一般的 IoC 容器的区别在于，Shiro 从根对象 securityManager 开始导航；Shiro 支持的依赖注入：public 空参构造器对象的创建、setter 依赖注入。
+1、纯 Java 代码写法（com.github.zhangkaitao.shiro.chapter4.NonConfigurationCreateTest）：
