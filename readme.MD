@@ -717,7 +717,7 @@ public class PermissionTest extends BaseTest {
 
 <a href=""#">注：注意shiro的api设计，是Subject.checkPermissions而不是Role.checkPermissions,
     shiro并未设计一个Role类或接口，而是直接用字符串表示权限，
-    类似的，shiro也并未抽象出一个Permission接口或类。
+    但是，shiro抽象出一个org.apache.shiro.authz.Permission接口,使用通配符方式的Permission通过类WildcardPermission实现。
 </a>
 
     
