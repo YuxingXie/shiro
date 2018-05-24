@@ -24,6 +24,12 @@
 >> ### <a href='#cp3-2' target='_self' id='ccp3-2'>环境准备</a>
 >> ### <a href='#cp3-3' target='_self' id='ccp3-3'>登录/退出</a>
 > ## <a href='#cp4' target='_self' id='ccp4'>Shiro 授权</a>
+>> ### <a href='#cp4-1' target='_self' id='ccp4-1'>授权</a>
+>> ### <a href='#cp4-2' target='_self' id='ccp4-2'>授权方式</a>
+>> ### <a href='#cp4-3' target='_self' id='ccp4-3'>授权</a>
+>> ### <a href='#cp4-4' target='_self' id='ccp4-4'>Permission</a>
+>> ### <a href='#cp4-5' target='_self' id='ccp4-5'>授权流程</a>
+>> ### <a href='#cp4-6' target='_self' id='ccp4-6'>Authorizer、PermissionResolver及RolePermissionResolver</a>
 > ## <a href='#cp5' target='_self' id='ccp5'>Shiro InI 配置</a>
 > ## <a href='#cp6' target='_self' id='ccp6'>Shiro 编码加密</a>
 > ## <a href='#cp7' target='_self' id='ccp7'>Shiro Realm</a>
@@ -527,7 +533,9 @@ public interface AuthenticationStrategy {
 
 ## Shiro 授权  <a href='#ccp4'>目录</a>
 
-### 授权
+<div id='cp4-1'></div>
+
+### 授权 <a href='#ccp4-1'>目录</a>
 授权，也叫访问控制，即在应用中控制谁能访问哪些资源（如访问页面/编辑数据/页面操作等）。在授权中需了解的几个关键对象：主体（Subject）、资源（Resource）、权限（Permission）、角色（Role）。
 
 #### 主体
@@ -547,8 +555,9 @@ Shiro 支持粗粒度权限（如用户模块的所有权限）和细粒度权�
 #### 显示角色：
 在程序中通过权限控制谁能访问某个资源，角色聚合一组权限集合；这样假设哪个角色不能访问某个资源，只需要从角色代表的权限集合中移除即可；无须修改多处代码；即粒度是以资源/实例为单位的；粒度较细。
 请 google 搜索“RBAC”和“RBAC新解”分别了解“基于角色的访问控制(Role-Based Access Control)”“基于资源的访问控制(Resource-Based Access Control)”。
+<div id='cp4-2'></div>
 
-### 授权方式
+### 授权方式 <a href='#ccp4-2'>目录</a>
 
 Shiro 支持三种方式的授权：
 
@@ -589,7 +598,9 @@ JSP/GSP 标签：在 JSP/GSP 页面通过相应的标签完成：
 
 后续部分将详细介绍如何使用。
 
-### 授权
+<div id='cp4-3'></div>
+
+### 授权 <a href='#ccp4-3'>目录</a>
 
 #### 基于角色的访问控制（隐式角色）
 
@@ -696,7 +707,9 @@ public class PermissionTest extends BaseTest {
 即是资源级别的粒度；这种方式的好处就是如果要修改基本都是一个资源级别的修改，不会对其他模块代码产生影响，粒度小。
 但是实现起来可能稍微复杂点，需要维护“用户——角色，角色——权限（资源：操作）”之间的关系。
 <a href="#">(注：总结授权的三要素即Subject、Role、Permission，其中Permission=Resource+Operation)</a>
-### Permission
+<div id='cp4-4'></div>
+
+### Permission <a href='#ccp4-4'>目录</a>
 #### 字符串通配符权限
 规则：“资源标识符:操作:对象实例 ID” 即对哪个资源的哪个实例可以进行什么操作。其默认支持通配符权限字符串，“:”表示资源/操作/实例的分割；
 “,”表示操作的分割；“*”表示任意资源/操作/实例。
@@ -856,7 +869,9 @@ ini 配置
 通配符匹配方式比字符串相等匹配来说是更复杂的，因此需要花费更长时间，但是一般系统的权限不会太多，且可以配合缓存来提供其性能，如果这样性能还达不到要求我们可以实现位操作算法实现性能
 更好的权限匹配。另外实例级别的权限验证如果数据量太大也不建议使用，可能造成查询权限及匹配变慢。可以考虑比如在sql查询时加上权限字符串之类的方式在查询时就完成了权限匹配。
 
-### 授权流程
+<div id='cp4-5'></div>
+
+### 授权流程 <a href='#ccp4-5'>目录</a>
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/6.png)
 
 流程如下：
@@ -886,7 +901,9 @@ PermissionResolver 解析为 Permission 实例；然后获取用户的角色，�
 
 * 接着调用 Permission.implies(Permission p) 逐个与传入的权限比较，如果有匹配的则返回 true，否则 false。
 
-### Authorizer、PermissionResolver及RolePermissionResolver
+<div id='cp4-6'></div>
+
+### Authorizer、PermissionResolver及RolePermissionResolver <a href='#ccp4-6'>目录</a>
 
 Authorizer 的职责是进行授权（访问控制），是 Shiro API 中授权核心的入口点，其提供了相应的角色/权限判断接口，具体请参考其 Javadoc。SecurityManager 继承了 Authorizer 接口，且提供了 ModularRealmAuthorizer 用于多 Realm 时的授权匹配。PermissionResolver 用于解析权限字符串到 Permission 实例，而 RolePermissionResolver 用于根据角色解析相应的权限集合。
 
