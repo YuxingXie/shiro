@@ -17,12 +17,15 @@
 >> ### <a href='#cp1-1' target='_self' id='ccp1-1'>Shiro 关于</a>
 >> ### <a href='#cp1-2' target='_self' id='ccp1-2'>适用人群</a>
 >> ### <a href='#cp1-3' target='_self' id='ccp1-2'>学习前提</a>
+
 > ## <a href='#cp2' target='_self' id='ccp2'>Shiro 简介</a>
 >> ### <a href='#cp2-1' target='_self' id='ccp2-1'>Shiro 简介</a>
+
 > ## <a href='#cp3' target='_self' id='ccp3'>Shiro Shiro 身份验证</a>
 >> ### <a href='#cp3-1' target='_self' id='ccp3-1'>身份验证</a>
 >> ### <a href='#cp3-2' target='_self' id='ccp3-2'>环境准备</a>
 >> ### <a href='#cp3-3' target='_self' id='ccp3-3'>登录/退出</a>
+
 > ## <a href='#cp4' target='_self' id='ccp4'>Shiro 授权</a>
 >> ### <a href='#cp4-1' target='_self' id='ccp4-1'>何谓授权</a>
 >> ### <a href='#cp4-2' target='_self' id='ccp4-2'>角色</a>
@@ -30,29 +33,52 @@
 >> ### <a href='#cp4-4' target='_self' id='ccp4-4'>Permission</a>
 >> ### <a href='#cp4-5' target='_self' id='ccp4-5'>授权流程</a>
 >> ### <a href='#cp4-6' target='_self' id='ccp4-6'>Authorizer、PermissionResolver及RolePermissionResolver</a>
+
 > ## <a href='#cp5' target='_self' id='ccp5'>Shiro InI 配置</a>
 >> ### <a href='#cp5-1' target='_self' id='ccp5-1'>INI 配置</a>
 >> ### <a href='#cp5-2' target='_self' id='ccp5-2'>根对象 SecurityManager</a>
+
 > ## <a href='#cp6' target='_self' id='ccp6'>Shiro 编码加密</a>
+
 > ## <a href='#cp7' target='_self' id='ccp7'>Shiro Realm</a>
+
 > ## <a href='#cp8' target='_self' id='ccp8'>Shiro Web 集成</a>
+
 > ## <a href='#cp9' target='_self' id='ccp9'>Shiro Web 拦截器机制</a>
+
 > ## <a href='#cp10' target='_self' id='ccp10'>Shiro Web JSP 标签</a>
+
 > ## <a href='#cp11' target='_self' id='ccp11'>Shiro Web 会话管理</a>
+
 > ## <a href='#cp12' target='_self' id='ccp12'>Shiro Web 缓存机制</a>
+
 > ## <a href='#cp13' target='_self' id='ccp13'>Shiro Web Spring 集成</a>
+
 > ## <a href='#cp14' target='_self' id='ccp14'>Shiro Web RememberMe</a>
+
 > ## <a href='#cp15' target='_self' id='ccp15'>Shiro Web SSL</a>
+
 > ## <a href='#cp16' target='_self' id='ccp16'>Shiro Web 单点登录</a>
+
 > ## <a href='#cp17' target='_self' id='ccp17'>Shiro Web 综合实例</a>
+
 > ## <a href='#cp18' target='_self' id='ccp18'>Shiro Web OAuth2</a>
+
 > ## <a href='#cp19' target='_self' id='ccp19'>Shiro Web 并发登录控制</a>
+
 > ## <a href='#cp20' target='_self' id='ccp20'>Shiro Web 动态 URL</a>
+
 > ## <a href='#cp21' target='_self' id='ccp21'>Shiro Web 无状态 Web</a>
+
 > ## <a href='#cp22' target='_self' id='ccp22'>Shiro Web 授予身份和切换身份</a>
+
 > ## <a href='#cp23' target='_self' id='ccp23'>Shiro Web 集成验证码</a>
+
 > ## <a href='#cp24' target='_self' id='ccp24'>Shiro Web 多项目</a>
+
 > ## <a href='#cp25' target='_self' id='ccp25'>Shiro Web 在线会话管理</a>
+
+
 
 <div id="cp1"></div>
 
@@ -1358,4 +1384,28 @@ role2=*
 ```ini
 [urls]
 /admin/** = authc, roles[admin], perms["permission1"]
+```
+具体规则参见 web 相关章节。
+
+<div id='cp6'></div>
+
+## Shiro 编码加密 <a href='#ccp6'>目录</a>
+注：本章没太多难点，不做重点讲解
+
+### 编码/加密
+
+在涉及到密码存储问题上，应该加密 / 生成密码摘要存储，而不是存储明文密码。比如之前的 600w csdn 账号泄露对用户可能造成很大损失，因此应加密 / 生成不可逆的摘要方式存储。
+
+### 编码/解码
+
+Shiro 提供了 base64 和 16 进制字符串编码 / 解码的 API 支持，方便一些编码解码操作。Shiro 内部的一些数据的存储 / 表示都使用了 base64 和 16 进制字符串。
+```java
+public class SomeClass{
+    public void someMethod(){
+        String str = "hello";
+        String base64Encoded = Base64.encodeToString(str.getBytes());
+        String str2 = Base64.decodeToString(base64Encoded);
+        Assert.assertEquals(str, str2);&nbsp;
+    }
+}
 ```
