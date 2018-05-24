@@ -1130,6 +1130,8 @@ AuthorizingRealm 里的验证逻辑实现的。
 
 ## Shiro InI 配置 <a href='#ccp5'>目录</a>
 
+注：本章不做深入研究。如需深入研究可从作者gitHub下载源码。
+
 <div id="cp5-1"></div>
 
 ### INI 配置 <a href='#ccp5-1'>目录</a>
@@ -1145,3 +1147,116 @@ AuthorizingRealm 里的验证逻辑实现的。
 从之前的 Shiro 架构图可以看出，Shiro 是从根对象 SecurityManager 进行身份验证和授权的；也就是所有操作都是自它开始的，这个对象是线程安全且真个应用只需要一个即可，因此 Shiro 提供了 SecurityUtils 让我们绑定它为全局的，方便后续操作。
 因为 Shiro 的类都是 POJO 的，因此都很容易放到任何 IoC 容器管理。但是和一般的 IoC 容器的区别在于，Shiro 从根对象 securityManager 开始导航；Shiro 支持的依赖注入：public 空参构造器对象的创建、setter 依赖注入。
 1、纯 Java 代码写法（com.github.zhangkaitao.shiro.chapter4.NonConfigurationCreateTest）：
+```java
+public class NonConfigurationCreateTest {
+    public void someMethod(){
+        DefaultSecurityManager securityManager = new DefaultSecurityManager();
+            //设置authenticator
+            ModularRealmAuthenticator authenticator = new ModularRealmAuthenticator();
+            authenticator.setAuthenticationStrategy(new AtLeastOneSuccessfulStrategy());
+            securityManager.setAuthenticator(authenticator);
+            //设置authorizer
+            ModularRealmAuthorizer authorizer = new ModularRealmAuthorizer();
+            authorizer.setPermissionResolver(new WildcardPermissionResolver());
+            securityManager.setAuthorizer(authorizer);
+            //设置Realm
+            DruidDataSource ds = new DruidDataSource();
+            ds.setDriverClassName("com.mysql.jdbc.Driver");
+            ds.setUrl("jdbc:mysql://localhost:3306/shiro");
+            ds.setUsername("root");
+            ds.setPassword("");
+            JdbcRealm jdbcRealm = new JdbcRealm();
+            jdbcRealm.setDataSource(ds);
+            jdbcRealm.setPermissionsLookupEnabled(true);
+            securityManager.setRealms(Arrays.asList((Realm) jdbcRealm));
+            //将SecurityManager设置到SecurityUtils 方便全局使用
+            SecurityUtils.setSecurityManager(securityManager);
+            Subject subject = SecurityUtils.getSubject();
+            UsernamePasswordToken token = new UsernamePasswordToken("zhang", "123");
+            subject.login(token);
+            Assert.assertTrue(subject.isAuthenticated());
+    }
+    
+}
+
+```
+
+2、等价的 INI 配置（shiro-config.ini）
+```ini
+[main]
+#authenticator
+authenticator=org.apache.shiro.authc.pam.ModularRealmAuthenticator
+authenticationStrategy=org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy
+authenticator.authenticationStrategy=$authenticationStrategy
+securityManager.authenticator=$authenticator
+#authorizer
+authorizer=org.apache.shiro.authz.ModularRealmAuthorizer
+permissionResolver=org.apache.shiro.authz.permission.WildcardPermissionResolver
+authorizer.permissionResolver=$permissionResolver
+securityManager.authorizer=$authorizer
+#realm
+dataSource=com.alibaba.druid.pool.DruidDataSource
+dataSource.driverClassName=com.mysql.jdbc.Driver
+dataSource.url=jdbc:mysql://localhost:3306/shiro
+dataSource.username=root
+#dataSource.password=
+jdbcRealm=org.apache.shiro.realm.jdbc.JdbcRealm
+jdbcRealm.dataSource=$dataSource
+jdbcRealm.permissionsLookupEnabled=true
+securityManager.realms=$jdbcRealm
+```
+
+即使没接触过 IoC 容器的知识，如上配置也是很容易理解的：
+
+* 对象名 = 全限定类名 相对于调用 public 无参构造器创建对象
+
+* 对象名. 属性名 = 值 相当于调用 setter 方法设置常量值
+
+* 对象名. 属性名 =$ 对象引用 相当于调用 setter 方法设置对象引用
+
+3、Java 代码（com.github.zhangkaitao.shiro.chapter4.ConfigurationCreateTest）
+```java
+ public class ConfigurationCreateTest{
+    public void someMethod(){
+        Factory<org.apache.shiro.mgt.SecurityManager> factory =
+                 new IniSecurityManagerFactory("classpath:shiro-config.ini");
+        org.apache.shiro.mgt.SecurityManager securityManager = factory.getInstance();
+        //将SecurityManager设置到SecurityUtils 方便全局使用
+        SecurityUtils.setSecurityManager(securityManager);
+        Subject subject = SecurityUtils.getSubject();
+        UsernamePasswordToken token = new UsernamePasswordToken("zhang", "123");
+        subject.login(token);
+        Assert.assertTrue(subject.isAuthenticated());
+    }
+ }
+```
+
+如上代码是从 Shiro INI 配置中获取相应的 securityManager 实例：
+
+* 默认情况先创建一个名字为 securityManager，类型为 org.apache.shiro.mgt.DefaultSecurityManager 的默认的 SecurityManager，如果想自定义，只需要在 ini 配置文件中指定 “securityManager=SecurityManager 实现类” 即可，名字必须为 securityManager，它是起始的根；
+* IniSecurityManagerFactory 是创建 securityManager 的工厂，其需要一个 ini 配置文件路径，其支持 “classpath:”（类路径）、“file:”（文件系统）、“url:”（网络）三种路径格式，默认是文件系统；
+* 接着获取 SecuriyManager 实例，后续步骤和之前的一样。
+
+从如上可以看出 Shiro INI 配置方式本身提供了一个简单的 IoC/DI 机制方便在配置文件配置，但是是从 securityManager 这个根对象开始导航。
+
+### INI 配置
+
+ini 配置文件类似于 Java 中的 properties（key=value），不过提供了将 key/value 分类的特性，key 是每个部分不重复即可，而不是整个配置文件。如下是 INI 配置分类：
+
+```ini
+[main]
+#提供了对根对象securityManager及其依赖的配置
+securityManager=org.apache.shiro.mgt.DefaultSecurityManager
+…………
+securityManager.realms=$jdbcRealm
+[users]
+#提供了对用户/密码及其角色的配置，用户名=密码，角色1，角色2
+username=password,role1,role2
+[roles]
+#提供了角色及权限之间关系的配置，角色=权限1，权限2
+role1=permission1,permission2
+[urls]
+#用于web，提供了对web url拦截相关的配置，url=拦截器[参数]，拦截器
+/index.html = anon
+/admin/** = authc, roles[admin], perms["permission1"]
+```
