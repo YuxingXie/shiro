@@ -5,7 +5,7 @@
 * 为了显示语法高亮，文中源码片段增加了类或接口名；
 * jdbc连接改为使用H2数据库，并使用spring-jdbc api;
 * 排版略做改动,并修正一些错误；
-* 如果知识点有心得或疑问，在源代码中TODO注释或在该文档中用 "(注:说明文字)" 说明，并添加空链接表示。
+* 如果知识点有心得或疑问，在源代码中TODO注释或在该文档中用 "(注:说明文字)" 说明，并添加空链接（字体蓝色方便查找）。
 
 原文项目gitHub地址：[https://github.com/zhangkaitao/shiro-example](https://github.com/zhangkaitao/shiro-example)
 
