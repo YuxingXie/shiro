@@ -382,7 +382,7 @@ public interface Authenticator {
 
 如果验证成功，将返回 AuthenticationInfo 验证信息；此信息中包含了身份及凭证；如果验证失败将抛出相应的 AuthenticationException 实现。
 
-SecurityManager 接口继承了 Authenticator(注：SecurityManager接口签名是public interface SecurityManager extends Authenticator, Authorizer, SessionManager)，另外还有一个 ModularRealmAuthenticator 实现，其委托给多个 Realm 进行验证，验证规则通过 AuthenticationStrategy 接口指定，默认提供的实现：
+SecurityManager 接口继承了 Authenticator<a href="javascript:void(0)">(注：SecurityManager接口签名是public interface SecurityManager extends Authenticator, Authorizer, SessionManager)</a>，另外还有一个 ModularRealmAuthenticator 实现，其委托给多个 Realm 进行验证，验证规则通过 AuthenticationStrategy 接口指定，默认提供的实现：
 
 <B>FirstSuccessfulStrategy</B>：只要有一个 Realm 验证成功即可，只返回第一个 Realm 身份验证成功的认证信息，其他的忽略；
 
@@ -613,11 +613,12 @@ Shiro 提供的 checkRole/checkRoles 和 hasRole/hasAllRoles 不同的地方是�
 
 1、在 ini 配置文件配置用户拥有的角色及角色-权限关系（shiro-permission.ini）
 
+<a href="javascript:void(0)">(注:user被称为资源标识符，create、update、delete称为操作)</a>
+
     [users]
     zhang=123,role1,role2
     wang=123,role1
     [roles]
-    #(注:user被称为资源标识符，create、update、delete称为操作)
     role1=user:create,user:update
     role2=user:create,user:delete
     
@@ -663,14 +664,22 @@ public class PermissionTest extends BaseTest {
 到此基于资源的访问控制（显示角色）就完成了，也可以叫基于权限的访问控制，这种方式的一般规则是“资源标识符：操作”，
 即是资源级别的粒度；这种方式的好处就是如果要修改基本都是一个资源级别的修改，不会对其他模块代码产生影响，粒度小。
 但是实现起来可能稍微复杂点，需要维护“用户——角色，角色——权限（资源：操作）”之间的关系。
-(注：总结授权的三要素即Subject、Role、Permission，其中Permission=Resource+Operation)
+<a href="javascript:void(0)">(注：总结授权的三要素即Subject、Role、Permission，其中Permission=Resource+Operation)</a>
 ### Permission
 #### 字符串通配符权限
 规则：“资源标识符:操作:对象实例 ID” 即对哪个资源的哪个实例可以进行什么操作。其默认支持通配符权限字符串，“:”表示资源/操作/实例的分割；
 “,”表示操作的分割；“*”表示任意资源/操作/实例。
 #### 1、单个资源单个权限
 
+    /**
+    *注：注意shiro的api设计，是Subject.checkPermissions而不是Role.checkPermissions
+    shiro并未设计一个Role类或接口，而是直接用字符串表示权限，
+    类似的，shiro也并未抽象出一个Permission接口或类。
+    */
     subject().checkPermissions("system:user:update");
+    
+
+
 
 用户拥有资源“system:user”的“update”权限。
 
@@ -758,6 +767,8 @@ ini 配置
 
 * 单个实例所有权限
 
+<a href="javascript:void(0)">(注:一直不理解这里的实例代表的含义。如果表示某个Subject的Id，而Subject接口并未提供类似getInstanceId之类的方法，如何区分Subject是哪个实例？)</a>
+
 ini 配置
 
     role73=user:*:1
@@ -800,7 +811,7 @@ ini 配置
 另外如“user:*”可以匹配如“user:delete”、“user:delete”可以匹配如“user:delete:1”、“user:*:1”可以匹配如“user:view:1”、“user”可以匹配
 “user:view”或“user:view:1”等。即*可以匹配所有，不加*可以进行前缀匹配；但是如“*:view”不能匹配“system:user:view”，需要使用“*:*:view”，即后缀匹配必须指定前缀（
 多个冒号就需要多个*来匹配）。    
-(注：总结为，*作为前缀只可匹配一个冒号，而作为后缀可以匹配所有，作为后缀是可以不加*)
+<a href="javascript:void(0)">(注：总结为，*作为前缀只可匹配一个冒号，而作为后缀可以匹配所有，作为后缀是可以不加*)</a>
 
 #### 7、WildcardPermission
 
@@ -988,7 +999,8 @@ public class MyRolePermissionResolver implements RolePermissionResolver {
 此处的实现很简单，如果用户拥有 role1，那么就返回一个 “menu:*” 的权限。
 
 #### 4、自定义 Realm
-(注:AuthorizingRealm即要求身份信息又要求授权信息)
+
+<a href="javascript:void(0)">(注:AuthorizingRealm即要求身份信息又要求授权信息)</a>
 ```java
 public class MyRealm extends AuthorizingRealm {
 
@@ -1034,7 +1046,7 @@ public class MyRealm extends AuthorizingRealm {
 WildcardPermissionResolver 完成，即此处是一个设计权限，如果采用生命周期（如使用初始化方法）的方式进行加载就可以解决我们自定义 permissionResolver 的问题。
 
 #### 5、测试用例
-(注：一直疑惑JdbcRealm如何识得表名和字段名，进源码看原来有默认查询语句，所以表结构表名按他的默认命名就可以了，但如若采用spring-data-jpa类似的ORM则JdbcRealm可能不适用了。)
+<a href="javascript:void(0)">(注：一直疑惑JdbcRealm如何识得表名和字段名，进源码看原来有默认查询语句，所以表结构表名按他的默认命名就可以了，但如若采用spring-data-jpa类似的ORM则JdbcRealm可能不适用了。)</a>
 ```java
 public class AuthorizerTest extends BaseTest {
 
