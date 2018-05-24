@@ -47,9 +47,9 @@ Java 企业级安全应用开发人员。
 
 相比较 Spring Security，Shiro 小巧的多，但是学习本教程前，你还是需要了解 Java 开发语言。
 
-<div id="cp2"><a href="#ccp2">目录</a></div>
+<div id="cp2"></div>
 
-## Shiro 简介
+## Shiro 简介 <a href="#ccp2">目录</a>
 
 ### 简介
 Apache Shiro 是 Java 的一个安全框架。目前，使用 Apache Shiro 的人越来越多，因为它相当简单，对比 Spring Security，可能没有 Spring Security 做的功能强大，但是在实际工作时可能并不需要那么复杂的东西，所以使用小而简单的 Shiro 就足够了。对于它俩到底哪个好，这个不必纠结，能更简单的解决项目问题就好了。
