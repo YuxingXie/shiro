@@ -928,8 +928,8 @@ Authorizer 的职责是进行授权（访问控制），是 Shiro API 中授权�
 #### 示例
 
  1、ini 配置（shiro-authorizer.ini）
-     
-     [main]
+```ini
+[main]
      #自定义authorizer
      authorizer=org.apache.shiro.authz.ModularRealmAuthorizer
      #自定义permissionResolver
@@ -945,6 +945,8 @@ Authorizer 的职责是进行授权（访问控制），是 Shiro API 中授权�
      #自定义realm 一定要放在securityManager.authorizer赋值之后（因为调用setRealms会将realms设置给authorizer，并给各个Realm设置permissionResolver和rolePermissionResolver）
      realm=com.github.zhangkaitao.shiro.chapter3.realm.MyRealm
      securityManager.realms=$realm
+``` 
+     
 
 设置 securityManager 的 realms 一定要放到最后，因为在调用 SecurityManager.setRealms 时会将 realms 设置给 authorizer，并为各个 Realm 设置 permissionResolver 
 和 rolePermissionResolver。另外，不能使用 IniSecurityManagerFactory 创建的 IniRealm，因为其初始化顺序的问题可能造成后续的初始化 Permission 造成影响。
