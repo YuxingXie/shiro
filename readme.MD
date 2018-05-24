@@ -2,7 +2,7 @@
 说明：文档尽量原文抄录，类名、包名未做任何修改，源代码中增加了import语句，为了显示语法高亮，
 某些代码片段增加了类或接口名；其它仅排版略做改动,并修正一些错误。如果知识点有心得或疑问，都在源代码中TODO注释。
 
-原文作者该教程的gitHub地址：[https://github.com/zhangkaitao/shiro-example](https://github.com/zhangkaitao/shiro-example)
+原文项目gitHub地址：[https://github.com/zhangkaitao/shiro-example](https://github.com/zhangkaitao/shiro-example)
 
 # 目录
 ## <a href='#cp1' target='_self' id='ccp1'>Shiro 关于</a>
