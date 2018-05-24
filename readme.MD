@@ -663,7 +663,7 @@ public class PermissionTest extends BaseTest {
 到此基于资源的访问控制（显示角色）就完成了，也可以叫基于权限的访问控制，这种方式的一般规则是“资源标识符：操作”，
 即是资源级别的粒度；这种方式的好处就是如果要修改基本都是一个资源级别的修改，不会对其他模块代码产生影响，粒度小。
 但是实现起来可能稍微复杂点，需要维护“用户——角色，角色——权限（资源：操作）”之间的关系。
-(注：总结Permission的三要素即Subject、Resource和Operation)
+(注：总结授权的三要素即Subject、Role、Permission，其中Permission=Resource+Operation)
 ### Permission
 #### 字符串通配符权限
 规则：“资源标识符:操作:对象实例 ID” 即对哪个资源的哪个实例可以进行什么操作。其默认支持通配符权限字符串，“:”表示资源/操作/实例的分割；
