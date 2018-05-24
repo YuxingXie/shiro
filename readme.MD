@@ -1,4 +1,7 @@
-# from：[w3school](https://www.w3cschool.cn/shiro/)
+# 跟我学shiro
+
+## From：[w3school](https://www.w3cschool.cn/shiro/)
+
 #### 说明
 * 文档尽量原文抄录，类名、包名未做任何修改，资源文件加上了代表章节的目录，如第三章的资源文件放在resources/ch3下；
 * 为了方便读者拷贝源码，文中源码片段可能增加import语句；
