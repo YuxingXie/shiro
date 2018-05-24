@@ -5,35 +5,35 @@
 原文作者该教程的gitHub地址：[https://github.com/zhangkaitao/shiro-example](https://github.com/zhangkaitao/shiro-example)
 
 # 目录
-## <a href='#cp1' target='_self'>Shiro 关于</a>
+## <a href='#cp1' target='_self' id='ccp1'>Shiro 关于</a>
 ## <a href='#cp2' target='_self' id='ccp2'>Shiro 简介</a>
-## <a href='#cp3' target='_self'>Shiro 身份验证</a>
-## <a href='#cp4' target='_self'>Shiro 授权</a>
-## <a href='#cp5' target='_self'>Shiro InI 配置</a>
-## <a href='#cp6' target='_self'>Shiro 编码加密</a>
-## <a href='#cp7' target='_self'>Shiro Realm</a>
-## <a href='#cp8' target='_self'>Shiro Web 集成</a>
-## <a href='#cp8' target='_self'>Shiro Web 拦截器机制</a>
-## <a href='#cp8' target='_self'>Shiro Web JSP 标签</a>
-## <a href='#cp8' target='_self'>Shiro Web 会话管理</a>
-## <a href='#cp8' target='_self'>Shiro Web 缓存机制</a>
-## <a href='#cp8' target='_self'>Shiro Web Spring 集成</a>
-## <a href='#cp8' target='_self'>Shiro Web RememberMe</a>
-## <a href='#cp8' target='_self'>Shiro Web SSL</a>
-## <a href='#cp8' target='_self'>Shiro Web 单点登录</a>
-## <a href='#cp8' target='_self'>Shiro Web 综合实例</a>
-## <a href='#cp8' target='_self'>Shiro Web OAuth2</a>
-## <a href='#cp8' target='_self'>Shiro Web 并发登录控制</a>
-## <a href='#cp8' target='_self'>Shiro Web 动态 URL</a>
-## <a href='#cp8' target='_self'>Shiro Web 无状态 Web</a>
-## <a href='#cp8' target='_self'>Shiro Web 授予身份和切换身份</a>
-## <a href='#cp8' target='_self'>Shiro Web 集成验证码</a>
-## <a href='#cp8' target='_self'>Shiro Web 多项目</a>
-## <a href='#cp8' target='_self'>Shiro Web 在线会话管理</a>
+## <a href='#cp3' target='_self' id='ccp3'>Shiro 身份验证</a>
+## <a href='#cp4' target='_self' id='ccp4'>Shiro 授权</a>
+## <a href='#cp5' target='_self' id='ccp5'>Shiro InI 配置</a>
+## <a href='#cp6' target='_self' id='ccp6'>Shiro 编码加密</a>
+## <a href='#cp7' target='_self' id='ccp7'>Shiro Realm</a>
+## <a href='#cp8' target='_self' id='ccp8'>Shiro Web 集成</a>
+## <a href='#cp9' target='_self' id='ccp9'>Shiro Web 拦截器机制</a>
+## <a href='#cp10' target='_self' id='ccp10'>Shiro Web JSP 标签</a>
+## <a href='#cp11' target='_self' id='ccp11'>Shiro Web 会话管理</a>
+## <a href='#cp12' target='_self' id='ccp12'>Shiro Web 缓存机制</a>
+## <a href='#cp13' target='_self' id='ccp13'>Shiro Web Spring 集成</a>
+## <a href='#cp14' target='_self' id='ccp14'>Shiro Web RememberMe</a>
+## <a href='#cp15' target='_self' id='ccp15'>Shiro Web SSL</a>
+## <a href='#cp16' target='_self' id='ccp16'>Shiro Web 单点登录</a>
+## <a href='#cp17' target='_self' id='ccp17'>Shiro Web 综合实例</a>
+## <a href='#cp18' target='_self' id='ccp18'>Shiro Web OAuth2</a>
+## <a href='#cp19' target='_self' id='ccp19'>Shiro Web 并发登录控制</a>
+## <a href='#cp20' target='_self' id='ccp20'>Shiro Web 动态 URL</a>
+## <a href='#cp21' target='_self' id='ccp21'>Shiro Web 无状态 Web</a>
+## <a href='#cp22' target='_self' id='ccp22'>Shiro Web 授予身份和切换身份</a>
+## <a href='#cp23' target='_self' id='ccp23'>Shiro Web 集成验证码</a>
+## <a href='#cp24' target='_self' id='ccp24'>Shiro Web 多项目</a>
+## <a href='#cp25' target='_self' id='ccp25'>Shiro Web 在线会话管理</a>
 
 <div id="cp1"></div>
 
-## Shiro 关于
+## Shiro 关于 <a href="#ccp1">目录</a>
 
 ### 跟我学 Shiro
 
@@ -117,7 +117,7 @@ Shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 J
 
 <div id="cp3"></div>
 
-## Shiro 身份验证
+## Shiro 身份验证 <a href='#ccp3'>目录</a>
 
 ### 身份验证
 
@@ -494,7 +494,7 @@ public interface AuthenticationStrategy {
 
 <div id='cp4'></div>
 
-## Shiro 授权
+## Shiro 授权  <a href='#ccp4'>目录</a>
 
 ### 授权
 授权，也叫访问控制，即在应用中控制谁能访问哪些资源（如访问页面/编辑数据/页面操作等）。在授权中需了解的几个关键对象：主体（Subject）、资源（Resource）、权限（Permission）、角色（Role）。
