@@ -1260,3 +1260,98 @@ role1=permission1,permission2
 /index.html = anon
 /admin/** = authc, roles[admin], perms["permission1"]
 ```
+
+#### \[main\] 部分
+提供了对根对象 securityManager 及其依赖对象的配置。
+
+##### 创建对象
+```ini
+securityManager=org.apache.shiro.mgt.DefaultSecurityManager
+```
+
+其构造器必须是 public 空参构造器，通过反射创建相应的实例。
+
+##### 常量值 setter 注入
+```ini
+dataSource.driverClassName=com.mysql.jdbc.Driver
+jdbcRealm.permissionsLookupEnabled=true
+```
+
+会自动调用 jdbcRealm.setPermissionsLookupEnabled(true)，对于这种常量值会自动类型转换。
+
+##### 对象引用 setter 注入
+```ini
+authenticator=org.apache.shiro.authc.pam.ModularRealmAuthenticator
+authenticationStrategy=org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy
+authenticator.authenticationStrategy=$authenticationStrategy
+securityManager.authenticator=$authenticator
+```
+
+会自动通过 securityManager.setAuthenticator(authenticator) 注入引用依赖。
+
+##### 嵌套属性 setter 注入
+```ini
+securityManager.authenticator.authenticationStrategy=$authenticationStrategy
+```
+也支持这种嵌套方式的 setter 注入。
+
+##### byte 数组 setter 注入
+```ini
+#base64 byte[]
+authenticator.bytes=aGVsbG8=
+#hex byte[]
+authenticator.bytes=0x68656c6c6f
+```
+
+默认需要使用 Base64 进行编码，也可以使用 0x 十六进制。
+
+##### Array/Set/List setter 注入
+```ini
+authenticator.array=1,2,3
+authenticator.set=$jdbcRealm,$jdbcRealm
+```
+
+多个之间通过 “，” 分割。
+
+##### Map setter 注入
+```ini
+authenticator.map=$jdbcRealm:$jdbcRealm,1:1,key:abc
+
+```
+即格式是：map=key：value，key：value，可以注入常量及引用值，常量的话都看作字符串（即使有泛型也不会自动造型）。
+
+##### 实例化 / 注入顺序
+```ini
+realm=Realm1
+realm=Realm12
+authenticator.bytes=aGVsbG8=
+authenticator.bytes=0x68656c6c6f
+```
+
+后边的覆盖前边的注入。
+
+测试用例请参考配置文件 shiro-config-main.ini。
+
+#### \[users\] 部分
+配置用户名 / 密码及其角色，格式：“用户名 = 密码，角色 1，角色 2”，角色部分可省略。如：
+```ini
+zhang=123,role1,role2
+wang=123 
+```
+[users]
+
+密码一般生成其摘要 / 加密存储，后续章节介绍。
+
+#### \[roles\] 部分
+配置角色及权限之间的关系，格式：“角色 = 权限 1，权限 2”；如：
+```ini
+[roles]
+role1=user:create,user:update
+role2=*
+```
+
+如果只有角色没有对应的权限，可以不配 roles，具体规则请参考授权章节。
+[urls] 部分
+配置 url 及相应的拦截器之间的关系，格式：“url = 拦截器 [参数]，拦截器 [参数]，如：
+[urls]
+/admin/** = authc, roles[admin], perms["permission1"]&nbsp;
