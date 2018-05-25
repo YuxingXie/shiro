@@ -42,6 +42,7 @@
 > ## <a href='#cp6' target='_self' id='ccp6'>Shiro 编码加密</a>
 
 > ## <a href='#cp7' target='_self' id='ccp7'>Shiro Realm</a>
+>> ### <a href='#cp7-1' target='_self' id='ccp7-1'>Realm 及相关对象</a>
 
 > ## <a href='#cp8' target='_self' id='ccp8'>Shiro Web 集成</a>
 
@@ -1724,3 +1725,7 @@ public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher
 <div id='cp7'></div>
 
 ## Shiro Realm <a href='#ccp7'>目录</a>
+
+<div id='cp7-1'></div>
+
+### Realm 及相关对象
