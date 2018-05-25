@@ -1491,3 +1491,49 @@ public class SomeClass{
 5. 可以设置 randomNumberGenerator 用于生成公盐；
 6. 可以设置 hashIterations 属性来修改默认加密迭代次数；
 7. 需要构建一个 HashRequest，传入算法、数据、公盐、迭代次数。
+
+SecureRandomNumberGenerator 用于生成一个随机数：
+
+    ecureRandomNumberGenerator randomNumberGenerator =
+         new SecureRandomNumberGenerator();
+    randomNumberGenerator.setSeed("123".getBytes());
+    String hex = randomNumberGenerator.nextBytes().toHex();
+
+#### 加密/解密
+
+Shiro 还提供对称式加密 / 解密算法的支持，如 AES、Blowfish 等；当前还没有提供对非对称加密 / 解密算法支持，未来版本可能提供。
+
+AES 算法实现：
+
+    AesCipherService aesCipherService = new AesCipherService();
+    aesCipherService.setKeySize(128); //设置key长度
+    //生成key
+    Key key = aesCipherService.generateNewKey();
+    String text = "hello";
+    //加密
+    String encrptText = 
+    aesCipherService.encrypt(text.getBytes(), key.getEncoded()).toHex();
+    //解密
+    String text2 =
+     new String(aesCipherService.decrypt(Hex.decode(encrptText), key.getEncoded()).getBytes());
+    Assert.assertEquals(text, text2);
+
+
+更多算法请参考示例 com.github.zhangkaitao.shiro.chapter5.hash.CodecAndCryptoTest。
+
+### PasswordService/CredentialsMatcher
+
+Shiro 提供了 PasswordService 及 CredentialsMatcher 用于提供加密密码及验证密码服务。
+```java
+public interface PasswordService {
+    //输入明文密码得到密文密码
+    String encryptPassword(Object plaintextPassword) throws IllegalArgumentException;
+}
+```
+
+```java
+public interface CredentialsMatcher {
+    //匹配用户输入的token的凭证（未加密）与系统提供的凭证（已加密）
+    boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info);
+}
+```
