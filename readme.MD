@@ -2418,6 +2418,32 @@ public class LoginServlet extends HttpServlet {
 2. doPost 时进行登录，登录时收集 username/password 参数，然后提交给 Subject 进行登录。如果有错误再返回到登录页面；否则跳转到登录成功页面（此处应该返回到访问登录页面之前的那个页面，或者没有上一个页面时访问主页）。
 3. JSP 页面请参考源码。
 
+##### 测试
+
+首先输入 http://localhost:8080/chapter7/login 进行登录，登录成功后接着可以访问 http://localhost:8080/chapter7/authenticated 来显示当前登录的用户：
+
+    ${subject.principal} 身份验证已通过。
+    
+当前实现的一个缺点就是，永远返回到同一个成功页面（比如首页），在实际项目中比如支付时如果没有登录将跳转到登录页面，登录成功后再跳回到支付页面；
+对于这种功能大家可以在登录时把当前请求保存下来，然后登录成功后再重定向到该请求即可。
+
+Shiro 内置了登录（身份验证）的实现：基于表单的和基于 Basic 的验证，其通过拦截器实现。
+
+##### 基于 Basic 的拦截器身份验证
+
+##### shiro-basicfilterlogin.ini 配置
+```ini
+[main]
+authcBasic.applicationName=please login
+………省略users
+[urls]
+/role=authcBasic,roles[admin]
+
+```
+
+
+
+
 
 
 ### 与spring-boot-web集成 
