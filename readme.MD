@@ -2441,6 +2441,162 @@ authcBasic.applicationName=please login
 
 ```
 
+1. authcBasic 是 org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter 类型的实例，其用于实现基于 Basic 的身份验证；applicationName 用于弹出的登录框显示信息使用，如图：
+
+![](https://github.com/YuxingXie/shiro/raw/master/doc/13.png)
+
+2. \[urls] 部分配置了 /role 地址需要走 authcBasic 拦截器，即如果访问 /role 时还没有通过身份验证那么将弹出如上图的对话框进行登录，登录成功即可访问。
+
+##### web.xml
+
+把 shiroConfigLocations 改为 shiro-basicfilterlogin.ini 即可。
+
+##### 测试
+输入 http://localhost:8080/chapter7/role，会弹出之前的 Basic 验证对话框输入 “zhang/123” 即可登录成功进行访问。
+
+##### 基于表单的拦截器身份验证
+
+基于表单的拦截器身份验证和【1】类似，但是更简单，因为其已经实现了大部分登录逻辑；我们只需要指定：登录地址 / 登录失败后错误信息存哪 / 成功的地址即可。
+
+shiro-formfilterlogin.ini
+```ini
+[main]
+authc.loginUrl=/formfilterlogin
+authc.usernameParam=username
+authc.passwordParam=password
+authc.successUrl=/
+authc.failureKeyAttribute=shiroLoginFailure
+[urls]
+/role=authc,roles[admin]
+```
+1. authc 是 org.apache.shiro.web.filter.authc.FormAuthenticationFilter 类型的实例，其用于实现基于表单的身份验证；通过 loginUrl 指定当身份验证时的登录表单；
+usernameParam 指定登录表单提交的用户名参数名；passwordParam 指定登录表单提交的密码参数名；successUrl 指定登录成功后重定向的默认地址（默认是 “/”）
+（如果有上一个地址会自动重定向带该地址）；failureKeyAttribute 指定登录失败时的 request 属性 key（默认 shiroLoginFailure）；这样可以在登录表单得到该错误 key 
+显示相应的错误消息；
+
+##### web.xml
+
+把 shiroConfigLocations 改为 shiro-formfilterlogin.ini 即可。
+
+##### 登录 Servlet
+```java
+@WebServlet(name = "formFilterLoginServlet", urlPatterns = "/formfilterlogin")
+public class FormFilterLoginServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException {
+        doPost(req, resp);
+    }
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+     throws ServletException, IOException {
+        String errorClassName = (String)req.getAttribute("shiroLoginFailure");
+        if(UnknownAccountException.class.getName().equals(errorClassName)) {
+            req.setAttribute("error", "用户名/密码错误");
+        } else if(IncorrectCredentialsException.class.getName().equals(errorClassName)) {
+            req.setAttribute("error", "用户名/密码错误");
+        } else if(errorClassName != null) {
+            req.setAttribute("error", "未知错误：" + errorClassName);
+        }
+        req.getRequestDispatcher("/WEB-INF/jsp/formfilterlogin.jsp").forward(req, resp);
+    }
+}
+```
+在登录 Servlet 中通过 shiroLoginFailure 得到 authc 登录失败时的异常类型名，然后根据此异常名来决定显示什么错误消息。
+
+##### 测试
+
+输入 http://localhost:8080/chapter7/role，会跳转到 “/formfilterlogin” 登录表单，提交表单如果 authc 拦截器登录成功后，会直接重定向会之前的地址 “/role”；
+假设我们直接访问 “/formfilterlogin” 的话登录成功将直接到默认的 successUrl。
+
+##### 授权（角色 / 权限验证）
+
+##### shiro.ini
+```ini
+[main]
+roles.unauthorizedUrl=/unauthorized
+perms.unauthorizedUrl=/unauthorized
+ [urls]
+/role=authc,roles[admin]
+/permission=authc,perms["user:create"]
+```
+通过 unauthorizedUrl 属性指定如果授权失败时重定向到的地址。roles 是 org.apache.shiro.web.filter.authz.RolesAuthorizationFilter 类型的实例，
+通过参数指定访问时需要的角色，如 “[admin]”，如果有多个使用 “，” 分割，且验证时是 hasAllRole 验证，即且的关系。Perms 是 
+org.apache.shiro.web.filter.authz.PermissionsAuthorizationFilter 类型的实例，和 roles 类似，只是验证权限字符串。
+
+##### web.xml
+
+把 shiroConfigLocations 改为 shiro.ini 即可。
+
+##### RoleServlet/PermissionServlet
+
+```java
+@WebServlet(name = "permissionServlet", urlPatterns = "/permission")
+public class PermissionServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException {
+        Subject subject = SecurityUtils.getSubject();
+        subject.checkPermission("user:create");
+        req.getRequestDispatcher("/WEB-INF/jsp/hasPermission.jsp").forward(req, resp);
+    }
+}
+```
+
+```java
+@WebServlet(name = "roleServlet", urlPatterns = "/role")
+public class RoleServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException {
+        Subject subject = SecurityUtils.getSubject();
+        subject.checkRole("admin");
+        req.getRequestDispatcher("/WEB-INF/jsp/hasRole.jsp").forward(req, resp);
+    }
+}
+```
+
+##### 测试
+
+首先访问 http://localhost:8080/chapter7/login，使用帐号 “zhang/123” 进行登录，再访问 /role 或 /permission 时会跳转到成功页面（因为其授权成功了）；如果使用帐号
+ “wang/123” 登录成功后访问这两个地址会跳转到 “/unauthorized” 即没有授权页面。
+
+##### 退出
+
+##### shiro.ini
+```ini
+[urls]
+/logout=anon
+```
+
+指定 /logout 使用 anon 拦截器即可，即不需要登录即可访问。
+
+##### LogoutServlet
+```java
+@WebServlet(name = "logoutServlet", urlPatterns = "/logout")
+public class LogoutServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException {
+        SecurityUtils.getSubject().logout();
+        req.getRequestDispatcher("/WEB-INF/jsp/logoutSuccess.jsp").forward(req, resp);
+    }
+}
+```
+
+直接调用 Subject.logout 即可，退出成功后转发 / 重定向到相应页面即可。
+
+##### 测试
+
+首先访问 http://localhost:8080/chapter7/login，使用帐号 “zhang/123” 进行登录，登录成功后访问 /logout 即可退出。
+
+Shiro 也提供了 logout 拦截器用于退出，其是 org.apache.shiro.web.filter.authc.LogoutFilter 类型的实例，我们可以在 shiro.ini 配置文件中通过如下配置完成退出：
+```ini
+[main]
+logout.redirectUrl=/login
+[urls]
+/logout2=logout
+```
+通过 logout.redirectUrl 指定退出后重定向的地址；通过 /logout2=logout 指定退出 url 是 /logout2。这样当我们登录成功后然后访问 /logout2 即可退出。
 
 
 
