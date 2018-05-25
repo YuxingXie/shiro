@@ -2356,7 +2356,7 @@ admin=user:*,menu:*
 
 ##### url 模式使用 Ant 风格模式
 * Ant 路径通配符支持?、、，注意通配符匹配不包括目录分隔符 “/”：
-* ?：匹配一个字符，如”/admin?” 将匹配 /admin1，但不匹配 /admin 或 /admin2；
+* ?：匹配一个字符，如”/admin?” 将匹配 /admin1，但不匹配 /admin 或 /admin2(注:不懂，为什么?或者是/admin12笔误？)；
 * \*：匹配零个或多个字符串，如 /admin* 将匹配 /admin、/admin123，但不匹配 /admin/1；
 * \*\*：匹配路径中的零个或多个路径，如 /admin/** 将匹配 /admin/a 或 /admin/a/b。
 
@@ -2427,7 +2427,7 @@ public class LoginServlet extends HttpServlet {
 
 ##### 测试
 
-首先输入 http://localhost:8080/chapter7/login 进行登录，登录成功后接着可以访问 http://localhost:8080/chapter7/authenticated 来显示当前登录的用户：
+首先输入 http://localhost:8080/login 进行登录，登录成功后接着可以访问 http://localhost:8080/authenticated 来显示当前登录的用户：
 
     ${subject.principal} 身份验证已通过。
     

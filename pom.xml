@@ -104,7 +104,7 @@
         <configuration>
           <!--<pausermall</path>-->
           <path>/</path>
-          <port>8000</port>
+          <port>8080</port>
           <!--<httpsPortNz>8443</httpsPort>-->
           <!--<keystoreFile>${user.home}/.keystore</keystoreFile>-->
           <!--<keystorePass>dabast</keystorePass>-->
