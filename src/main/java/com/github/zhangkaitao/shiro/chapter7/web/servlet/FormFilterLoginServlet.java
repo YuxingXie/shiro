@@ -40,6 +40,6 @@ public class FormFilterLoginServlet extends HttpServlet {
             req.setAttribute("error", "未知错误：" + errorClassName);
         }
 
-        req.getRequestDispatcher("/WEB-INF/jsp/formfilterlogin.jsp").forward(req, resp);
+        req.getRequestDispatcher("/WEB-INF/jsp/ch7/formfilterlogin.jsp").forward(req, resp);
     }
 }

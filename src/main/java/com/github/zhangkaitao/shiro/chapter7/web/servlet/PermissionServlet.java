@@ -22,6 +22,6 @@ public class PermissionServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Subject subject = SecurityUtils.getSubject();
         subject.checkPermission("user:create");
-        req.getRequestDispatcher("/WEB-INF/jsp/hasPermission.jsp").forward(req, resp);
+        req.getRequestDispatcher("/WEB-INF/jsp/ch7/hasPermission.jsp").forward(req, resp);
     }
 }
