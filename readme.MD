@@ -7,6 +7,7 @@
 * 为了方便读者拷贝源码，文中源码片段可能增加import语句；
 * 为了显示语法高亮，文中源码片段增加了类或接口名；
 * jdbc连接改为使用H2数据库，并使用spring-jdbc api;
+* 某些难度不大的章节(不代表不重要)没有源代码分析，可从原文项目gitHub下载；
 * 排版略做改动,并修正一些错误；
 * 如果知识点有心得或疑问，在源代码中TODO注释或在该文档中用 "(注:说明文字)" 说明，并添加空链接（字体蓝色方便查找）。
 
@@ -1575,3 +1576,9 @@ myRealm.passwordService=$passwordService
 myRealm.credentialsMatcher=$passwordMatcher
 securityManager.realms=$myRealm
 ```
+* passwordService 使用 DefaultPasswordService，如果有必要也可以自定义；
+* hashService 定义散列密码使用的 HashService，默认使用 DefaultHashService（默认 SHA-256 算法）；
+* hashFormat 用于对散列出的值进行格式化，默认使用 Shiro1CryptFormat，另外提供了 Base64Format 和 HexFormat，对于有 salt 的密码请自定义实现 ParsableHashFormat 然后把 salt 格式化到散列值中；
+* hashFormatFactory 用于根据散列值得到散列的密码和 salt；因为如果使用如 SHA 算法，那么会生成一个 salt，此 salt 需要保存到散列后的值中以便之后与传入的密码比较时使用；默认使用 DefaultHashFormatFactory；
+passwordMatcher 使用 PasswordMatcher，其是一个 CredentialsMatcher 实现；
+* 将 credentialsMatcher 赋值给 myRealm，myRealm 间接继承了 AuthenticatingRealm，其在调用 getAuthenticationInfo 方法获取到 AuthenticationInfo 信息后，会使用 credentialsMatcher 来验证凭据是否匹配，如果不匹配将抛出 IncorrectCredentialsException 异常。
