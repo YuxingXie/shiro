@@ -213,7 +213,7 @@ Shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 J
     [users]
     zhang=123
     wang=123
-此处使用 ini 配置文件，通过 [users] 指定了两个主体：zhang/123、wang/123。
+此处使用 ini 配置文件，通过 \[users] 指定了两个主体：zhang/123、wang/123。
 
 2、测试用例（com.github.zhangkaitao.shiro.chapter2.LoginLogoutTest）
 
@@ -232,7 +232,7 @@ Shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 J
     public void testHelloworld() {
         //1、获取SecurityManager工厂，此处使用Ini配置文件初始化SecurityManager  
         Factory<org.apache.shiro.mgt.SecurityManager> factory =
-                new IniSecurityManagerFactory("classpath:shiro.ini");
+                new IniSecurityManagerFactory("classpath:ch2/shiro.ini");
         //2、得到SecurityManager实例 并绑定给SecurityUtils   
         org.apache.shiro.mgt.SecurityManager securityManager = factory.getInstance();
         SecurityUtils.setSecurityManager(securityManager);
@@ -2249,7 +2249,7 @@ shiro-web
         <filter-class>org.apache.shiro.web.servlet.IniShiroFilter</filter-class>
         <init-param>
             <param-name>configPath</param-name>
-            <param-value>classpath:shiro.ini</param-value>
+            <param-value>classpath:ch7/shiro.ini</param-value>
         </init-param>
     </filter>
     <filter-mapping>
@@ -2259,7 +2259,7 @@ shiro-web
 
 
 1. 使用 IniShiroFilter 作为 Shiro 安全控制的入口点，通过 url-pattern 指定需要安全的 URL；
-2. 通过 configPath 指定 ini 配置文件位置，默认是先从 /WEB-INF/shiro.ini 加载，如果没有就默认加载 classpath:shiro.ini，即默认相对于 web 应用上下文根路径；
+2. 通过 configPath 指定 ini 配置文件位置，默认是先从 /WEB-INF/shiro.ini 加载，如果没有就默认加载 classpath:ch7/shiro.ini，即默认相对于 web 应用上下文根路径；
 3. 也可以通过如下方式直接内嵌 ini 配置文件内容到 web.xml。
 
 
@@ -2289,10 +2289,10 @@ shiro-web
     </context-param>
     <context-param>
         <param-name>shiroConfigLocations</param-name>
-        <param-value>classpath:shiro.ini</param-value>
+        <param-value>classpath:ch7/shiro.ini</param-value>
     </context-param>
     
-shiroConfigLocations 默认是 “/WEB-INF/shiro.ini”，IniWebEnvironment 默认是先从 / WEB-INF/shiro.ini 加载，如果没有就默认加载 classpath:shiro.ini。
+shiroConfigLocations 默认是 “/WEB-INF/shiro.ini”，IniWebEnvironment 默认是先从 / WEB-INF/shiro.ini 加载，如果没有就默认加载 classpath:ch7/shiro.ini。
 
 #### 3、与 Spring 集成
 
