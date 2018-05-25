@@ -1921,3 +1921,148 @@ Account 相当于我们之前的 User，SimpleAccount 是其一个实现；在 I
 #### PrincipalCollection <a href='#ccp7-1-4'>目录</a>
 
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/10.png)
+
+因为我们可以在 Shiro 中同时配置多个 Realm，所以呢身份信息可能就有多个；因此其提供了 PrincipalCollection 用于聚合这些身份信息：
+
+```java
+public interface PrincipalCollection extends Iterable, Serializable {
+    Object getPrimaryPrincipal(); //得到主要的身份
+    <T> T oneByType(Class<T> type); //根据身份类型获取第一个
+    <T> Collection<T> byType(Class<T> type); //根据身份类型获取一组
+    List asList(); //转换为List
+    Set asSet(); //转换为Set
+    Collection fromRealm(String realmName); //根据Realm名字获取
+    Set<String> getRealmNames(); //获取所有身份验证通过的Realm名字
+    boolean isEmpty(); //判断是否为空
+}
+```
+
+因为 PrincipalCollection 聚合了多个，此处最需要注意的是 getPrimaryPrincipal，如果只有一个 Principal 那么直接返回即可，如果有多个 Principal，则返回第一个
+（因为内部使用 Map 存储，所以可以认为是返回任意一个）；oneByType / byType 根据凭据的类型返回相应的 Principal；fromRealm 根据 Realm 名字
+（每个 Principal 都与一个 Realm 关联）获取相应的 Principal。
+
+MutablePrincipalCollection 是一个可变的 PrincipalCollection 接口，即提供了如下可变方法：
+```java
+public interface MutablePrincipalCollection extends PrincipalCollection {
+    void add(Object principal, String realmName); //添加Realm-Principal的关联
+    void addAll(Collection principals, String realmName); //添加一组Realm-Principal的关联
+    void addAll(PrincipalCollection principals);//添加PrincipalCollection
+    void clear();//清空
+}
+```
+
+目前 Shiro 只提供了一个实现 SimplePrincipalCollection，还记得之前的 AuthenticationStrategy 实现嘛，用于在多 Realm 时判断是否满足条件的，在大多数实现中
+（继承了 AbstractAuthenticationStrategy）afterAttempt 方法会进行 AuthenticationInfo（实现了 MergableAuthenticationInfo）的 merge，比如 
+SimpleAuthenticationInfo 会合并多个 Principal 为一个 PrincipalCollection。
+
+对于 PrincipalMap 是 Shiro 1.2 中的一个实验品，暂时无用，具体可以参考其 Javadoc。接下来通过示例来看看 PrincipalCollection。
+
+##### 1、准备三个 Realm
+##### MyRealm1
+
+```java
+public class MyRealm1 implements Realm {
+    @Override
+    public String getName() {
+        return "a"; //realm name 为 “a”
+    }
+    //省略supports方法，具体请见源码
+    @Override
+    public AuthenticationInfo getAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+        return new SimpleAuthenticationInfo(
+                "zhang", //身份 字符串类型
+                "123",   //凭据
+                getName() //Realm Name
+        );
+    }
+}
+```
+
+##### MyRealm2
+
+和 MyRealm1 完全一样，只是 Realm 名字为 b。
+
+##### MyRealm3
+```java
+public class MyRealm3 implements Realm {
+    @Override
+    public String getName() {
+        return "c"; //realm name 为 “c”
+    }
+    //省略supports方法，具体请见源码
+    @Override
+    public AuthenticationInfo getAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+        User user = new User("zhang", "123");
+        return new SimpleAuthenticationInfo(
+                user, //身份 User类型
+                "123",   //凭据
+                getName() //Realm Name
+        );
+    }
+}
+```
+和 MyRealm1 同名，但返回的 Principal 是 User 类型。
+
+##### 2、ini 配置（shiro-multirealm.ini）
+```ini
+[main]
+realm1=com.github.zhangkaitao.shiro.chapter6.realm.MyRealm1
+realm2=com.github.zhangkaitao.shiro.chapter6.realm.MyRealm2
+realm3=com.github.zhangkaitao.shiro.chapter6.realm.MyRealm3
+securityManager.realms=$realm1,$realm2,$realm3
+```
+##### 3、测试用例（com.github.zhangkaitao.shiro.chapter6.realm.PrincialCollectionTest）
+因为我们的 Realm 中没有进行身份及凭据验证，所以相当于身份验证都是成功的，都将返回：
+```java
+public class PrincialCollectionTest extends BaseTest {
+
+    @Test
+    public void test() {
+
+        //因为Realm里没有进行验证，所以相当于每个Realm都身份验证成功了
+        login("classpath:ch6/shiro-multirealm.ini", "zhang", "123");
+        Subject subject = subject();
+        //获取Primary Principal（即第一个）
+        Object primaryPrincipal1 = subject.getPrincipal();
+        PrincipalCollection princialCollection = subject.getPrincipals();
+        Object primaryPrincipal2 = princialCollection.getPrimaryPrincipal();
+
+        //但是因为多个Realm都返回了Principal，所以此处到底是哪个是不确定的
+        Assert.assertEquals(primaryPrincipal1, primaryPrincipal2);
+
+
+        //返回 a b c
+        Set<String> realmNames = princialCollection.getRealmNames();
+        System.out.println(realmNames);
+
+        //因为MyRealm1和MyRealm2返回的凭据都是zhang，所以排重了
+        Set<Object> principals = princialCollection.asSet(); //asList和asSet的结果一样
+        System.out.println(principals);
+
+        //根据Realm名字获取
+        Collection<User> users = princialCollection.fromRealm("c");
+        System.out.println(users);
+    }
+}
+```
+我们可以直接调用 subject.getPrincipal 获取 PrimaryPrincipal（即所谓的第一个）；或者通过 getPrincipals 获取 PrincipalCollection；然后通过其
+getPrimaryPrincipal 获取 PrimaryPrincipal。
+
+    Set<String> realmNames = princialCollection.getRealmNames();
+
+获取所有身份验证成功的 Realm 名字。
+
+    Set<Object> principals = princialCollection.asSet(); //asList 和 asSet 的结果一样
+    
+将身份信息转换为 Set/List，即使转换为 List，也是先转换为 Set 再完成的。
+
+    Collection<User> users = princialCollection.fromRealm("c");
+
+根据 Realm 名字获取身份，因为 Realm 名字可以重复，所以可能多个身份，建议 Realm 名字尽量不要重复。
+
+
+<div id='cp7-1-5'></div>
+
+#### AuthorizationInfo <a href='#ccp7-1-5'>目录</a>
+
+![](https://github.com/YuxingXie/shiro/raw/master/doc/11.png)
