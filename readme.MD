@@ -1720,3 +1720,7 @@ public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher
 ```
 
 如上代码逻辑比较简单，即如果密码输入正确清除 cache 中的记录；否则 cache 中的重试次数 +1，如果超出 5 次那么抛出异常表示超出重试次数了。
+
+<div id='cp7'></div>
+
+## Shiro Realm <a href='ccp7'>目录</a>
