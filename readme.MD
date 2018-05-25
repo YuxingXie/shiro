@@ -2353,6 +2353,73 @@ admin=user:*,menu:*
 * \：匹配零个或多个字符串，如 / admin * 将匹配 / admin、/admin123，但不匹配 / admin/1；
 * \*\*\：匹配路径中的零个或多个路径，如 / admin/** 将匹配 / admin/a 或 / admin/a/b。
 
+##### url 模式匹配顺序
+
+url 模式匹配顺序是按照在配置中的声明顺序匹配，即从头开始使用第一个匹配的 url 模式对应的拦截器链。如：
+
+    /bb/**=filter1
+    /bb/aa=filter2
+    /**=filter3
+    
+如果请求的 url 是 “/bb/aa”，因为按照声明顺序进行匹配，那么将使用 filter1 进行拦截。
+
+拦截器将在下一节详细介绍。接着我们来看看身份验证、授权及退出在 web 中如何实现。
+
+##### 身份验证（登录）
+
+##### 首先配置需要身份验证的 url
+
+    /authenticated=authc
+    /role=authc,roles[admin]
+    /permission=authc,perms["user:create"]
+
+即访问这些地址时会首先判断用户有没有登录，如果没有登录默会跳转到登录页面，默认是 / login.jsp，可以通过在 [main] 部分通过如下配置修改：
+```ini
+authc.loginUrl=/login
+```
+##### 登录 Servlet（com.github.zhangkaitao.shiro.chapter7.web.servlet.LoginServlet）
+
+```java
+@WebServlet(name = "loginServlet", urlPatterns = "/login")
+public class LoginServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException {
+        req.getRequestDispatcher("/WEB-INF/jsp/login.jsp").forward(req, resp);
+    }
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException {
+        String error = null;
+        String username = req.getParameter("username");
+        String password = req.getParameter("password");
+        Subject subject = SecurityUtils.getSubject();
+        UsernamePasswordToken token = new UsernamePasswordToken(username, password);
+        try {
+            subject.login(token);
+        } catch (UnknownAccountException e) {
+            error = "用户名/密码错误";
+        } catch (IncorrectCredentialsException e) {
+            error = "用户名/密码错误";
+        } catch (AuthenticationException e) {
+            //其他错误，比如锁定，如果想单独处理请单独catch处理
+            error = "其他错误：" + e.getMessage();
+        }
+        if(error != null) {//出错了，返回登录页面
+            req.setAttribute("error", error);
+            req.getRequestDispatcher("/WEB-INF/jsp/login.jsp").forward(req, resp);
+        } else {//登录成功
+            req.getRequestDispatcher("/WEB-INF/jsp/loginSuccess.jsp").forward(req, resp);
+        }
+    }
+}
+```
+1. doGet 请求时展示登录页面；
+2. doPost 时进行登录，登录时收集 username/password 参数，然后提交给 Subject 进行登录。如果有错误再返回到登录页面；否则跳转到登录成功页面（此处应该返回到访问登录页面之前的那个页面，或者没有上一个页面时访问主页）。
+3. JSP 页面请参考源码。
+
+
+
 ### 与spring-boot-web集成 
 
 注:本节为本人自我研究总结与spring-boot-web的集成，使用gradle构建，java代码配置spring bean。
