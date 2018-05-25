@@ -38,9 +38,11 @@
 > ## <a href='#cp7' target='_self' id='ccp7'>Shiro Realm</a>
 >> ### <a href='#cp7-1' target='_self' id='ccp7-1'>Realm 及相关对象</a>
 >>> #### <a href='#cp7-1-1' target='_self' id='ccp7-1-1'>Realm</a>
->>> #### <a href='#cp7-1-2' target='_self' id='ccp7-1-2'>Realm</a>
->>> #### <a href='#cp7-1-3' target='_self' id='ccp7-1-3'>Realm</a>
->>> #### <a href='#cp7-1-4' target='_self' id='ccp7-1-4'>Realm</a>
+>>> #### <a href='#cp7-1-2' target='_self' id='ccp7-1-2'>AuthenticationToken</a>
+>>> #### <a href='#cp7-1-3' target='_self' id='ccp7-1-3'>AuthenticationInfo</a>
+>>> #### <a href='#cp7-1-4' target='_self' id='ccp7-1-4'>PrincipalCollection</a>
+>>> #### <a href='#cp7-1-5' target='_self' id='ccp7-1-5'>AuthorizationInfo</a>
+>>> #### <a href='#cp7-1-6' target='_self' id='ccp7-1-6'>Subject</a>
 
 > ## <a href='#cp8' target='_self' id='ccp8'>Shiro Web 集成</a>
 > ## <a href='#cp9' target='_self' id='ccp9'>Shiro Web 拦截器机制</a>
