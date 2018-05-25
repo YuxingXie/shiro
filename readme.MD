@@ -2205,7 +2205,7 @@ public class SecurityUtils{
 
 <div id='cp8-1'></div>
 
-### 与 Web 集成 <a href='#ccp8-1'>目录</a>
+### 与传统Web集成 <a href='#ccp8-1'>目录</a>
 
 Shiro 提供了与 Web 集成的支持，其通过一个 ShiroFilter 入口来拦截需要安全控制的 URL，然后进行相应的控制，ShiroFilter 类似于如 Strut2/SpringMVC 这种 web 框架的前端控制器，其是安全控制的入口点，其负责读取配置（如 ini 配置文件），然后判断 URL 是否需要登录 / 权限等工作。
 
@@ -2343,8 +2343,15 @@ admin=user:*,menu:*
 /role=authc,roles[admin]
 /permission=authc,perms["user:create"]
 ```
+其中最重要的就是 \[urls] 部分的配置，其格式是： “url = 拦截器 \[参数]，拦截器\[参数]”；即如果当前请求的 url 匹配\[urls] 部分的某个 url 模式，将会执行其配置的拦截器。
+比如 anon 拦截器表示匿名访问（即不需要登录即可访问）；authc 拦截器表示需要身份认证通过后才能访问；roles\[admin]拦截器表示需要有 admin 角色授权才能访问；
+而 perms\["user:create"]拦截器表示需要有 “user:create” 权限才能访问。
 
-
+##### url 模式使用 Ant 风格模式
+* Ant 路径通配符支持?、、，注意通配符匹配不包括目录分隔符 “/”：
+* ?：匹配一个字符，如”/admin?” 将匹配 / admin1，但不匹配 / admin 或 / admin2；
+* \：匹配零个或多个字符串，如 / admin * 将匹配 / admin、/admin123，但不匹配 / admin/1；
+* **\：匹配路径中的零个或多个路径，如 / admin/** 将匹配 / admin/a 或 / admin/a/b。
 
 ### 与spring-boot-web集成 
 
