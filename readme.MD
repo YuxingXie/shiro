@@ -2358,7 +2358,7 @@ admin=user:*,menu:*
 * Ant 路径通配符支持?、、，注意通配符匹配不包括目录分隔符 “/”：
 * ?：匹配一个字符，如”/admin?” 将匹配 /admin1，但不匹配 /admin 或 /admin2；
 * \*：匹配零个或多个字符串，如 /admin* 将匹配 /admin、/admin123，但不匹配 /admin/1；
-* \*\*：匹配路径中的零个或多个路径，如 / admin/** 将匹配 / admin/a 或 / admin/a/b。
+* \*\*：匹配路径中的零个或多个路径，如 /admin/** 将匹配 /admin/a 或 /admin/a/b。
 
 ##### url 模式匹配顺序
 
