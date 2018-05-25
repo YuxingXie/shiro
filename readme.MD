@@ -1728,4 +1728,12 @@ public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher
 
 <div id='cp7-1'></div>
 
-### Realm 及相关对象
+### Realm 及相关对象 <a href='#ccp7-1'>目录</a>
+
+#### Realm
+
+Realm】及【Authorizer】部分都已经详细介绍过 Realm 了，接下来再来看一下一般真实环境下的 Realm 如何实现。
+
+##### 1、定义实体及关系
+
+![](https://github.com/YuxingXie/shiro/raw/master/doc/7.png)
