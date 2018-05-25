@@ -2086,3 +2086,109 @@ Shiro 提供了一个实现 SimpleAuthorizationInfo，大多数时候使用这�
 <div id='cp7-1-6'></div>
 
 #### Subject <a href='#ccp7-1-6'>目录</a>
+
+![](https://github.com/YuxingXie/shiro/raw/master/doc/12.png)
+
+Subject 是 Shiro 的核心对象，基本所有身份验证、授权都是通过 Subject 完成。
+
+##### 1、身份信息获取
+
+##### 1、身份信息获取
+
+    Object getPrincipal(); //Primary Principal
+    PrincipalCollection getPrincipals(); // PrincipalCollection
+
+##### 2、身份验证
+
+    void login(AuthenticationToken token) throws AuthenticationException;
+    boolean isAuthenticated();
+    boolean isRemembered();
+    
+通过 login 登录，如果登录失败将抛出相应的 AuthenticationException，如果登录成功调用 isAuthenticated 就会返回 true，即已经通过身份验证；如果 isRemembered 
+返回 true，表示是通过记住我功能登录的而不是调用 login 方法登录的。isAuthenticated/isRemembered 是互斥的，即如果其中一个返回 true，另一个返回 false。
+
+##### 3、角色授权验证
+    boolean hasRole(String roleIdentifier);
+    boolean[] hasRoles(List<String> roleIdentifiers);
+    boolean hasAllRoles(Collection<String> roleIdentifiers);
+    void checkRole(String roleIdentifier) throws AuthorizationException;
+    void checkRoles(Collection<String> roleIdentifiers) throws AuthorizationException;
+    void checkRoles(String... roleIdentifiers) throws AuthorizationException;
+    
+hasRole 进行角色验证，验证后返回 true/false；而 checkRole 验证失败时抛出 AuthorizationException 异常。
+
+##### 4、权限授权验证
+    boolean isPermitted(String permission);
+    boolean isPermitted(Permission permission);
+    boolean[] isPermitted(String... permissions);
+    boolean[] isPermitted(List<Permission> permissions);
+    boolean isPermittedAll(String... permissions);
+    boolean isPermittedAll(Collection<Permission> permissions);
+    void checkPermission(String permission) throws AuthorizationException;
+    void checkPermission(Permission permission) throws AuthorizationException;
+    void checkPermissions(String... permissions) throws AuthorizationException;
+    void checkPermissions(Collection<Permission> permissions) throws AuthorizationException;
+
+isPermitted 进行权限验证，验证后返回 true/false；而 checkPermission 验证失败时抛出 AuthorizationException。
+
+##### 5、会话
+
+    Session getSession(); //相当于getSession(true)
+    Session getSession(boolean create); 
+
+类似于 Web 中的会话。如果登录成功就相当于建立了会话，接着可以使用 getSession 获取；如果 create=false 如果没有会话将返回 null，而 create=true 如果没有会话会强制创建一个。
+
+##### 6、退出
+    void logout();
+
+##### 7、RunAs
+    void runAs(PrincipalCollection principals) throws NullPointerException, IllegalStateException;
+    boolean isRunAs();
+    PrincipalCollection getPreviousPrincipals();
+    PrincipalCollection releaseRunAs();
+
+RunAs 即实现 “允许 A 假设为 B 身份进行访问”；通过调用 subject.runAs(b) 进行访问；接着调用 subject.getPrincipals 将获取到 B 的身份；此时调用 isRunAs 将返回 true；而 a 的身份需要通过 subject. getPreviousPrincipals 获取；如果不需要 RunAs 了调用 subject. releaseRunAs 即可。
+
+##### 8、多线程
+
+    <V> V execute(Callable<V> callable) throws ExecutionException;
+    void execute(Runnable runnable);
+    <V> Callable<V> associateWith(Callable<V> callable);
+    Runnable associateWith(Runnable runnable);
+
+实现线程之间的 Subject 传播，因为 Subject 是线程绑定的；因此在多线程执行中需要传播到相应的线程才能获取到相应的 Subject。最简单的办法就是通过 execute(runnable/callable 实例) 直接调用；或者通过 associateWith(runnable/callable 实例) 得到一个包装后的实例；它们都是通过：1、把当前线程的 Subject 绑定过去；2、在线程执行结束后自动释放。
+Subject 自己不会实现相应的身份验证 / 授权逻辑，而是通过 DelegatingSubject 委托给 SecurityManager 实现；及可以理解为 Subject 是一个面门。
+
+对于 Subject 的构建一般没必要我们去创建；一般通过 SecurityUtils.getSubject() 获取：
+
+```java
+public class SecurityUtils{
+    //other codes
+    public static Subject getSubject() {
+        Subject subject = ThreadContext.getSubject();
+        if (subject == null) {
+            subject = (new Subject.Builder()).buildSubject();
+            ThreadContext.bind(subject);
+        }
+        return subject;
+    }
+}
+
+```
+即首先查看当前线程是否绑定了 Subject，如果没有通过 Subject.Builder 构建一个然后绑定到现场返回。
+
+如果想自定义创建，可以通过：
+
+    new Subject.Builder().principals(身份).authenticated(true/false).buildSubject()
+
+这种可以创建相应的 Subject 实例了，然后自己绑定到线程即可。在 new Builder() 时如果没有传入 SecurityManager，自动调用 SecurityUtils.getSecurityManager 获取；
+也可以自己传入一个实例。
+
+对于 Subject 我们一般这么使用：
+1. 身份验证（login）
+2. 授权（hasRole/isPermitted 或 checkRole/checkPermission）
+3. 将相应的数据存储到会话（Session）
+4. 切换身份（RunAs/多线程身份传播
+5. 退出
+
+而我们必须的功能就是 1、2、5。到目前为止我们就可以使用 Shiro 进行应用程序的安全控制了，但是还是缺少如对 Web 验证、Java 方法验证等的一些简化实现。
