@@ -44,8 +44,9 @@
 >>> #### <a href='#cp7-1-5' id='ccp7-1-5'>AuthorizationInfo</a>
 >>> #### <a href='#cp7-1-6' id='ccp7-1-6'>Subject</a>
 > ## <a href='#cp8' id='ccp8'>Shiro Web 集成</a>
->> ### <a href='#cp8-1' id='ccp8-1'>与Web 集成</a>
+>> ### <a href='#cp8-1' id='ccp8-1'>与传统Web集成</a>
 >>> ### <a href='#cp8-1-1' id='ccp8-1-1'>准备环境</a>
+>> ### <a href='#cp8-2' id='ccp8-2'>与spring-boot-web集成(读者自研章节)</a>
 
 > ## <a href='#cp9' id='ccp9'>Shiro Web 拦截器机制</a>
 > ## <a href='#cp10' id='ccp10'>Shiro Web JSP 标签</a>
@@ -2199,6 +2200,7 @@ public class SecurityUtils{
 
 ## Shiro Web 集成 <a href='#ccp8'>目录</a>
 
+注：本章除了包括作者所描述的传统web集成方式外，本人另开一节研究如何与spring-boot集成。
 
 <div id='cp8-1'></div>
 
@@ -2209,3 +2211,11 @@ Shiro 提供了与 Web 集成的支持，其通过一个 ShiroFilter 入口来�
 <div id='cp8-1-1'></div>
 
 #### 准备环境 <a href='#ccp8-1-1'>目录</a>
+
+<div id='cp8-2'></div>
+
+### 与spring-boot-web集成 <a href='#ccp8-2'>目录</a>
+
+注:本节为本人自我研究总结与spring-boot-web的集成，使用gradle构建，java代码配置spring bean。
+
+源码在spring-boot-web-shiro-integration中。
