@@ -37,6 +37,10 @@
 > ## <a href='#cp6' target='_self' id='ccp6'>Shiro 编码加密</a>
 > ## <a href='#cp7' target='_self' id='ccp7'>Shiro Realm</a>
 >> ### <a href='#cp7-1' target='_self' id='ccp7-1'>Realm 及相关对象</a>
+>>> #### <a href='#cp7-1-1' target='_self' id='ccp7-1-1'>Realm</a>
+>>> #### <a href='#cp7-1-2' target='_self' id='ccp7-1-2'>Realm</a>
+>>> #### <a href='#cp7-1-3' target='_self' id='ccp7-1-3'>Realm</a>
+>>> #### <a href='#cp7-1-4' target='_self' id='ccp7-1-4'>Realm</a>
 
 > ## <a href='#cp8' target='_self' id='ccp8'>Shiro Web 集成</a>
 > ## <a href='#cp9' target='_self' id='ccp9'>Shiro Web 拦截器机制</a>
@@ -1707,7 +1711,9 @@ public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher
 
 ### Realm 及相关对象 <a href='#ccp7-1'>目录</a>
 
-#### Realm
+<div id='cp7-1-1'></div>
+
+#### Realm <a href='#ccp7-1-1'>目录</a>
 
 Realm】及【Authorizer】部分都已经详细介绍过 Realm 了，接下来再来看一下一般真实环境下的 Realm 如何实现。
 
@@ -1728,3 +1734,166 @@ Realm】及【Authorizer】部分都已经详细介绍过 Realm 了，接下来�
 sql 及实体请参考源代码中的 src/sql/ch6/shiro.h2.sql 和 com.github.zhangkaitao.shiro.chapter6.entity 对应的实体。
 
 ##### 2、环境准备
+
+为了方便数据库操作，使用了 “org.springframework: spring-jdbc: 4.0.0.RELEASE” 依赖，虽然是 spring4 版本的，但使用上和 spring3 无区别。其他依赖请参考源码的 pom.xml。
+
+##### 3、定义 Service 及 Dao
+
+为了实现的简单性，只实现必须的功能，其他的可以自己实现即可。
+
+##### PermissionService
+```java
+public interface PermissionService {
+    Permission createPermission(Permission permission);
+    void deletePermission(Long permissionId);
+}
+```
+实现基本的创建 / 删除权限。
+
+##### RoleService
+```java
+public interface RoleService {
+    Role createRole(Role role);
+    void deleteRole(Long roleId);
+    //添加角色-权限之间关系
+    void correlationPermissions(Long roleId, Long... permissionIds);
+    //移除角色-权限之间关系
+    void uncorrelationPermissions(Long roleId, Long... permissionIds);//
+}
+```
+
+相对于 PermissionService 多了关联 / 移除关联角色 - 权限功能。
+
+##### UserService
+```java
+public interface UserService {
+    User createUser(User user); //创建账户
+    void changePassword(Long userId, String newPassword);//修改密码
+    void correlationRoles(Long userId, Long... roleIds); //添加用户-角色关系
+    void uncorrelationRoles(Long userId, Long... roleIds);// 移除用户-角色关系
+    User findByUsername(String username);// 根据用户名查找用户
+    Set<String> findRoles(String username);// 根据用户名查找其角色
+    Set<String> findPermissions(String username); //根据用户名查找其权限
+}
+```
+
+此处使用 findByUsername、findRoles 及 findPermissions 来查找用户名对应的帐号、角色及权限信息。之后的 Realm 就使用这些方法来查找相关信息。
+
+##### UserServiceImpl
+```java
+public class UserServiceImpl implements UserService {
+    //other code
+    public User createUser(User user) {
+        //加密密码
+        passwordHelper.encryptPassword(user);
+        return userDao.createUser(user);
+    }
+    public void changePassword(Long userId, String newPassword) {
+        User user =userDao.findOne(userId);
+        user.setPassword(newPassword);
+        passwordHelper.encryptPassword(user);
+        userDao.updateUser(user);
+    }
+}
+
+```
+在创建账户及修改密码时直接把生成密码操作委托给 PasswordHelper。
+
+##### PasswordHelper
+```java
+public class PasswordHelper {
+    private RandomNumberGenerator randomNumberGenerator =
+     new SecureRandomNumberGenerator();
+    private String algorithmName = "md5";
+    private final int hashIterations = 2;
+    public void encryptPassword(User user) {
+        user.setSalt(randomNumberGenerator.nextBytes().toHex());
+        String newPassword = new SimpleHash(
+                algorithmName,
+                user.getPassword(),
+                ByteSource.Util.bytes(user.getCredentialsSalt()),
+                hashIterations).toHex();
+        user.setPassword(newPassword);
+    }
+}
+```
+之后的 CredentialsMatcher 需要和此处加密的算法一样。user.getCredentialsSalt() 辅助方法返回 username+salt。
+
+为了节省篇幅，对于 DAO/Service 的接口及实现，具体请参考源码com.github.zhangkaitao.shiro.chapter6。另外请参考 Service 层的测试用例 
+com.github.zhangkaitao.shiro.chapter6.service.ServiceTest。
+
+##### 4、定义 Realm
+
+##### RetryLimitHashedCredentialsMatcher
+
+和第五章的一样，在此就不罗列代码了，请参考源码 com.github.zhangkaitao.shiro.chapter6.credentials.RetryLimitHashedCredentialsMatcher。
+
+##### UserRealm
+
+另外请参考 Service 层的测试用例 com.github.zhangkaitao.shiro.chapter6.service.ServiceTest。
+
+```java
+public class UserRealm extends AuthorizingRealm {
+    private UserService userService = new UserServiceImpl();
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
+        String username = (String)principals.getPrimaryPrincipal();
+        SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
+        authorizationInfo.setRoles(userService.findRoles(username));
+        authorizationInfo.setStringPermissions(userService.findPermissions(username));
+        return authorizationInfo;
+    }
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+        String username = (String)token.getPrincipal();
+        User user = userService.findByUsername(username);
+        if(user == null) {
+            throw new UnknownAccountException();//没找到帐号
+        }
+        if(Boolean.TRUE.equals(user.getLocked())) {
+            throw new LockedAccountException(); //帐号锁定
+        }
+        //交给AuthenticatingRealm使用CredentialsMatcher进行密码匹配，如果觉得人家的不好可以在此判断或自定义实现
+        SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
+                user.getUsername(), //用户名
+                user.getPassword(), //密码
+                ByteSource.Util.bytes(user.getCredentialsSalt()),//salt=username+salt
+                getName()  //realm name
+        );
+        return authenticationInfo;
+    }
+}
+```
+* UserRealm 父类 AuthorizingRealm 将获取 Subject 相关信息分成两步：获取身份验证信息（doGetAuthenticationInfo）及授权信息（doGetAuthorizationInfo）；
+
+* doGetAuthenticationInfo 获取身份验证相关信息：首先根据传入的用户名获取 User 信息；然后如果 user 为空，那么抛出没找到帐号异常 UnknownAccountException；如果 user 找到但锁定了抛出锁定异常 LockedAccountException；最后生成 AuthenticationInfo 信息，交给间接父类 AuthenticatingRealm 使用 CredentialsMatcher 进行判断密码是否匹配，如果不匹配将抛出密码错误异常 IncorrectCredentialsException；另外如果密码重试此处太多将抛出超出重试次数异常 ExcessiveAttemptsException；在组装 SimpleAuthenticationInfo 信息时，需要传入：身份信息（用户名）、凭据（密文密码）、盐（username+salt），CredentialsMatcher 使用盐加密传入的明文密码和此处的密文密码进行匹配。
+
+* doGetAuthorizationInfo 获取授权信息：PrincipalCollection 是一个身份集合，因为我们现在就一个 Realm，所以直接调用 getPrimaryPrincipal 得到之前传入的用户名即可；
+然后根据用户名调用 UserService 接口获取角色及权限信息。
+
+##### 5、测试用例
+
+为了节省篇幅，请参考测试用例 com.github.zhangkaitao.shiro.chapter6.realm.UserRealmTest。包含了：登录成功、用户名错误、密码错误、密码超出重试次数、
+有/没有角色、有/没有权限的测试。
+
+<div id='cp7-1-2'></div>
+
+#### AuthenticationToken <a href='#ccp7-1-2'>目录</a>
+
+![](https://github.com/YuxingXie/shiro/raw/master/doc/8.png)
+
+AuthenticationToken 用于收集用户提交的身份（如用户名）及凭据（如密码）：
+```java
+public interface AuthenticationToken extends Serializable {
+    Object getPrincipal(); //身份
+    Object getCredentials(); //凭据
+}
+```
+
+扩展接口 RememberMeAuthenticationToken：提供了 “boolean isRememberMe()” 现“记住我”的功能； 扩展接口是 HostAuthenticationToken：提供了 “String getHost()” 
+方法用于获取用户 “主机” 的功能。
+
+Shiro 提供了一个直接拿来用的 UsernamePasswordToken，用于实现用户名 / 密码 Token 组，另外其实现了 RememberMeAuthenticationToken 和 HostAuthenticationToken，
+可以实现记住我及主机验证的支持。
+
+<div id='cp7-1-3'></div>
+
+#### AuthenticationInfo <a href='#ccp7-1-3'>目录</a>
