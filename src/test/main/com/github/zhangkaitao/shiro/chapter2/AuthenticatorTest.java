@@ -22,7 +22,7 @@ public class AuthenticatorTest {
 
     @Test
     public void testAllSuccessfulStrategyWithSuccess() {
-        login("classpath:shiro-authenticator-all-success.ini");
+        login("classpath:ch2/shiro-authenticator-all-success.ini");
         Subject subject = SecurityUtils.getSubject();
 
         //得到一个身份集合，其包含了Realm验证成功的身份信息
@@ -34,12 +34,12 @@ public class AuthenticatorTest {
 //    @Test
     public void testAllSuccessfulStrategyWithFail() {
         //todo ini中指定了securityManager.authenticator的authenticationStrategy为org.apache.shiro.authc.pam.AllSuccessfulStrategy，必须全部Realms验证成功
-        login("classpath:shiro-authenticator-all-fail.ini");
+        login("classpath:ch2/shiro-authenticator-all-fail.ini");
     }
 
     @Test
     public void testAtLeastOneSuccessfulStrategyWithSuccess() {
-        login("classpath:shiro-authenticator-atLeastOne-success.ini");
+        login("classpath:ch2/shiro-authenticator-atLeastOne-success.ini");
         Subject subject = SecurityUtils.getSubject();
 
         //得到一个身份集合，其包含了Realm验证成功的身份信息
@@ -49,7 +49,7 @@ public class AuthenticatorTest {
 
     @Test
     public void testFirstOneSuccessfulStrategyWithSuccess() {
-        login("classpath:shiro-authenticator-first-success.ini");
+        login("classpath:ch2/shiro-authenticator-first-success.ini");
         Subject subject = SecurityUtils.getSubject();
 
         //得到一个身份集合，其包含了第一个Realm验证成功的身份信息
@@ -59,7 +59,7 @@ public class AuthenticatorTest {
 
     @Test
     public void testAtLeastTwoStrategyWithSuccess() {
-        login("classpath:shiro-authenticator-atLeastTwo-success.ini");
+        login("classpath:ch2/shiro-authenticator-atLeastTwo-success.ini");
         Subject subject = SecurityUtils.getSubject();
 
         //得到一个身份集合，因为myRealm1和myRealm4返回的身份一样所以输出时只返回一个
@@ -69,7 +69,7 @@ public class AuthenticatorTest {
 
     @Test
     public void testOnlyOneStrategyWithSuccess() {
-        login("classpath:shiro-authenticator-onlyone-success.ini");
+        login("classpath:ch2/shiro-authenticator-onlyone-success.ini");
         Subject subject = SecurityUtils.getSubject();
 
         //得到一个身份集合，因为myRealm1和myRealm4返回的身份一样所以输出时只返回一个
