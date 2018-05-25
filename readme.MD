@@ -46,7 +46,8 @@
 > ## <a href='#cp8' id='ccp8'>Shiro Web 集成</a>
 >> ### <a href='#cp8-1' id='ccp8-1'>与传统Web集成</a>
 >>> ### <a href='#cp8-1-1' id='ccp8-1-1'>准备环境</a>
->> ### <a href='#cp8-2' id='ccp8-2'>与spring-boot-web集成(读者自研章节)</a>
+>>> ### <a href='#cp8-1-2' id='ccp8-1-2'>ShiroFilter 入口</a>
+>>> ### <a href='#cp8-1-3' id='ccp8-1-3'>Web INI 配置</a>
 
 > ## <a href='#cp9' id='ccp9'>Shiro Web 拦截器机制</a>
 > ## <a href='#cp10' id='ccp10'>Shiro Web JSP 标签</a>
@@ -2212,10 +2213,142 @@ Shiro 提供了与 Web 集成的支持，其通过一个 ShiroFilter 入口来�
 
 #### 准备环境 <a href='#ccp8-1-1'>目录</a>
 
-<div id='cp8-2'></div>
+##### 1、创建 webapp 应用
+此处我们使用了 jetty-maven-plugin 和 tomcat7-maven-plugin 插件；这样可以直接使用 “mvn jetty:run” 或“mvn tomcat7:run”直接运行 webapp 了。然后通过 URLhttp://localhost:8080/chapter7 / 访问即可。
 
-### 与spring-boot-web集成 <a href='#ccp8-2'>目录</a>
+##### 2、依赖
+Servlet3
+
+    <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>3.0.1</version>
+        <scope>provided</scope>
+    </dependency>
+
+Servlet3 的知识可以参考 https://github.com/zhangkaitao/servlet3-showcase 及 Servlet3 规范 http://www.iteye.com/blogs/subjects/Servlet-3-1。
+
+shiro-web
+
+    <dependency>
+        <groupId>org.apache.shiro</groupId>
+        <artifactId>shiro-web</artifactId>
+        <version>1.2.2</version>
+    </dependency>
+    
+其他依赖请参考源码的 pom.xml。
+
+<div id='cp8-1-2'></div>
+
+### ShiroFilter 入口 <a href='#ccp8-1-2'>目录</a>
+
+#### 1、Shiro 1.1 及以前版本配置方式
+
+    <filter>
+        <filter-name>iniShiroFilter</filter-name>
+        <filter-class>org.apache.shiro.web.servlet.IniShiroFilter</filter-class>
+        <init-param>
+            <param-name>configPath</param-name>
+            <param-value>classpath:shiro.ini</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>iniShiroFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+
+1. 使用 IniShiroFilter 作为 Shiro 安全控制的入口点，通过 url-pattern 指定需要安全的 URL；
+2. 通过 configPath 指定 ini 配置文件位置，默认是先从 /WEB-INF/shiro.ini 加载，如果没有就默认加载 classpath:shiro.ini，即默认相对于 web 应用上下文根路径；
+3. 也可以通过如下方式直接内嵌 ini 配置文件内容到 web.xml。
+
+
+    <init-param>
+        <param-name>config</param-name>
+        <param-value>
+            ini配置文件贴在这
+        </param-value>
+    </init-param>
+
+#### 2、Shiro 1.2 及以后版本的配置方式
+
+从 Shiro 1.2 开始引入了 Environment/WebEnvironment 的概念，即由它们的实现提供相应的 SecurityManager 及其相应的依赖。ShiroFilter 会自动找到 Environment 
+然后获取相应的依赖。
+
+    <listener>
+       <listener-class>org.apache.shiro.web.env.EnvironmentLoaderListener</listener-class>
+    </listener>
+
+通过 EnvironmentLoaderListener 来创建相应的 WebEnvironment，并自动绑定到 ServletContext，默认使用 IniWebEnvironment 实现。
+
+可以通过如下配置修改默认实现及其加载的配置文件位置：
+
+    <context-param>
+       <param-name>shiroEnvironmentClass</param-name>
+       <param-value>org.apache.shiro.web.env.IniWebEnvironment</param-value>
+    </context-param>
+    <context-param>
+        <param-name>shiroConfigLocations</param-name>
+        <param-value>classpath:shiro.ini</param-value>
+    </context-param>
+    
+shiroConfigLocations 默认是 “/WEB-INF/shiro.ini”，IniWebEnvironment 默认是先从 / WEB-INF/shiro.ini 加载，如果没有就默认加载 classpath:shiro.ini。
+
+#### 3、与 Spring 集成
+
+    <filter>
+        <filter-name>shiroFilter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+        <init-param>
+            <param-name>targetFilterLifecycle</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>shiroFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+DelegatingFilterProxy 作用是自动到 spring 容器查找名字为 shiroFilter（filter-name）的 bean 并把所有 Filter 的操作委托给它。然后将 ShiroFilter 配置到 spring 容器即可：
+
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+    <property name="securityManager" ref="securityManager"/>
+    <!—忽略其他，详见与Spring集成部分 -->
+    </bean>
+
+最后不要忘了使用 org.springframework.web.context.ContextLoaderListener 加载这个 spring 配置文件即可。因为我们现在的 shiro 版本是 1.2 的，因此之后的测试都是使用
+1.2 的配置。
+
+<div id='cp8-1-3'></div>
+
+### Web INI 配置 <a href='#ccp8-1-3'>目录</a>
+
+ini 配置部分和之前的相比将多出对 url 部分的配置。
+```ini
+[main]
+#默认是/login.jsp
+authc.loginUrl=/login
+roles.unauthorizedUrl=/unauthorized
+perms.unauthorizedUrl=/unauthorized
+[users]
+zhang=123,admin
+wang=123
+[roles]
+admin=user:*,menu:*
+[urls]
+/login=anon
+/unauthorized=anon
+/static/**=anon
+/authenticated=authc
+/role=authc,roles[admin]
+/permission=authc,perms["user:create"]
+```
+
+
+
+### 与spring-boot-web集成 
 
 注:本节为本人自我研究总结与spring-boot-web的集成，使用gradle构建，java代码配置spring bean。
 
 源码在spring-boot-web-shiro-integration中。
+
