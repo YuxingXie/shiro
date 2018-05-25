@@ -1537,3 +1537,41 @@ public interface CredentialsMatcher {
     boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info);
 }
 ```
+
+Shiro 默认提供了 PasswordService 实现 DefaultPasswordService；CredentialsMatcher 实现 PasswordMatcher 及 HashedCredentialsMatcher（更强大）。
+
+#### DefaultPasswordService 配合 PasswordMatcher 实现简单的密码加密与验证服务
+
+1、定义 Realm（com.github.zhangkaitao.shiro.chapter5.hash.realm.MyRealm）
+```java
+public class MyRealm extends AuthorizingRealm {
+    private PasswordService passwordService;
+    public void setPasswordService(PasswordService passwordService) {
+        this.passwordService = passwordService;
+    }
+     //省略doGetAuthorizationInfo，具体看代码 
+    @Override
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+        return new SimpleAuthenticationInfo("wu",passwordService.encryptPassword("123"),getName());
+    }
+}
+```
+为了方便，直接注入一个 passwordService 来加密密码，实际使用时需要在 Service 层使用 passwordService 加密密码并存到数据库。
+
+2、ini 配置（shiro-passwordservice.ini）
+```ini
+[main]
+passwordService=org.apache.shiro.authc.credential.DefaultPasswordService
+hashService=org.apache.shiro.crypto.hash.DefaultHashService
+passwordService.hashService=$hashService
+hashFormat=org.apache.shiro.crypto.hash.format.Shiro1CryptFormat
+passwordService.hashFormat=$hashFormat
+hashFormatFactory=org.apache.shiro.crypto.hash.format.DefaultHashFormatFactory
+passwordService.hashFormatFactory=$hashFormatFactory
+passwordMatcher=org.apache.shiro.authc.credential.PasswordMatcher
+passwordMatcher.passwordService=$passwordService
+myRealm=com.github.zhangkaitao.shiro.chapter5.hash.realm.MyRealm
+myRealm.passwordService=$passwordService
+myRealm.credentialsMatcher=$passwordMatcher
+securityManager.realms=$myRealm
+```
