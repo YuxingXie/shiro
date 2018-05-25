@@ -1581,4 +1581,58 @@ securityManager.realms=$myRealm
 * hashFormat 用于对散列出的值进行格式化，默认使用 Shiro1CryptFormat，另外提供了 Base64Format 和 HexFormat，对于有 salt 的密码请自定义实现 ParsableHashFormat 然后把 salt 格式化到散列值中；
 * hashFormatFactory 用于根据散列值得到散列的密码和 salt；因为如果使用如 SHA 算法，那么会生成一个 salt，此 salt 需要保存到散列后的值中以便之后与传入的密码比较时使用；默认使用 DefaultHashFormatFactory；
 passwordMatcher 使用 PasswordMatcher，其是一个 CredentialsMatcher 实现；
-* 将 credentialsMatcher 赋值给 myRealm，myRealm 间接继承了 AuthenticatingRealm，其在调用 getAuthenticationInfo 方法获取到 AuthenticationInfo 信息后，会使用 credentialsMatcher 来验证凭据是否匹配，如果不匹配将抛出 IncorrectCredentialsException 异常。
+* 将 credentialsMatcher 赋值给 myRealm，myRealm 间接继承了 AuthenticatingRealm，其在调用 getAuthenticationInfo 方法获取到 AuthenticationInfo 信息后，会使用
+credentialsMatcher 来验证凭据是否匹配，如果不匹配将抛出 IncorrectCredentialsException 异常。
+
+3、测试用例请参考 com.github.zhangkaitao.shiro.chapter5.hash.PasswordTest。
+
+另外可以参考配置 shiro-jdbc-passwordservice.ini，提供了 JdbcRealm 的测试用例，测试前请先调用 sql/shiro-init-data.sql 初始化用户数据。
+
+如上方式的缺点是：salt 保存在散列值中；没有实现如密码重试次数限制。
+
+#### HashedCredentialsMatcher 实现密码验证服务
+
+Shiro 提供了 CredentialsMatcher 的散列实现 HashedCredentialsMatcher，和之前的 PasswordMatcher 不同的是，它只用于密码验证，且可以提供自己的盐，而不是随机生成盐，
+且生成密码散列值的算法需要自己写，因为能提供自己的盐。
+
+1、生成密码散列值
+
+此处我们使用 MD5 算法，“密码 + 盐（用户名 + 随机数）” 的方式生成散列值：
+```java
+public class SomeClass{
+    public void someMethod(){
+        String algorithmName = "md5";
+        String username = "liu";
+        String password = "123";
+        String salt1 = username;
+        String salt2 = new SecureRandomNumberGenerator().nextBytes().toHex();
+        int hashIterations = 2;
+        SimpleHash hash = new SimpleHash(algorithmName, password, salt1 + salt2, hashIterations);
+        String encodedPassword = hash.toHex();
+    }
+}
+```
+如果要写用户模块，需要在新增用户/重置密码时使用如上算法保存密码，将生成的密码及 salt2 存入数据库（因为我们的散列算法是：md5(md5(密码 +username+salt2))）。
+
+2、生成 Realm（com.github.zhangkaitao.shiro.chapter5.hash.realm.MyRealm2）
+
+```java
+public class MyRealm2 extends AuthorizingRealm {
+
+    @Override
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
+        return null;
+    }
+
+    @Override
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+        String username = "liu"; //用户名及salt1
+        String salt2 = "0072273a5d87322163795118fdd7c45e";
+        String password = "be320beca57748ab9632c4121ccac0db"; //加密后的密码
+        SimpleAuthenticationInfo ai = new SimpleAuthenticationInfo(username, password, getName());
+        ai.setCredentialsSalt(ByteSource.Util.bytes(username+salt2)); //盐是用户名+随机数
+        return ai;
+    }
+}
+
+```
