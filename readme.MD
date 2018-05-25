@@ -14,54 +14,56 @@
 原文项目gitHub地址：[https://github.com/zhangkaitao/shiro-example](https://github.com/zhangkaitao/shiro-example)
 
 # 目录
-> ## <a href='#cp1' target='_self' id='ccp1'>Shiro 关于</a>
->> ### <a href='#cp1-1' target='_self' id='ccp1-1'>Shiro 关于</a>
->> ### <a href='#cp1-2' target='_self' id='ccp1-2'>适用人群</a>
->> ### <a href='#cp1-3' target='_self' id='ccp1-2'>学习前提</a>
-> ## <a href='#cp2' target='_self' id='ccp2'>Shiro 简介</a>
->> ### <a href='#cp2-1' target='_self' id='ccp2-1'>Shiro 简介</a>
-> ## <a href='#cp3' target='_self' id='ccp3'>Shiro Shiro 身份验证</a>
->> ### <a href='#cp3-1' target='_self' id='ccp3-1'>身份验证</a>
->> ### <a href='#cp3-2' target='_self' id='ccp3-2'>环境准备</a>
->> ### <a href='#cp3-3' target='_self' id='ccp3-3'>登录/退出</a>
-> ## <a href='#cp4' target='_self' id='ccp4'>Shiro 授权</a>
->> ### <a href='#cp4-1' target='_self' id='ccp4-1'>何谓授权</a>
->> ### <a href='#cp4-2' target='_self' id='ccp4-2'>角色</a>
->> ### <a href='#cp4-3' target='_self' id='ccp4-3'>授权</a>
->> ### <a href='#cp4-4' target='_self' id='ccp4-4'>Permission</a>
->> ### <a href='#cp4-5' target='_self' id='ccp4-5'>授权流程</a>
->> ### <a href='#cp4-6' target='_self' id='ccp4-6'>Authorizer、PermissionResolver及RolePermissionResolver</a>
-> ## <a href='#cp5' target='_self' id='ccp5'>Shiro InI 配置</a>
->> ### <a href='#cp5-1' target='_self' id='ccp5-1'>INI 配置</a>
->> ### <a href='#cp5-2' target='_self' id='ccp5-2'>根对象 SecurityManager</a>
-> ## <a href='#cp6' target='_self' id='ccp6'>Shiro 编码加密</a>
-> ## <a href='#cp7' target='_self' id='ccp7'>Shiro Realm</a>
->> ### <a href='#cp7-1' target='_self' id='ccp7-1'>Realm 及相关对象</a>
->>> #### <a href='#cp7-1-1' target='_self' id='ccp7-1-1'>Realm</a>
->>> #### <a href='#cp7-1-2' target='_self' id='ccp7-1-2'>AuthenticationToken</a>
->>> #### <a href='#cp7-1-3' target='_self' id='ccp7-1-3'>AuthenticationInfo</a>
->>> #### <a href='#cp7-1-4' target='_self' id='ccp7-1-4'>PrincipalCollection</a>
->>> #### <a href='#cp7-1-5' target='_self' id='ccp7-1-5'>AuthorizationInfo</a>
->>> #### <a href='#cp7-1-6' target='_self' id='ccp7-1-6'>Subject</a>
+> ## <a href='#cp1' id='ccp1'>Shiro 关于</a>
+>> ### <a href='#cp1-1' id='ccp1-1'>Shiro 关于</a>
+>> ### <a href='#cp1-2' id='ccp1-2'>适用人群</a>
+>> ### <a href='#cp1-3' id='ccp1-2'>学习前提</a>
+> ## <a href='#cp2' id='ccp2'>Shiro 简介</a>
+>> ### <a href='#cp2-1' id='ccp2-1'>Shiro 简介</a>
+> ## <a href='#cp3' id='ccp3'>Shiro Shiro 身份验证</a>
+>> ### <a href='#cp3-1' id='ccp3-1'>身份验证</a>
+>> ### <a href='#cp3-2' id='ccp3-2'>环境准备</a>
+>> ### <a href='#cp3-3' id='ccp3-3'>登录/退出</a>
+> ## <a href='#cp4' id='ccp4'>Shiro 授权</a>
+>> ### <a href='#cp4-1' id='ccp4-1'>何谓授权</a>
+>> ### <a href='#cp4-2' id='ccp4-2'>角色</a>
+>> ### <a href='#cp4-3' id='ccp4-3'>授权</a>
+>> ### <a href='#cp4-4' id='ccp4-4'>Permission</a>
+>> ### <a href='#cp4-5' id='ccp4-5'>授权流程</a>
+>> ### <a href='#cp4-6' id='ccp4-6'>Authorizer、PermissionResolver及RolePermissionResolver</a>
+> ## <a href='#cp5' id='ccp5'>Shiro InI 配置</a>
+>> ### <a href='#cp5-1' id='ccp5-1'>INI 配置</a>
+>> ### <a href='#cp5-2' id='ccp5-2'>根对象 SecurityManager</a>
+> ## <a href='#cp6' id='ccp6'>Shiro 编码加密</a>
+> ## <a href='#cp7' id='ccp7'>Shiro Realm</a>
+>> ### <a href='#cp7-1' id='ccp7-1'>Realm 及相关对象</a>
+>>> #### <a href='#cp7-1-1' id='ccp7-1-1'>Realm</a>
+>>> #### <a href='#cp7-1-2' id='ccp7-1-2'>AuthenticationToken</a>
+>>> #### <a href='#cp7-1-3' id='ccp7-1-3'>AuthenticationInfo</a>
+>>> #### <a href='#cp7-1-4' id='ccp7-1-4'>PrincipalCollection</a>
+>>> #### <a href='#cp7-1-5' id='ccp7-1-5'>AuthorizationInfo</a>
+>>> #### <a href='#cp7-1-6' id='ccp7-1-6'>Subject</a>
+> ## <a href='#cp8' id='ccp8'>Shiro Web 集成</a>
+>> ### <a href='#cp8-1' id='ccp8-1'>与Web 集成</a>
+>>> ### <a href='#cp8-1-1' id='ccp8-1-1'>准备环境</a>
 
-> ## <a href='#cp8' target='_self' id='ccp8'>Shiro Web 集成</a>
-> ## <a href='#cp9' target='_self' id='ccp9'>Shiro Web 拦截器机制</a>
-> ## <a href='#cp10' target='_self' id='ccp10'>Shiro Web JSP 标签</a>
-> ## <a href='#cp11' target='_self' id='ccp11'>Shiro Web 会话管理</a>
-> ## <a href='#cp12' target='_self' id='ccp12'>Shiro Web 缓存机制</a>
-> ## <a href='#cp13' target='_self' id='ccp13'>Shiro Web Spring 集成</a>
-> ## <a href='#cp14' target='_self' id='ccp14'>Shiro Web RememberMe</a>
-> ## <a href='#cp15' target='_self' id='ccp15'>Shiro Web SSL</a>
-> ## <a href='#cp16' target='_self' id='ccp16'>Shiro Web 单点登录</a>
-> ## <a href='#cp17' target='_self' id='ccp17'>Shiro Web 综合实例</a>
-> ## <a href='#cp18' target='_self' id='ccp18'>Shiro Web OAuth2</a>
-> ## <a href='#cp19' target='_self' id='ccp19'>Shiro Web 并发登录控制</a>
-> ## <a href='#cp20' target='_self' id='ccp20'>Shiro Web 动态 URL</a>
-> ## <a href='#cp21' target='_self' id='ccp21'>Shiro Web 无状态 Web</a>
-> ## <a href='#cp22' target='_self' id='ccp22'>Shiro Web 授予身份和切换身份</a>
-> ## <a href='#cp23' target='_self' id='ccp23'>Shiro Web 集成验证码</a>
-> ## <a href='#cp24' target='_self' id='ccp24'>Shiro Web 多项目</a>
-> ## <a href='#cp25' target='_self' id='ccp25'>Shiro Web 在线会话管理</a>
+> ## <a href='#cp9' id='ccp9'>Shiro Web 拦截器机制</a>
+> ## <a href='#cp10' id='ccp10'>Shiro Web JSP 标签</a>
+> ## <a href='#cp11' id='ccp11'>Shiro Web 会话管理</a>
+> ## <a href='#cp12' id='ccp12'>Shiro Web 缓存机制</a>
+> ## <a href='#cp13' id='ccp13'>Shiro Web Spring 集成</a>
+> ## <a href='#cp14' id='ccp14'>Shiro Web RememberMe</a>
+> ## <a href='#cp15' id='ccp15'>Shiro Web SSL</a>
+> ## <a href='#cp16' id='ccp16'>Shiro Web 单点登录</a>
+> ## <a href='#cp17' id='ccp17'>Shiro Web 综合实例</a>
+> ## <a href='#cp18' id='ccp18'>Shiro Web OAuth2</a>
+> ## <a href='#cp19' id='ccp19'>Shiro Web 并发登录控制</a>
+> ## <a href='#cp20' id='ccp20'>Shiro Web 动态 URL</a>
+> ## <a href='#cp21' id='ccp21'>Shiro Web 无状态 Web</a>
+> ## <a href='#cp22' id='ccp22'>Shiro Web 授予身份和切换身份</a>
+> ## <a href='#cp23' id='ccp23'>Shiro Web 集成验证码</a>
+> ## <a href='#cp24' id='ccp24'>Shiro Web 多项目</a>
+> ## <a href='#cp25' id='ccp25'>Shiro Web 在线会话管理</a>
 
 
 
@@ -2192,3 +2194,18 @@ public class SecurityUtils{
 5. 退出
 
 而我们必须的功能就是 1、2、5。到目前为止我们就可以使用 Shiro 进行应用程序的安全控制了，但是还是缺少如对 Web 验证、Java 方法验证等的一些简化实现。
+
+<div id='cp8'></div>
+
+## Shiro Web 集成 <a href='#ccp8'>目录</a>
+
+
+<div id='cp8-1'></div>
+
+### 与 Web 集成 <a href='#ccp8-1'>目录</a>
+
+Shiro 提供了与 Web 集成的支持，其通过一个 ShiroFilter 入口来拦截需要安全控制的 URL，然后进行相应的控制，ShiroFilter 类似于如 Strut2/SpringMVC 这种 web 框架的前端控制器，其是安全控制的入口点，其负责读取配置（如 ini 配置文件），然后判断 URL 是否需要登录 / 权限等工作。
+
+<div id='cp8-1-1'></div>
+
+#### 准备环境 <a href='#ccp8-1-1'>目录</a>
