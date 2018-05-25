@@ -1405,7 +1405,89 @@ public class SomeClass{
         String str = "hello";
         String base64Encoded = Base64.encodeToString(str.getBytes());
         String str2 = Base64.decodeToString(base64Encoded);
-        Assert.assertEquals(str, str2);&nbsp;
+        Assert.assertEquals(str, str2);
     }
 }
 ```
+
+通过如上方式可以进行 base64 编码 / 解码操作，更多 API 请参考其 Javadoc。
+```java
+public class SomeClass{
+    public void someMethod(){
+        String str = "hello";
+        String base64Encoded = Hex.encodeToString(str.getBytes());
+        String str2 = new String(Hex.decode(base64Encoded.getBytes()));
+        Assert.assertEquals(str, str2);
+    }
+}
+```
+通过如上方式可以进行 16 进制字符串编码 / 解码操作，更多 API 请参考其 Javadoc。
+
+还有一个可能经常用到的类 CodecSupport，提供了 toBytes(str,"utf-8")/toString(bytes,"utf-8") 用于在 byte 数组/String之间转换。
+
+### 散列算法
+
+散列算法一般用于生成数据的摘要信息，是一种不可逆的算法，一般适合存储密码之类的数据，常见的散列算法如 MD5、SHA 等。一般进行散列时最好提供一个 salt（盐），
+比如加密密码 “admin”，产生的散列值是 “21232f297a57a5a743894a0e4a801fc3”，可以到一些 md5 解密网站很容易的通过散列值得到密码 “admin”，
+即如果直接对密码进行散列相对来说破解更容易，此时我们可以加一些只有系统知道的干扰数据，如用户名和 ID（即盐）；这样散列的对象是 “密码 + 用户名 +ID”，
+这样生成的散列值相对来说更难破解。
+```java
+public class SomeClass{
+    public void someMethod(){
+        String str = "hello";
+        String salt = "123";
+        String md5 = new Md5Hash(str, salt).toString();//还可以转换为 toBase64()/toHex()
+    }
+}
+```
+
+如上代码通过盐 “123”MD5 散列 “hello”。另外散列时还可以指定散列次数，如 2 次表示：md5(md5(str))：“new Md5Hash(str, salt, 2).toString()”。
+
+```java
+public class SomeClass{
+    public void someMethod(){
+        String str = "hello";
+        String salt = "123";
+        String sha1 = new Sha256Hash(str, salt).toString();
+    }
+}
+```
+
+使用 SHA256 算法生成相应的散列数据，另外还有如 SHA1、SHA512 算法。
+Shiro 还提供了通用的散列支持：
+```java
+public class SomeClass{
+    public void someMethod(){
+        String str = "hello";
+        String salt = "123";
+        //内部使用MessageDigest
+        String simpleHash = new SimpleHash("SHA-1", str, salt).toString();
+    }
+}
+```
+通过调用 SimpleHash 时指定散列算法，其内部使用了 Java 的 MessageDigest 实现。
+
+为了方便使用，Shiro 提供了 HashService，默认提供了 DefaultHashService 实现。
+```java
+public class SomeClass{
+    public void someMethod(){
+        DefaultHashService hashService = new DefaultHashService(); //默认算法SHA-512
+        hashService.setHashAlgorithmName("SHA-512");
+        hashService.setPrivateSalt(new SimpleByteSource("123")); //私盐，默认无
+        hashService.setGeneratePublicSalt(true);//是否生成公盐，默认false
+        hashService.setRandomNumberGenerator(new SecureRandomNumberGenerator());//用于生成公盐。默认就这个
+        hashService.setHashIterations(1); //生成Hash值的迭代次数
+        HashRequest request = new HashRequest.Builder()
+                    .setAlgorithmName("MD5").setSource(ByteSource.Util.bytes("hello"))
+                    .setSalt(ByteSource.Util.bytes("123")).setIterations(2).build();
+        String hex = hashService.computeHash(request).toHex();
+    }
+}
+```
+1. 首先创建一个 DefaultHashService，默认使用 SHA-512 算法；
+2. 以通过 hashAlgorithmName 属性修改算法；
+3. 可以通过 privateSalt 设置一个私盐，其在散列时自动与用户传入的公盐混合产生一个新盐；
+4. 可以通过 generatePublicSalt 属性在用户没有传入公盐的情况下是否生成公盐；
+5. 可以设置 randomNumberGenerator 用于生成公盐；
+6. 可以设置 hashIterations 属性来修改默认加密迭代次数；
+7. 需要构建一个 HashRequest，传入算法、数据、公盐、迭代次数。
