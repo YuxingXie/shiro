@@ -2236,7 +2236,10 @@ shiro-web
         <version>1.2.2</version>
     </dependency>
     
-其他依赖请参考源码的 pom.xml。
+其他依赖请参考源码的 pom.xml(注:build节点部分请参考本人的pom.xml，可直接从maven启动tomcat7,见下图)。
+
+![](https://github.com/YuxingXie/shiro/raw/master/doc/sh-2.png)
+
 
 <div id='cp8-1-2'></div>
 
