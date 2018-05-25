@@ -1636,3 +1636,85 @@ public class MyRealm2 extends AuthorizingRealm {
 }
 
 ```
+
+此处就是把步骤 1 中生成的相应数据组装为 SimpleAuthenticationInfo，通过 SimpleAuthenticationInfo 的 credentialsSalt 设置盐，HashedCredentialsMatcher
+会自动识别这个盐。
+
+如果使用 JdbcRealm，需要修改获取用户信息（包括盐）的 sql：“select password, password_salt from users where username = ?”，而我们的盐是由
+username+password_salt 组成，所以需要通过如下 ini 配置（shiro-jdbc-hashedCredentialsMatcher.ini）修改：
+
+```ini
+jdbcRealm.saltStyle=COLUMN
+jdbcRealm.authenticationQuery=select password, concat(username,password_salt) from users where username = ?
+jdbcRealm.credentialsMatcher=$credentialsMatcher
+```
+
+* saltStyle 表示使用密码 + 盐的机制，authenticationQuery 第一列是密码，第二列是盐；
+* 通过 authenticationQuery 指定密码及盐查询 SQL；
+
+此处还要注意 Shiro 默认使用了 apache commons BeanUtils，默认是不进行 Enum 类型转型的，此时需要自己注册一个 Enum 转换器
+“BeanUtilsBean.getInstance().getConvertUtils().register(new EnumConverter(), JdbcRealm.SaltStyle.class);”
+具体请参考示例 “com.github.zhangkaitao.shiro.chapter5.hash.PasswordTest” 中的代码。
+
+另外可以参考配置 shiro-jdbc-passwordservice.ini，提供了 JdbcRealm 的测试用例，测试前请先调用 sql/shiro-init-data.sql 初始化用户数据。
+
+3、ini 配置（shiro-hashedCredentialsMatcher.ini）
+```ini
+[main]
+credentialsMatcher=org.apache.shiro.authc.credential.HashedCredentialsMatcher
+credentialsMatcher.hashAlgorithmName=md5
+credentialsMatcher.hashIterations=2
+credentialsMatcher.storedCredentialsHexEncoded=true
+myRealm=com.github.zhangkaitao.shiro.chapter5.hash.realm.MyRealm2
+myRealm.credentialsMatcher=$credentialsMatcher
+securityManager.realms=$myRealm
+```
+* 通过 credentialsMatcher.hashAlgorithmName=md5 指定散列算法为 md5，需要和生成密码时的一样；
+* credentialsMatcher.hashIterations=2，散列迭代次数，需要和生成密码时的意义；
+* credentialsMatcher.storedCredentialsHexEncoded=true 表示是否存储散列后的密码为 16 进制，需要和生成密码时的一样，默认是 base64。
+
+此处最需要注意的就是 HashedCredentialsMatcher 的算法需要和生成密码时的算法一样。另外 HashedCredentialsMatcher 会自动根据 AuthenticationInfo 的类型是否是
+SaltedAuthenticationInfo 来获取 credentialsSalt 盐。
+
+4、测试用例请参考 com.github.zhangkaitao.shiro.chapter5.hash.PasswordTest。
+
+#### 密码重试次数限制
+
+如在 1 个小时内密码最多重试 5 次，如果尝试次数超过 5 次就锁定 1 小时，1 小时后可再次重试，如果还是重试失败，可以锁定如 1 天，以此类推，防止密码被暴力破解。我们通过继承
+HashedCredentialsMatcher，且使用 Ehcache 记录重试次数和超时时间。
+
+com.github.zhangkaitao.shiro.chapter5.hash.credentials.RetryLimitHashedCredentialsMatcher：
+```java
+public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher {
+
+    private Ehcache passwordRetryCache;
+
+    public RetryLimitHashedCredentialsMatcher() {
+        CacheManager cacheManager = CacheManager.newInstance(CacheManager.class.getClassLoader().getResource("ehcache.xml"));
+        passwordRetryCache = cacheManager.getCache("passwordRetryCache");
+    }
+
+    @Override
+    public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) {
+        String username = (String)token.getPrincipal();
+        //retry count + 1
+        Element element = passwordRetryCache.get(username);
+        if(element == null) {
+            element = new Element(username , new AtomicInteger(0));
+            passwordRetryCache.put(element);
+        }
+        AtomicInteger retryCount = (AtomicInteger)element.getObjectValue();
+        if(retryCount.incrementAndGet() > 5) {
+            //if retry count > 5 throw
+            throw new ExcessiveAttemptsException();
+        }
+
+        boolean matches = super.doCredentialsMatch(token, info);
+        if(matches) {
+            //clear retry count
+            passwordRetryCache.remove(username);
+        }
+        return matches;
+    }
+}
+```
