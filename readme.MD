@@ -2246,7 +2246,7 @@ shiro-web
 ### ShiroFilter 入口 <a href='#ccp8-1-2'>目录</a>
 
 #### 1、Shiro 1.1 及以前版本配置方式
-
+```xml
     <filter>
         <filter-name>iniShiroFilter</filter-name>
         <filter-class>org.apache.shiro.web.servlet.IniShiroFilter</filter-class>
@@ -2259,19 +2259,23 @@ shiro-web
         <filter-name>iniShiroFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+```
+    
 
 
 1. 使用 IniShiroFilter 作为 Shiro 安全控制的入口点，通过 url-pattern 指定需要安全的 URL；
 2. 通过 configPath 指定 ini 配置文件位置，默认是先从 /WEB-INF/shiro.ini 加载，如果没有就默认加载 classpath:ch7/shiro.ini，即默认相对于 web 应用上下文根路径；
 3. 也可以通过如下方式直接内嵌 ini 配置文件内容到 web.xml。
 
-
+```xml
     <init-param>
         <param-name>config</param-name>
         <param-value>
             ini配置文件贴在这
         </param-value>
     </init-param>
+```
+    
 
 #### 2、Shiro 1.2 及以后版本的配置方式
 
