@@ -1899,3 +1899,25 @@ Shiro 提供了一个直接拿来用的 UsernamePasswordToken，用于实现用�
 <div id='cp7-1-3'></div>
 
 #### AuthenticationInfo <a href='#ccp7-1-3'>目录</a>
+
+![](https://github.com/YuxingXie/shiro/raw/master/doc/9.png)
+
+AuthenticationInfo 有两个作用：
+1. 如果 Realm 是 AuthenticatingRealm 子类，则提供给 AuthenticatingRealm 内部使用的 CredentialsMatcher 进行凭据验证；
+（如果没有继承它需要在自己的Realm中自己实现验证）；
+
+2. 提供给 SecurityManager 来创建 Subject（提供身份信息）；
+
+MergableAuthenticationInfo 用于提供在多 Realm 时合并 AuthenticationInfo 的功能，主要合并 Principal、如果是其他的如 credentialsSalt，会用后边的信息覆盖前边的。
+
+比如 HashedCredentialsMatcher，在验证时会判断 AuthenticationInfo 是否是 SaltedAuthenticationInfo 子类，来获取盐信息。
+
+Account 相当于我们之前的 User，SimpleAccount 是其一个实现；在 IniRealm、PropertiesRealm 这种静态创建帐号信息的场景中使用，这些 Realm 直接继承了 SimpleAccountRealm，而 SimpleAccountRealm 提供了相关的 API 来动态维护 SimpleAccount；即可以通过这些 API 来动态增删改查 SimpleAccount；动态增删改查角色 / 权限信息。及如果您的帐号不是特别多，可以使用这种方式，具体请参考 SimpleAccountRealm Javadoc。
+
+其他情况一般返回 SimpleAuthenticationInfo 即可。
+
+<div id='cp7-1-4'></div>
+
+#### PrincipalCollection <a href='#ccp7-1-4'>目录</a>
+
+![](https://github.com/YuxingXie/shiro/raw/master/doc/10.png)
