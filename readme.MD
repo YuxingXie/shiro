@@ -3278,3 +3278,14 @@ Shiro 内置了很多默认的拦截器，比如身份验证、授权等相关�
 <p>不创建会话拦截器，调用 subject.getSession(false) 不会有什么问题，但是如果 subject.getSession(true) 将抛出 DisabledSessionException 异常；</p>
 </td>
 </tr></tbody></table>
+
+另外还提供了一个 org.apache.shiro.web.filter.authz.HostFilter，即主机拦截器，比如其提供了属性：authorizedIps：已授权的 ip 地址，deniedIps：表示拒绝的 ip 地址；
+不过目前还没有完全实现，不可用。
+
+这些默认的拦截器会自动注册，可以直接在 ini 配置文件中通过 “拦截器名. 属性” 设置其属性：
+
+    perms.unauthorizedUrl=/unauthorized
+    
+另外如果某个拦截器不想使用了可以直接通过如下配置直接禁用：
+
+    perms.enabled=false
