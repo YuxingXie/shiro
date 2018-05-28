@@ -383,7 +383,9 @@ securityManager 会按照 realms 指定的顺序进行身份认证。此处我�
                 <version>0.2.23</version>
             </dependency>
             
-<a href="#">注:H2数据库更简单所以读者使用H2数据库,并且作者关于mysql的所有配置和代码改为h2的配置及代码，依赖如下</a>
+
+ ![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
+注:H2数据库更简单所以读者使用H2数据库,并且作者关于mysql的所有配置和代码改为h2的配置及代码，依赖如下
     
     <dependency>
         <groupId>com.h2database</groupId>
@@ -436,13 +438,17 @@ public interface Authenticator {
 
 如果验证成功，将返回 AuthenticationInfo 验证信息；此信息中包含了身份及凭证；如果验证失败将抛出相应的 AuthenticationException 实现。
 
-SecurityManager 接口继承了 Authenticator<a href="#">(注：SecurityManager接口签名是public interface SecurityManager extends Authenticator, Authorizer, SessionManager)</a>，另外还有一个 ModularRealmAuthenticator 实现，其委托给多个 Realm 进行验证，验证规则通过 AuthenticationStrategy 接口指定，默认提供的实现：
+SecurityManager 接口继承了 Authenticator，
+另外还有一个 ModularRealmAuthenticator 实现，其委托给多个 Realm 进行验证，验证规则通过 AuthenticationStrategy 接口指定，默认提供的实现：
 
 <B>FirstSuccessfulStrategy</B>：只要有一个 Realm 验证成功即可，只返回第一个 Realm 身份验证成功的认证信息，其他的忽略；
 
 <B>AtLeastOneSuccessfulStrategy</B>：只要有一个 Realm 验证成功即可，和 FirstSuccessfulStrategy 不同，返回所有 Realm 身份验证成功的认证信息；
 
 <B>AllSuccessfulStrategy</B>：所有 Realm 验证成功才算成功，且返回所有 Realm 身份验证成功的认证信息，如果有一个失败就失败了。
+
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
+注：SecurityManager接口签名是public interface SecurityManager extends Authenticator, Authorizer, SessionManager
 
 ModularRealmAuthenticator 默认使用 AtLeastOneSuccessfulStrategy 策略。
 
@@ -672,7 +678,7 @@ Shiro 提供的 checkRole/checkRoles 和 hasRole/hasAllRoles 不同的地方是�
 
 1、在 ini 配置文件配置用户拥有的角色及角色-权限关系（shiro-permission.ini）
 
-<a href="#">(注:user被称为资源标识符，create、update、delete称为操作)</a>
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)(注:user被称为资源标识符，create、update、delete称为操作)
 
     [users]
     zhang=123,role1,role2
@@ -723,7 +729,10 @@ public class PermissionTest extends BaseTest {
 到此基于资源的访问控制（显示角色）就完成了，也可以叫基于权限的访问控制，这种方式的一般规则是“资源标识符：操作”，
 即是资源级别的粒度；这种方式的好处就是如果要修改基本都是一个资源级别的修改，不会对其他模块代码产生影响，粒度小。
 但是实现起来可能稍微复杂点，需要维护“用户——角色，角色——权限（资源：操作）”之间的关系。
-<a href="#">(注：总结授权的三要素即Subject、Role、Permission，其中Permission=Resource+Operation)</a>
+
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
+注：总结授权的三要素即Subject、Role、Permission，其中Permission=Resource+Operation
+
 <div id='cp4-4'></div>
 
 ### Permission <a href='#ccp4-4'>目录</a>
@@ -732,10 +741,10 @@ public class PermissionTest extends BaseTest {
 “,”表示操作的分割；“*”表示任意资源/操作/实例。
 #### 1、单个资源单个权限
 
-<a href=""#">注：注意shiro的api设计，是Subject.checkPermissions而不是Role.checkPermissions,
-    shiro并未设计一个Role类或接口，而是直接用字符串表示权限，
-    但是，shiro抽象出一个org.apache.shiro.authz.Permission接口,使用通配符方式的Permission通过类WildcardPermission实现。
-</a>
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
+注：注意shiro的api设计，是Subject.checkPermissions而不是Role.checkPermissions,shiro并未设计一个Role类或接口，而是直接用字符串表示权限，
+但是，shiro抽象出一个org.apache.shiro.authz.Permission接口,使用通配符方式的Permission通过类WildcardPermission实现。
+
 
     
     subject().checkPermissions("system:user:update");
@@ -827,7 +836,8 @@ ini 配置
 
 * 单个实例所有权限
 
-<a href="#">(注:一直不理解这里的实例代表的含义。如果表示某个Subject的Id，而Subject接口并未提供类似getInstanceId之类的方法，如何区分Subject是哪个实例？)</a>
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
+(注:一直不理解这里的实例代表的含义。如果表示某个Subject的Id，而Subject接口并未提供类似getInstanceId之类的方法，如何区分Subject是哪个实例？)
 
 ini 配置
 
@@ -870,8 +880,10 @@ ini 配置
 
 另外如“user:*”可以匹配如“user:delete”、“user:delete”可以匹配如“user:delete:1”、“user:*:1”可以匹配如“user:view:1”、“user”可以匹配
 “user:view”或“user:view:1”等。即*可以匹配所有，不加*可以进行前缀匹配；但是如“*:view”不能匹配“system:user:view”，需要使用“*:*:view”，即后缀匹配必须指定前缀（
-多个冒号就需要多个*来匹配）。    
-<a href="#">(注：总结为，*作为前缀只可匹配一个冒号，而作为后缀可以匹配所有，作为后缀是可以不加*)</a>
+多个冒号就需要多个*来匹配）。  
+  
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
+(注：总结为，*作为前缀只可匹配一个冒号，而作为后缀可以匹配所有，作为后缀是可以不加*)
 
 #### 7、WildcardPermission
 
@@ -1068,7 +1080,7 @@ public class MyRolePermissionResolver implements RolePermissionResolver {
 
 #### 4、自定义 Realm
 
-<a href="#">(注:AuthorizingRealm即要求身份信息又要求授权信息)</a>
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)(注:AuthorizingRealm即要求身份信息又要求授权信息)
 ```java
 public class MyRealm extends AuthorizingRealm {
 
@@ -1114,7 +1126,10 @@ public class MyRealm extends AuthorizingRealm {
 WildcardPermissionResolver 完成，即此处是一个设计权限，如果采用生命周期（如使用初始化方法）的方式进行加载就可以解决我们自定义 permissionResolver 的问题。
 
 #### 5、测试用例
-<a href="#">(注：一直疑惑JdbcRealm如何识得表名和字段名，进源码看原来有默认查询语句，所以表结构表名按他的默认命名就可以了，但如若采用spring-data-jpa类似的ORM则JdbcRealm可能不适用了。)</a>
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
+(注：一直疑惑JdbcRealm如何识得表名和字段名，进源码看原来有默认查询语句，所以表结构表名按他的默认命名就可以了，
+但如若采用spring-data-jpa类似的ORM则JdbcRealm可能不适用了。)
+
 ```java
 public class AuthorizerTest extends BaseTest {
 
@@ -1145,6 +1160,7 @@ AuthorizingRealm 里的验证逻辑实现的。
 
 ## Shiro InI 配置 <a href='#ccp5'>目录</a>
 
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
 注：本章不做深入研究。如需深入研究可从作者gitHub下载源码。
 
 <div id="cp5-1"></div>
@@ -1379,6 +1395,8 @@ role2=*
 <div id='cp6'></div>
 
 ## Shiro 编码加密 <a href='#ccp6'>目录</a>
+
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
 注：本章没太多难点，不做重点讲解
 
 ### 编码/加密
@@ -2201,6 +2219,8 @@ public class SecurityUtils{
 
 ## Shiro Web 集成 <a href='#ccp8'>目录</a>
 
+
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
 注：本章除了包括作者所描述的传统web集成方式外，本人另开一节研究如何与spring-boot集成。
 
 <div id='cp8-1'></div>
@@ -2236,7 +2256,9 @@ shiro-web
         <version>1.2.2</version>
     </dependency>
     
-其他依赖请参考源码的 pom.xml(注:build节点部分请参考本人的pom.xml，可直接从maven启动tomcat7,见下图)。
+其他依赖请参考源码的 pom.xml
+
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)(注:build节点部分请参考本人的pom.xml，可直接从maven启动tomcat7,见下图)。
 
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/sh-2.png)
 
@@ -2354,6 +2376,7 @@ admin=user:*,menu:*
 比如 anon 拦截器表示匿名访问（即不需要登录即可访问）；authc 拦截器表示需要身份认证通过后才能访问；roles\[admin]拦截器表示需要有 admin 角色授权才能访问；
 而 perms\["user:create"]拦截器表示需要有 “user:create” 权限才能访问。
 
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
 (注:
 
 这些名为anon,authc,roles,perms等的过滤器，实际上是一些javax.servlet.Filter接口的实现，它们都位于org.apache.shiro.web.filter包中。
@@ -2402,6 +2425,7 @@ authc.loginUrl=/login
 ```
 ##### 登录 Servlet（com.github.zhangkaitao.shiro.chapter7.web.servlet.LoginServlet）
 
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
 (注：在方法进入servlet之前已经经过了shiro的各种过滤器链，这些过滤器的doFilter方法都在org.apache.shiro.web.servlet.OncePerRequestFilter中
 使用模板方法的设计模式抽象实现。有兴趣的同学可以研究下)
 
@@ -2634,6 +2658,7 @@ logout.redirectUrl=/login
 
 ### 与spring-boot-web集成 
 
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
 注:本节为本人自我研究总结与spring-boot-web的集成，使用gradle构建，java代码配置spring bean。
 
 源码在spring-boot-web-shiro-integration中。
