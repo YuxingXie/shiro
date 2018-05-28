@@ -2356,11 +2356,11 @@ admin=user:*,menu:*
 
 (注:
 
-这些名为anon,authc,roles,perms等的过滤器，实际上是一些javax.servlet.Filter接口的具体实现类的实例，它们都位于org.apache.shiro.web.filter包中。
+这些名为anon,authc,roles,perms等的过滤器，实际上是一些javax.servlet.Filter接口的实现，它们都位于org.apache.shiro.web.filter包中。
 
 可以大胆猜测一下，
 
-anon对应org.apache.shiro.web.filter.authc.AnonymousFilter,
+anon对应org.apache.shiro.web.filter.authc.AnonymousFilter
 
 authc对应org.apache.shiro.web.filter.authc.AuthenticationFilter
 
