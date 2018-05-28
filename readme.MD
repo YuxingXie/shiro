@@ -2699,7 +2699,7 @@ AdviceFilter 提供了 AOP 风格的支持，类似于 SpringMVC 中的 Intercep
 
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)注：该类继承自AdviceFilter
 
-PathMatchingFilter 提供了基于 Ant 风格的请求路径匹配功能及拦截器参数解析的功能，如“roles[admin,user]”自动根据“，”分割解析到一个路径参数配置并绑定到相应的路径：
+PathMatchingFilter 提供了基于 Ant 风格的请求路径匹配功能及拦截器参数解析的功能，如“roles\[admin,user]”自动根据“，”分割解析到一个路径参数配置并绑定到相应的路径：
 
     boolean pathsMatch(String path, ServletRequest request);
     boolean onPreHandle(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception;
@@ -2720,6 +2720,6 @@ AccessControlFilter 提供了访问控制的基础功能；比如是否允许访
     boolean onAccessDenied(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception;
     abstract boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception;
     
-isAccessAllowed：表示是否允许访问；mappedValue 就是[urls]配置中拦截器参数部分，如果允许访问返回 true，否则 false；
+isAccessAllowed：表示是否允许访问；mappedValue 就是\[urls\]配置中拦截器参数部分，如果允许访问返回 true，否则 false；
 onAccessDenied：表示当访问拒绝时是否已经处理了；如果返回 true 表示需要继续处理；如果返回 false 表示该拦截器实例已经处理了，将直接返回即可。
 onPreHandle 会自动调用这两个方法决定是否继续处理：
