@@ -49,6 +49,8 @@
 >>> ### <a href='#cp8-1-2' id='ccp8-1-2'>ShiroFilter 入口</a>
 >>> ### <a href='#cp8-1-3' id='ccp8-1-3'>Web INI 配置</a>
 > ## <a href='#cp9' id='ccp9'>Shiro 拦截器机制</a>
+>> ### <a href='#cp9-1' id='ccp9-1'>拦截器机制</a>
+>> ### <a href='#cp9-2' id='ccp9-2'>拦截器链</a>
 
 > ## <a href='#cp10' id='ccp10'>Shiro JSP 标签</a>
 > ## <a href='#cp11' id='ccp11'>Shiro 会话管理</a>
@@ -2658,6 +2660,9 @@ logout.redirectUrl=/login
 
 ## Shiro 拦截器机制 <a href='#ccp9'>目录</a>
 
+
+<div id='cp9-1'></div>
+
 ### 拦截器机制 <a href='#ccp9-1'>目录</a>
 
 #### 拦截器介绍
@@ -2730,7 +2735,8 @@ onPreHandle 会自动调用这两个方法决定是否继续处理：
     
 另外 AccessControlFilter 还提供了如下方法用于处理如登录成功后/重定向到上一个请求：
 
-![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)注：这是个经常使用但实现起来小有麻烦的功能
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)注：这是个经常使用但自己实现起来小有麻烦的功能。
+如何控制这些方法的执行呢？方法是在自己编写的继承自AccessControlFilter的类中调用这些方法。
 
     void setLoginUrl(String loginUrl) //身份验证时使用，默认/login.jsp
     String getLoginUrl()
@@ -2739,3 +2745,18 @@ onPreHandle 会自动调用这两个方法决定是否继续处理：
     void saveRequestAndRedirectToLogin(ServletRequest request, ServletResponse response) throws IOException //将当前请求保存起来并重定向到登录页面
     void saveRequest(ServletRequest request) //将请求保存起来，如登录成功后再重定向回该请求
     void redirectToLogin(ServletRequest request, ServletResponse response) //重定向到登录页面
+    
+比如基于表单的身份验证就需要使用这些功能。
+
+到此基本的拦截器就完事了，如果我们想进行访问访问的控制就可以继承 AccessControlFilter；如果我们要添加一些通用数据我们可以直接继承 PathMatchingFilter。
+
+<div id='cp9-2'></div>
+
+### 拦截器链 <a href='#ccp9-2'>目录</a>
+
+Shiro 对 Servlet 容器的 FilterChain 进行了代理，即 ShiroFilter 在继续 Servlet 容器的 Filter 链的执行之前，通过 ProxiedFilterChain 对 Servlet 容器的 FilterChain 进行了代理；即先走 Shiro 自己的 Filter 体系，然后才会委托给 Servlet 容器的 FilterChain 进行 Servlet 容器级别的 Filter 链执行；Shiro 的 ProxiedFilterChain 执行流程：1、先执行 Shiro 自己的 Filter 链；2、再执行 Servlet 容器的 Filter 链（即原始的 Filter）。
+而 ProxiedFilterChain 是通过 FilterChainResolver 根据配置文件中[urls]部分是否与请求的 URL 是否匹配解析得到的。
+FilterChain getChain(ServletRequest request, ServletResponse response, FilterChain originalChain);
+即传入原始的 chain 得到一个代理的 chain。
+Shiro 内部提供了一个路径匹配的 FilterChainResolver 实现：PathMatchingFilterChainResolver，其根据[urls]中配置的 url 模式（默认 Ant 风格）=拦截器链和请求的 url 是否匹配来解析得到配置的拦截器链的；而 PathMatchingFilterChainResolver 内部通过 FilterChainManager 维护着拦截器链，比如 DefaultFilterChainManager 实现维护着 url 模式与拦截器链的关系。因此我们可以通过 FilterChainManager 进行动态动态增加 url 模式与拦截器链的关系。
+DefaultFilterChainManager 会默认添加 org.apache.shiro.web.filter.mgt.DefaultFilter 中声明的拦截器：
