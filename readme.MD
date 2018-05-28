@@ -52,6 +52,7 @@
 >> ### <a href='#cp9-1' id='ccp9-1'>拦截器机制</a>
 >> ### <a href='#cp9-2' id='ccp9-2'>拦截器链</a>
 >> ### <a href='#cp9-3' id='ccp9-3'>自定义拦截器</a>
+>> ### <a href='#cp9-4' id='ccp9-4'>默认拦截器</a>
 
 > ## <a href='#cp10' id='ccp10'>Shiro JSP 标签</a>
 > ## <a href='#cp11' id='ccp11'>Shiro 会话管理</a>
@@ -3061,8 +3062,69 @@ shiro.ini 配置
 [filters]
 formLogin=com.github.zhangkaitao.shiro.chapter8.web.filter.FormLoginFilter
 [urls]
-/test.jsp=formLogin
-/login.jsp=formLogin
+/ch8/test.jsp=formLogin
+/ch8/login.jsp=formLogin
 ```
 
 启动服务器输入 http://localhost:8080/ch8/test.jsp 测试时，会自动跳转到登录页面，登录成功后又会跳回到 test.jsp 页面。
+
+此处可以通过继承 AuthenticatingFilter 实现，其提供了很多登录相关的基础代码。另外可以参考 Shiro 内嵌的 FormAuthenticationFilter 的源码，思路是一样的。
+
+#### 6、任意角色授权拦截器
+
+Shiro 提供 roles 拦截器，其验证用户拥有所有角色，没有提供验证用户拥有任意角色的拦截器。
+
+```java
+public class AnyRolesFilter extends AccessControlFilter {
+    private String unauthorizedUrl = "/unauthorized.jsp";
+    private String loginUrl = "/login.jsp";
+    protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
+        String[] roles = (String[])mappedValue;
+        if(roles == null) {
+            return true;//如果没有设置角色参数，默认成功
+        }
+        for(String role : roles) {
+            if(getSubject(request, response).hasRole(role)) {
+                return true;
+            }
+        }
+        return false;//跳到onAccessDenied处理
+    }
+    @Override
+    protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
+        Subject subject = getSubject(request, response);
+        if (subject.getPrincipal() == null) {//表示没有登录，重定向到登录页面
+            saveRequest(request);
+            WebUtils.issueRedirect(request, response, loginUrl);
+        } else {
+            if (StringUtils.hasText(unauthorizedUrl)) {//如果有未授权页面跳转过去
+                WebUtils.issueRedirect(request, response, unauthorizedUrl);
+            } else {//否则返回401未授权状态码
+                WebUtils.toHttp(response).sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            }
+        }
+        return false;
+    }
+} 
+```
+
+流程：
+1. 首先判断用户有没有任意角色，如果没有返回 false，将到 onAccessDenied 进行处理；
+2. 如果用户没有角色，接着判断用户有没有登录，如果没有登录先重定向到登录；
+3. 如果用户没有角色且设置了未授权页面（unauthorizedUrl），那么重定向到未授权页面；否则直接返回 401 未授权错误码。
+
+shiro.ini 配置
+
+```ini
+[filters]
+anyRoles=com.github.zhangkaitao.shiro.chapter8.web.filter.AnyRolesFilter
+[urls]
+/ch8/test.jsp=formLogin,anyRoles[admin,user]
+/ch8/login.jsp=formLogin
+```
+
+此处可以继承 AuthorizationFilter 实现，其提供了授权相关的基础代码。另外可以参考 Shiro 内嵌的 RolesAuthorizationFilter 的源码，只是实现 hasAllRoles 逻辑。
+
+<div id='cp9-4'></div>
+
+### 默认拦截器 <a href='#ccp9-4'>目录</a>
