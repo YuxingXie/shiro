@@ -48,24 +48,24 @@
 >>> ### <a href='#cp8-1-1' id='ccp8-1-1'>准备环境</a>
 >>> ### <a href='#cp8-1-2' id='ccp8-1-2'>ShiroFilter 入口</a>
 >>> ### <a href='#cp8-1-3' id='ccp8-1-3'>Web INI 配置</a>
+> ## <a href='#cp9' id='ccp9'>Shiro 拦截器机制</a>
 
-> ## <a href='#cp9' id='ccp9'>Shiro Web 拦截器机制</a>
-> ## <a href='#cp10' id='ccp10'>Shiro Web JSP 标签</a>
-> ## <a href='#cp11' id='ccp11'>Shiro Web 会话管理</a>
-> ## <a href='#cp12' id='ccp12'>Shiro Web 缓存机制</a>
-> ## <a href='#cp13' id='ccp13'>Shiro Web Spring 集成</a>
-> ## <a href='#cp14' id='ccp14'>Shiro Web RememberMe</a>
-> ## <a href='#cp15' id='ccp15'>Shiro Web SSL</a>
-> ## <a href='#cp16' id='ccp16'>Shiro Web 单点登录</a>
-> ## <a href='#cp17' id='ccp17'>Shiro Web 综合实例</a>
-> ## <a href='#cp18' id='ccp18'>Shiro Web OAuth2</a>
-> ## <a href='#cp19' id='ccp19'>Shiro Web 并发登录控制</a>
-> ## <a href='#cp20' id='ccp20'>Shiro Web 动态 URL</a>
-> ## <a href='#cp21' id='ccp21'>Shiro Web 无状态 Web</a>
-> ## <a href='#cp22' id='ccp22'>Shiro Web 授予身份和切换身份</a>
-> ## <a href='#cp23' id='ccp23'>Shiro Web 集成验证码</a>
-> ## <a href='#cp24' id='ccp24'>Shiro Web 多项目</a>
-> ## <a href='#cp25' id='ccp25'>Shiro Web 在线会话管理</a>
+> ## <a href='#cp10' id='ccp10'>Shiro JSP 标签</a>
+> ## <a href='#cp11' id='ccp11'>Shiro 会话管理</a>
+> ## <a href='#cp12' id='ccp12'>Shiro 缓存机制</a>
+> ## <a href='#cp13' id='ccp13'>Shiro Spring 集成</a>
+> ## <a href='#cp14' id='ccp14'>Shiro RememberMe</a>
+> ## <a href='#cp15' id='ccp15'>Shiro SSL</a>
+> ## <a href='#cp16' id='ccp16'>Shiro 单点登录</a>
+> ## <a href='#cp17' id='ccp17'>Shiro 综合实例</a>
+> ## <a href='#cp18' id='ccp18'>Shiro OAuth2</a>
+> ## <a href='#cp19' id='ccp19'>Shiro 并发登录控制</a>
+> ## <a href='#cp20' id='ccp20'>Shiro 动态 URL</a>
+> ## <a href='#cp21' id='ccp21'>Shiro 无状态 Web</a>
+> ## <a href='#cp22' id='ccp22'>Shiro 授予身份和切换身份</a>
+> ## <a href='#cp23' id='ccp23'>Shiro 集成验证码</a>
+> ## <a href='#cp24' id='ccp24'>Shiro 多项目</a>
+> ## <a href='#cp25' id='ccp25'>Shiro 在线会话管理</a>
 
 
 
@@ -2654,12 +2654,14 @@ logout.redirectUrl=/login
 
 
 
+<div id='cp9'></div>
 
+## Shiro 拦截器机制 <a id='#ccp9'>目录</a>
 
-### 与spring-boot-web集成 
+### 拦截器机制
 
-![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
-注:本节为本人自我研究总结与spring-boot-web的集成，使用gradle构建，java代码配置spring bean。
+#### 拦截器介绍
 
-源码在spring-boot-web-shiro-integration中。
+Shiro 使用了与 Servlet 一样的 Filter 接口进行扩展；所以如果对 Filter 不熟悉可以参考《Servlet 3.1 规范》http://www.iteye.com/blogs/subjects/Servlet-3-1 
+了解 Filter 的工作原理。首先下图是 Shiro 拦截器的基础类图：
 
