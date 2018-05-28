@@ -2354,6 +2354,22 @@ admin=user:*,menu:*
 比如 anon 拦截器表示匿名访问（即不需要登录即可访问）；authc 拦截器表示需要身份认证通过后才能访问；roles\[admin]拦截器表示需要有 admin 角色授权才能访问；
 而 perms\["user:create"]拦截器表示需要有 “user:create” 权限才能访问。
 
+(注:
+
+这些名为anon,authc,roles,perms等的过滤器，实际上是一些javax.servlet.Filter接口的具体实现类的实例，它们都位于org.apache.shiro.web.filter包中。
+
+可以大胆猜测一下，
+
+anon对应org.apache.shiro.web.filter.authc.AnonymousFilter,
+
+authc对应org.apache.shiro.web.filter.authc.AuthenticationFilter
+
+roles对应org.apache.shiro.web.filter.authz.RolesAuthorizationFilter
+
+perms对应org.apache.shiro.web.filter.authz.PermissionsAuthorizationFilter
+
+)
+
 ##### url 模式使用 Ant 风格模式
 * Ant 路径通配符支持?、、，注意通配符匹配不包括目录分隔符 “/”：
 * ?：匹配一个字符，如”/admin?” 将匹配 /admin1，但不匹配 /admin 或 /admin2(注:不懂，为什么?或者是/admin12笔误？)；
