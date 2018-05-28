@@ -2754,9 +2754,40 @@ onPreHandle 会自动调用这两个方法决定是否继续处理：
 
 ### 拦截器链 <a href='#ccp9-2'>目录</a>
 
-Shiro 对 Servlet 容器的 FilterChain 进行了代理，即 ShiroFilter 在继续 Servlet 容器的 Filter 链的执行之前，通过 ProxiedFilterChain 对 Servlet 容器的 FilterChain 进行了代理；即先走 Shiro 自己的 Filter 体系，然后才会委托给 Servlet 容器的 FilterChain 进行 Servlet 容器级别的 Filter 链执行；Shiro 的 ProxiedFilterChain 执行流程：1、先执行 Shiro 自己的 Filter 链；2、再执行 Servlet 容器的 Filter 链（即原始的 Filter）。
+Shiro 对 Servlet 容器的 FilterChain 进行了代理，即 ShiroFilter 在继续 Servlet 容器的 Filter 链的执行之前，通过 ProxiedFilterChain 对 Servlet 容器的 
+FilterChain 进行了代理；即先走 Shiro 自己的 Filter 体系，然后才会委托给 Servlet 容器的 FilterChain 进行 Servlet 容器级别的 Filter 链执行；Shiro 的 
+ProxiedFilterChain 执行流程：1、先执行 Shiro 自己的 Filter 链；2、再执行 Servlet 容器的 Filter 链（即原始的 Filter）。
+
 而 ProxiedFilterChain 是通过 FilterChainResolver 根据配置文件中[urls]部分是否与请求的 URL 是否匹配解析得到的。
-FilterChain getChain(ServletRequest request, ServletResponse response, FilterChain originalChain);
+
+    FilterChain getChain(ServletRequest request, ServletResponse response, FilterChain originalChain);
+
 即传入原始的 chain 得到一个代理的 chain。
-Shiro 内部提供了一个路径匹配的 FilterChainResolver 实现：PathMatchingFilterChainResolver，其根据[urls]中配置的 url 模式（默认 Ant 风格）=拦截器链和请求的 url 是否匹配来解析得到配置的拦截器链的；而 PathMatchingFilterChainResolver 内部通过 FilterChainManager 维护着拦截器链，比如 DefaultFilterChainManager 实现维护着 url 模式与拦截器链的关系。因此我们可以通过 FilterChainManager 进行动态动态增加 url 模式与拦截器链的关系。
+
+Shiro 内部提供了一个路径匹配的 FilterChainResolver 实现：PathMatchingFilterChainResolver，其根据\[urls\]中配置的 url 模式（默认 Ant 风格）=拦截器链和请求的 
+url 是否匹配来解析得到配置的拦截器链的；而 PathMatchingFilterChainResolver 内部通过 FilterChainManager 维护着拦截器链，比如 DefaultFilterChainManager 
+实现维护着 url 模式与拦截器链的关系。因此我们可以通过 FilterChainManager 进行动态动态增加 url 模式与拦截器链的关系。
+
 DefaultFilterChainManager 会默认添加 org.apache.shiro.web.filter.mgt.DefaultFilter 中声明的拦截器：
+
+```java
+public enum DefaultFilter {
+    anon(AnonymousFilter.class),
+    authc(FormAuthenticationFilter.class),
+    authcBasic(BasicHttpAuthenticationFilter.class),
+    logout(LogoutFilter.class),
+    noSessionCreation(NoSessionCreationFilter.class),
+    perms(PermissionsAuthorizationFilter.class),
+    port(PortFilter.class),
+    rest(HttpMethodPermissionFilter.class),
+    roles(RolesAuthorizationFilter.class),
+    ssl(SslFilter.class),
+    user(UserFilter.class);
+    
+    private DefaultFilter(Class<? extends Filter> filterClass) {
+        this.filterClass = filterClass;
+    }
+    
+    //other code
+}
+```
