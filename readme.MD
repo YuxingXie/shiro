@@ -2658,10 +2658,11 @@ logout.redirectUrl=/login
 
 ## Shiro 拦截器机制 <a id='#ccp9'>目录</a>
 
-### 拦截器机制
+### 拦截器机制 <a id='#ccp9-1'>目录</a>
 
 #### 拦截器介绍
 
 Shiro 使用了与 Servlet 一样的 Filter 接口进行扩展；所以如果对 Filter 不熟悉可以参考《Servlet 3.1 规范》http://www.iteye.com/blogs/subjects/Servlet-3-1 
 了解 Filter 的工作原理。首先下图是 Shiro 拦截器的基础类图：
 
+![](https://github.com/YuxingXie/shiro/raw/master/doc/14.png)
