@@ -2427,7 +2427,7 @@ authc.loginUrl=/login
 
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
 (注：在方法进入servlet之前已经经过了shiro的各种过滤器链，这些过滤器的doFilter方法都在org.apache.shiro.web.servlet.OncePerRequestFilter中
-使用模板方法的设计模式抽象实现。有兴趣的同学可以研究下)
+使用模板方法的设计模式实现。有兴趣的同学可以研究下)
 
 ```java
 @WebServlet(name = "loginServlet", urlPatterns = "/login")
