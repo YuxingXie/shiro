@@ -1,5 +1,5 @@
 <html>
 <body>
-<a href="login.jsp">login</a>
+<a href="/WEB-INF/jsp/ch8/login.jsp">login</a>
 </body>
 </html>

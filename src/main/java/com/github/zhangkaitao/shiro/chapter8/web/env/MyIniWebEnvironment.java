@@ -19,6 +19,7 @@ import javax.servlet.Filter;
 public class MyIniWebEnvironment extends IniWebEnvironment {
     @Override
     protected FilterChainResolver createFilterChainResolver() {
+
         //在此处扩展自己的FilterChainResolver
         //1、创建FilterChainResolver
         PathMatchingFilterChainResolver filterChainResolver =

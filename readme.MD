@@ -2855,3 +2855,25 @@ public class MyIniWebEnvironment extends IniWebEnvironment {
 <param-name>shiroEnvironmentClass</param-name> <param-value>com.github.zhangkaitao.shiro.chapter8.web.env.MyIniWebEnvironment</param-value>
 </context-param>
 ```
+<div id='cp9-3'></div>
+
+### 自定义拦截器 <a href='#ccp9-3'>目录</a>
+
+通过自定义自己的拦截器可以扩展一些功能，诸如动态 url -角色/权限访问控制的实现、根据 Subject 身份信息获取用户信息绑定到 Request（即设置通用数据）、验证码验证、
+在线用户信息的保存等等，因为其本质就是一个 Filter；所以 Filter 能做的它就能做。
+
+对于 Filter 的介绍请参考《Servlet规范》中的 Filter 部分：http://www.iteye.com/blogs/subjects/Servlet-3-1 。
+
+#### 1、扩展 OncePerRequestFilter
+
+OncePerRequestFilter 保证一次请求只调用一次 doFilterInternal，即如内部的 forward 不会再多执行一次 doFilterInternal：
+
+```java
+public class MyOncePerRequestFilter extends OncePerRequestFilter {
+    @Override
+    protected void doFilterInternal(ServletRequest request, ServletResponse response, FilterChain chain) throws ServletException, IOException {
+        System.out.println("=========once per request filter");
+        chain.doFilter(request, response);
+    }
+}
+```
