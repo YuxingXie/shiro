@@ -2829,17 +2829,17 @@ public class MyIniWebEnvironment extends IniWebEnvironment {
             filterChainManager.addFilter(filter.name(), (Filter) ClassUtils.newInstance(filter.getFilterClass()));
         }
         //4、注册URL-Filter的映射关系
-        filterChainManager.addToChain("/WEB-INF/jsp/ch8/login.jsp", "authc");
-        filterChainManager.addToChain("/WEB-INF/jsp/ch8/unauthorized.jsp", "anon");
+        filterChainManager.addToChain("/ch8/login.jsp", "authc");
+        filterChainManager.addToChain("/ch8/unauthorized.jsp", "anon");
         filterChainManager.addToChain("/**", "authc");
         filterChainManager.addToChain("/**", "roles", "admin");
 
         //5、设置Filter的属性
         FormAuthenticationFilter authcFilter =
                 (FormAuthenticationFilter)filterChainManager.getFilter("authc");
-        authcFilter.setLoginUrl("/WEB-INF/jsp/ch8/login.jsp");
+        authcFilter.setLoginUrl("/ch8/login.jsp");
         RolesAuthorizationFilter rolesFilter = (RolesAuthorizationFilter)filterChainManager.getFilter("roles");
-        rolesFilter.setUnauthorizedUrl("/WEB-INF/jsp/ch8/unauthorized.jsp");
+        rolesFilter.setUnauthorizedUrl("/ch8/unauthorized.jsp");
 
         filterChainResolver.setFilterChainManager(filterChainManager);
         return filterChainResolver;
@@ -2996,7 +2996,7 @@ myFilter4=com.github.zhangkaitao.shiro.chapter8.web.filter.MyAccessControlFilter
 ```java
 public class FormLoginFilter extends PathMatchingFilter {
 
-    private String loginUrl = "/WEB-INF/jsp/ch8/index.jsp";
+    private String loginUrl = "/ch8/index.jsp";
     private String successUrl = "/";
 
     @Override
@@ -3054,3 +3054,15 @@ onPreHandle 主要流程：
 * 如果没有登录，看看是否是登录请求，如果是 get 方法的登录页面请求，则继续拦截器链（到请求页面），否则如果是 get 方法的其他页面请求则保存当前请求并重定向到登录页面；
 * 如果是 post 方法的登录页面表单提交请求，则收集用户名 / 密码登录即可，如果失败了保存错误消息到 “shiroLoginFailure” 并返回到登录页面；
 * 如果登录成功了，且之前有保存的请求，则重定向到之前的这个请求，否则到默认的成功页面。
+
+shiro.ini 配置
+```ini
+
+[filters]
+formLogin=com.github.zhangkaitao.shiro.chapter8.web.filter.FormLoginFilter
+[urls]
+/test.jsp=formLogin
+/login.jsp=formLogin
+```
+
+启动服务器输入 http://localhost:8080/ch8/test.jsp 测试时，会自动跳转到登录页面，登录成功后又会跳回到 test.jsp 页面。
