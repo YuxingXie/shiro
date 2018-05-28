@@ -9,7 +9,7 @@
 * jdbc连接改为使用H2数据库，并使用spring-jdbc api;
 * 某些难度不大的章节(不代表不重要)没有源代码分析，可从原文项目gitHub下载；
 * 排版略做改动,并修正一些错误；
-* 如果知识点有心得或疑问，在源代码中TODO注释或在该文档中用 "(注:说明文字)" 说明，并添加空链接（字体蓝色方便查找）。
+* 如果知识点有心得或疑问，在源代码中TODO注释或在本文档中用 ![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png) 图标表示。
 
 原文项目gitHub地址：[https://github.com/zhangkaitao/shiro-example](https://github.com/zhangkaitao/shiro-example)
 
