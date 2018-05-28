@@ -3131,7 +3131,7 @@ anyRoles=com.github.zhangkaitao.shiro.chapter8.web.filter.AnyRolesFilter
 
 Shiro 内置了很多默认的拦截器，比如身份验证、授权等相关的。默认拦截器可以参考 org.apache.shiro.web.filter.mgt.DefaultFilter 中的枚举拦截器：
 
-<table style="width:100%"><tbody><tr><td>
+<table width="100%"><tbody><tr><td>
 <p>默认拦截器名</p>
 </td>
 <td>
