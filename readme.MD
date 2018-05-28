@@ -2791,3 +2791,5 @@ public enum DefaultFilter {
     //other code
 }
 ```
+
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)注：现在终于知道这些拦截器的命名怎么来的了
