@@ -2214,7 +2214,7 @@ Shiro 提供了与 Web 集成的支持，其通过一个 ShiroFilter 入口来�
 #### 准备环境 <a href='#ccp8-1-1'>目录</a>
 
 ##### 1、创建 webapp 应用
-此处我们使用了 jetty-maven-plugin 和 tomcat7-maven-plugin 插件；这样可以直接使用 “mvn jetty:run” 或“mvn tomcat7:run”直接运行 webapp 了。然后通过 URLhttp://localhost:8080/chapter7 / 访问即可。
+此处我们使用了 jetty-maven-plugin 和 tomcat7-maven-plugin 插件；这样可以直接使用 “mvn jetty:run” 或“mvn tomcat7:run”直接运行 webapp 了。然后通过 URL http://localhost:8080 访问即可。
 
 ##### 2、依赖
 Servlet3
@@ -2455,6 +2455,7 @@ Shiro 内置了登录（身份验证）的实现：基于表单的和基于 Basi
 ##### 基于 Basic 的拦截器身份验证
 
 ##### shiro-basicfilterlogin.ini 配置
+
 ```ini
 [main]
 authcBasic.applicationName=please login
@@ -2475,7 +2476,7 @@ authcBasic.applicationName=please login
 把 shiroConfigLocations 改为 shiro-basicfilterlogin.ini 即可。
 
 ##### 测试
-输入 http://localhost:8080/chapter7/role，会弹出之前的 Basic 验证对话框输入 “zhang/123” 即可登录成功进行访问。
+输入 http://localhost:8080/role，会弹出之前的 Basic 验证对话框输入 “zhang/123” 即可登录成功进行访问。
 
 ##### 基于表单的拦截器身份验证
 
@@ -2529,7 +2530,7 @@ public class FormFilterLoginServlet extends HttpServlet {
 
 ##### 测试
 
-输入 http://localhost:8080/chapter7/role，会跳转到 “/formfilterlogin” 登录表单，提交表单如果 authc 拦截器登录成功后，会直接重定向会之前的地址 “/role”；
+输入 http://localhost:8080/role，会跳转到 “/formfilterlogin” 登录表单，提交表单如果 authc 拦截器登录成功后，会直接重定向会之前的地址 “/role”；
 假设我们直接访问 “/formfilterlogin” 的话登录成功将直接到默认的 successUrl。
 
 ##### 授权（角色 / 权限验证）
@@ -2581,7 +2582,7 @@ public class RoleServlet extends HttpServlet {
 
 ##### 测试
 
-首先访问 http://localhost:8080/chapter7/login，使用帐号 “zhang/123” 进行登录，再访问 /role 或 /permission 时会跳转到成功页面（因为其授权成功了）；如果使用帐号
+首先访问 http://localhost:8080/login，使用帐号 “zhang/123” 进行登录，再访问 /role 或 /permission 时会跳转到成功页面（因为其授权成功了）；如果使用帐号
  “wang/123” 登录成功后访问这两个地址会跳转到 “/unauthorized” 即没有授权页面。
 
 ##### 退出
@@ -2610,7 +2611,7 @@ public class LogoutServlet extends HttpServlet {
 
 ##### 测试
 
-首先访问 http://localhost:8080/chapter7/login，使用帐号 “zhang/123” 进行登录，登录成功后访问 /logout 即可退出。
+首先访问 http://localhost:8080/login，使用帐号 “zhang/123” 进行登录，登录成功后访问 /logout 即可退出。
 
 Shiro 也提供了 logout 拦截器用于退出，其是 org.apache.shiro.web.filter.authc.LogoutFilter 类型的实例，我们可以在 shiro.ini 配置文件中通过如下配置完成退出：
 ```ini
