@@ -2697,7 +2697,7 @@ AdviceFilter 提供了 AOP 风格的支持，类似于 SpringMVC 中的 Intercep
 
 5. PathMatchingFilter
 
-![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)注：该类继承自AdviceFilter,public abstract class PathMatchingFilter extends AdviceFilter implements PathConfigProcessor
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)注：该类继承自AdviceFilter
 
 PathMatchingFilter 提供了基于 Ant 风格的请求路径匹配功能及拦截器参数解析的功能，如“roles[admin,user]”自动根据“，”分割解析到一个路径参数配置并绑定到相应的路径：
 
@@ -2709,3 +2709,17 @@ pathsMatch：该方法用于 path 与请求路径进行匹配的方法；如果�
 onPreHandle：在 preHandle 中，当 pathsMatch 匹配一个路径后，会调用 opPreHandler 方法并将路径绑定参数配置传给 mappedValue；然后可以在这个方法中进行一些验证
 （如角色授权），如果验证失败可以返回 false 中断流程；默认返回 true；也就是说子类可以只实现 onPreHandle 即可，无须实现 preHandle。如果没有 path 与请求路径匹配，
 默认是通过的（即 preHandle 返回 true）。
+
+6. AccessControlFilter
+
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)注：extends PathMatchingFilter
+
+AccessControlFilter 提供了访问控制的基础功能；比如是否允许访问/当访问拒绝时如何处理等：
+
+    abstract boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception;
+    boolean onAccessDenied(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception;
+    abstract boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception;
+    
+isAccessAllowed：表示是否允许访问；mappedValue 就是[urls]配置中拦截器参数部分，如果允许访问返回 true，否则 false；
+onAccessDenied：表示当访问拒绝时是否已经处理了；如果返回 true 表示需要继续处理；如果返回 false 表示该拦截器实例已经处理了，将直接返回即可。
+onPreHandle 会自动调用这两个方法决定是否继续处理：
