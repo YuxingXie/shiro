@@ -2656,9 +2656,9 @@ logout.redirectUrl=/login
 
 <div id='cp9'></div>
 
-## Shiro 拦截器机制 <a id='#ccp9'>目录</a>
+## Shiro 拦截器机制 <a href='#ccp9'>目录</a>
 
-### 拦截器机制 <a id='#ccp9-1'>目录</a>
+### 拦截器机制 <a href='#ccp9-1'>目录</a>
 
 #### 拦截器介绍
 
@@ -2683,7 +2683,7 @@ ShiroFilter 是整个 Shiro 的入口点，用于拦截需要安全控制的请�
 
 AdviceFilter 提供了 AOP 风格的支持，类似于 SpringMVC 中的 Interceptor：
 
-![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)(注:以下方法表示方法签名，AdviceFilter虽然是抽象类，但下列方法不是抽象方法)
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)(注:以下方法表示方法签名，AdviceFilter虽然是抽象类，但下列方法不是抽象方法。下同。)
 
     protected boolean preHandle(ServletRequest request, ServletResponse response) throws Exception;
     
@@ -2694,3 +2694,18 @@ AdviceFilter 提供了 AOP 风格的支持，类似于 SpringMVC 中的 Intercep
 * preHandler：类似于 AOP 中的前置增强；在拦截器链执行之前执行；如果返回 true 则继续拦截器链；否则中断后续的拦截器链的执行直接返回；进行预处理（如基于表单的身份验证、授权）
 * postHandle：类似于 AOP 中的后置返回增强；在拦截器链执行完成后执行；进行后处理（如记录执行时间之类的）；
 * afterCompletion：类似于 AOP 中的后置最终增强；即不管有没有异常都会执行；可以进行清理资源（如接触 Subject 与线程的绑定之类的）；
+
+5. PathMatchingFilter
+
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)注：该类继承自AdviceFilter,public abstract class PathMatchingFilter extends AdviceFilter implements PathConfigProcessor
+
+PathMatchingFilter 提供了基于 Ant 风格的请求路径匹配功能及拦截器参数解析的功能，如“roles[admin,user]”自动根据“，”分割解析到一个路径参数配置并绑定到相应的路径：
+
+    boolean pathsMatch(String path, ServletRequest request);
+    boolean onPreHandle(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception;
+    
+pathsMatch：该方法用于 path 与请求路径进行匹配的方法；如果匹配返回 true；
+
+onPreHandle：在 preHandle 中，当 pathsMatch 匹配一个路径后，会调用 opPreHandler 方法并将路径绑定参数配置传给 mappedValue；然后可以在这个方法中进行一些验证
+（如角色授权），如果验证失败可以返回 false 中断流程；默认返回 true；也就是说子类可以只实现 onPreHandle 即可，无须实现 preHandle。如果没有 path 与请求路径匹配，
+默认是通过的（即 preHandle 返回 true）。
