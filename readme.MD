@@ -2888,3 +2888,68 @@ myFilter1=com.github.zhangkaitao.shiro.chapter8.web.filter.MyOncePerRequestFilte
 [urls]
 /**=myFilter1
 ```
+
+Filter 可以在 \[main\] 或 \[filters\] 部分注册，然后在 \[urls\] 部分配置 url 与 filter 的映射关系即可。
+
+#### 2、扩展 AdviceFilter
+
+AdviceFilter 提供了 AOP 的功能，其实现和 SpringMVC 中的 Interceptor 思想一样：具体可参考我的 SpringMVC 教程中的处理器拦截器部分：
+http://www.iteye.com/blogs/subjects/kaitao-springmvc
+
+```java
+public class MyAdviceFilter extends AdviceFilter {
+    @Override
+    protected boolean preHandle(ServletRequest request, ServletResponse response) throws Exception {
+        System.out.println("====预处理/前置处理");
+        return true;//返回 false 将中断后续拦截器链的执行
+    }
+    @Override
+    protected void postHandle(ServletRequest request, ServletResponse response) throws Exception {
+        System.out.println("====后处理/后置返回处理");
+    }
+    @Override
+    public void afterCompletion(ServletRequest request, ServletResponse response, Exception exception) throws Exception {
+        System.out.println("====完成处理/后置最终处理");
+    }
+}
+```
+
+* preHandle：进行请求的预处理，然后根据返回值决定是否继续处理（true：继续过滤器链）；可以通过它实现权限控制；
+* postHandle：执行完拦截器链之后正常返回后执行；
+* afterCompletion：不管最后有没有异常，afterCompletion 都会执行，完成如清理资源功能。
+
+然后在 shiro.ini 中进行如下配置：
+```ini
+[filters]
+myFilter1=com.github.zhangkaitao.shiro.chapter8.web.filter.MyOncePerRequestFilter
+myFilter2=com.github.zhangkaitao.shiro.chapter8.web.filter.MyAdviceFilter
+[urls]
+/**=myFilter1,myFilter2
+```
+
+该过滤器的具体使用可参考我的 SpringMVC 教程中的处理器拦截器部分。
+
+#### 3、PathMatchingFilter
+
+PathMatchingFilter 继承了 AdviceFilter，提供了 url 模式过滤的功能，如果需要对指定的请求进行处理，可以扩展 PathMatchingFilter：
+```java
+public class MyPathMatchingFilter extends PathMatchingFilter {
+    @Override
+    protected boolean onPreHandle(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
+       System.out.println("url matches,config is " + Arrays.toString((String[])mappedValue));
+       return true;
+    }
+}
+```
+
+* preHandle：会进行 url 模式与请求 url 进行匹配，如果匹配会调用 onPreHandle；如果没有配置 url 模式 / 没有 url 模式匹配，默认直接返回 true；
+* onPreHandle：如果 url 模式与请求 url 匹配，那么会执行 onPreHandle，并把该拦截器配置的参数传入。默认什么不处理直接返回 true。
+
+然后在 shiro.ini 中进行如下配置：
+```ini
+[filters]
+myFilter3=com.github.zhangkaitao.shiro.chapter8.web.filter.MyPathMatchingFilter
+[urls]
+/**= myFilter3[config]
+```
+/** 就是注册给 PathMatchingFilter 的 url 模式，config 就是拦截器的配置参数，多个之间逗号分隔，onPreHandle 使用 mappedValue 接收参数值。
