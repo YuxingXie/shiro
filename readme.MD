@@ -2666,3 +2666,28 @@ Shiro 使用了与 Servlet 一样的 Filter 接口进行扩展；所以如果对
 了解 Filter 的工作原理。首先下图是 Shiro 拦截器的基础类图：
 
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/14.png)
+
+1. NameableFilter
+
+NameableFilter 给 Filter 起个名字，如果没有设置默认就是 FilterName；还记得之前的如 authc 吗？当我们组装拦截器链时会根据这个名字找到相应的拦截器实例；
+
+2. OncePerRequestFilter
+
+OncePerRequestFilter 用于防止多次执行 Filter 的；也就是说一次请求只会走一次拦截器链；另外提供 enabled 属性，表示是否开启该拦截器实例，默认 enabled=true 表示开启，如果不想让某个拦截器工作，可以设置为 false 即可。
+
+3. ShiroFilter
+
+ShiroFilter 是整个 Shiro 的入口点，用于拦截需要安全控制的请求进行处理，这个之前已经用过了。
+
+4. AdviceFilter
+
+AdviceFilter 提供了 AOP 风格的支持，类似于 SpringMVC 中的 Interceptor：
+
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)(注:以下方法表示方法签名，AdviceFilter虽然是抽象类，但下列方法不是抽象方法)
+
+    protected boolean preHandle(ServletRequest request, ServletResponse response) throws Exception;
+    
+    protected void postHandle(ServletRequest request, ServletResponse response) throws Exception;
+    
+    public void afterCompletion(ServletRequest request, ServletResponse response, Exception exception) throws Exception;
+    
