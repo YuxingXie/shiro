@@ -3292,7 +3292,9 @@ Shiro 内置了很多默认的拦截器，比如身份验证、授权等相关�
 
 <div id='cp10'></div>
 
-## 第九章：Shiro JSP 标签 <a href='#ccp10'></a>
+## 第九章：Shiro JSP 标签 <a href='#ccp10'>目录</a>
+
+注：本章未深入研究，代码如有错误请见谅。
 
 ### JSP 标签
 
@@ -3408,7 +3410,7 @@ Shiro 提供了 JSTL 标签用于在 JSP/GSP 页面进行权限控制，如根�
 
 #### 导入自定义标签库
 ```jsp
-<%@taglib prefix="zhang" tagdir="/WEB-INF/tags" %>
+<%@taglib prefix="zhang" tagdir="/WEB-INF/tags/ch9" %>
 ```
 
 #### 示例
@@ -3424,3 +3426,25 @@ Shiro 提供了 JSTL 标签用于在 JSP/GSP 页面进行权限控制，如根�
 </zhang:hasAnyPermissions>
 ```
 hasAllRoles 表示拥有所有相关的角色；hasAllPermissions 表示拥有所有相关的权限；hasAnyPermissions 表示拥有任意一个相关的权限。
+
+<div id='cp11'></div>
+
+## 第十章：Shiro 会话管理 <a href='#ccp11'>目录</a>
+
+
+
+
+
+
+<div id='cp12'></div>
+
+## 第十一章：Shiro 缓存机制 <a href='#ccp12'>目录</a>
+
+
+
+
+
+
+<div id='cp13'></div>
+
+## 第十二章：Shiro Spring 集成 <a href='#ccp13'>目录</a>
