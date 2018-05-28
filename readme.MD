@@ -2445,7 +2445,10 @@ public class LoginServlet extends HttpServlet {
 
 首先输入 http://localhost:8080/login 进行登录，登录成功后接着可以访问 http://localhost:8080/authenticated 来显示当前登录的用户：
 
+```jsp
     ${subject.principal} 身份验证已通过。
+```
+    
     
 当前实现的一个缺点就是，永远返回到同一个成功页面（比如首页），在实际项目中比如支付时如果没有登录将跳转到登录页面，登录成功后再跳回到支付页面；
 对于这种功能大家可以在登录时把当前请求保存下来，然后登录成功后再重定向到该请求即可。
