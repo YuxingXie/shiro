@@ -18,24 +18,24 @@
 >> ### <a href='#cp1-1' id='ccp1-1'>Shiro 关于</a>
 >> ### <a href='#cp1-2' id='ccp1-2'>适用人群</a>
 >> ### <a href='#cp1-3' id='ccp1-2'>学习前提</a>
-> ## <a href='#cp2' id='ccp2'>Shiro 简介</a>
+> ## <a href='#cp2' id='ccp2'>第一章：Shiro 简介</a>
 >> ### <a href='#cp2-1' id='ccp2-1'>Shiro 简介</a>
-> ## <a href='#cp3' id='ccp3'>Shiro Shiro 身份验证</a>
+> ## <a href='#cp3' id='ccp3'>第二章：Shiro 身份验证</a>
 >> ### <a href='#cp3-1' id='ccp3-1'>身份验证</a>
 >> ### <a href='#cp3-2' id='ccp3-2'>环境准备</a>
 >> ### <a href='#cp3-3' id='ccp3-3'>登录/退出</a>
-> ## <a href='#cp4' id='ccp4'>Shiro 授权</a>
+> ## <a href='#cp4' id='ccp4'>第三章：Shiro 授权</a>
 >> ### <a href='#cp4-1' id='ccp4-1'>何谓授权</a>
 >> ### <a href='#cp4-2' id='ccp4-2'>角色</a>
 >> ### <a href='#cp4-3' id='ccp4-3'>授权</a>
 >> ### <a href='#cp4-4' id='ccp4-4'>Permission</a>
 >> ### <a href='#cp4-5' id='ccp4-5'>授权流程</a>
 >> ### <a href='#cp4-6' id='ccp4-6'>Authorizer、PermissionResolver及RolePermissionResolver</a>
-> ## <a href='#cp5' id='ccp5'>Shiro InI 配置</a>
+> ## <a href='#cp5' id='ccp5'>第四章：Shiro InI 配置</a>
 >> ### <a href='#cp5-1' id='ccp5-1'>INI 配置</a>
 >> ### <a href='#cp5-2' id='ccp5-2'>根对象 SecurityManager</a>
-> ## <a href='#cp6' id='ccp6'>Shiro 编码加密</a>
-> ## <a href='#cp7' id='ccp7'>Shiro Realm</a>
+> ## <a href='#cp6' id='ccp6'>第五章：Shiro 编码加密</a>
+> ## <a href='#cp7' id='ccp7'>第六章：Shiro Realm</a>
 >> ### <a href='#cp7-1' id='ccp7-1'>Realm 及相关对象</a>
 >>> #### <a href='#cp7-1-1' id='ccp7-1-1'>Realm</a>
 >>> #### <a href='#cp7-1-2' id='ccp7-1-2'>AuthenticationToken</a>
@@ -43,33 +43,33 @@
 >>> #### <a href='#cp7-1-4' id='ccp7-1-4'>PrincipalCollection</a>
 >>> #### <a href='#cp7-1-5' id='ccp7-1-5'>AuthorizationInfo</a>
 >>> #### <a href='#cp7-1-6' id='ccp7-1-6'>Subject</a>
-> ## <a href='#cp8' id='ccp8'>Shiro Web 集成</a>
+> ## <a href='#cp8' id='ccp8'>第七章：Shiro Web 集成</a>
 >> ### <a href='#cp8-1' id='ccp8-1'>与传统Web集成</a>
 >>> ### <a href='#cp8-1-1' id='ccp8-1-1'>准备环境</a>
 >>> ### <a href='#cp8-1-2' id='ccp8-1-2'>ShiroFilter 入口</a>
 >>> ### <a href='#cp8-1-3' id='ccp8-1-3'>Web INI 配置</a>
-> ## <a href='#cp9' id='ccp9'>Shiro 拦截器机制</a>
+> ## <a href='#cp9' id='ccp9'>第八章：Shiro 拦截器机制</a>
 >> ### <a href='#cp9-1' id='ccp9-1'>拦截器机制</a>
 >> ### <a href='#cp9-2' id='ccp9-2'>拦截器链</a>
 >> ### <a href='#cp9-3' id='ccp9-3'>自定义拦截器</a>
 >> ### <a href='#cp9-4' id='ccp9-4'>默认拦截器</a>
 
-> ## <a href='#cp10' id='ccp10'>Shiro JSP 标签</a>
-> ## <a href='#cp11' id='ccp11'>Shiro 会话管理</a>
-> ## <a href='#cp12' id='ccp12'>Shiro 缓存机制</a>
-> ## <a href='#cp13' id='ccp13'>Shiro Spring 集成</a>
-> ## <a href='#cp14' id='ccp14'>Shiro RememberMe</a>
-> ## <a href='#cp15' id='ccp15'>Shiro SSL</a>
-> ## <a href='#cp16' id='ccp16'>Shiro 单点登录</a>
-> ## <a href='#cp17' id='ccp17'>Shiro 综合实例</a>
-> ## <a href='#cp18' id='ccp18'>Shiro OAuth2</a>
-> ## <a href='#cp19' id='ccp19'>Shiro 并发登录控制</a>
-> ## <a href='#cp20' id='ccp20'>Shiro 动态 URL</a>
-> ## <a href='#cp21' id='ccp21'>Shiro 无状态 Web</a>
-> ## <a href='#cp22' id='ccp22'>Shiro 授予身份和切换身份</a>
-> ## <a href='#cp23' id='ccp23'>Shiro 集成验证码</a>
-> ## <a href='#cp24' id='ccp24'>Shiro 多项目</a>
-> ## <a href='#cp25' id='ccp25'>Shiro 在线会话管理</a>
+> ## <a href='#cp10' id='ccp10'>第九章：Shiro JSP 标签</a>
+> ## <a href='#cp11' id='ccp11'>第十章：Shiro 会话管理</a>
+> ## <a href='#cp12' id='ccp12'>第十一章：Shiro 缓存机制</a>
+> ## <a href='#cp13' id='ccp13'>第十二章：Shiro Spring 集成</a>
+> ## <a href='#cp14' id='ccp14'>第十三章：Shiro RememberMe</a>
+> ## <a href='#cp15' id='ccp15'>第十四章：Shiro SSL</a>
+> ## <a href='#cp16' id='ccp16'>第十五章：Shiro 单点登录</a>
+> ## <a href='#cp17' id='ccp17'>第十六章：Shiro 综合实例</a>
+> ## <a href='#cp18' id='ccp18'>第十七章：Shiro OAuth2</a>
+> ## <a href='#cp19' id='ccp19'>第十八章：Shiro 并发登录控制</a>
+> ## <a href='#cp20' id='ccp20'>第十九章：Shiro 动态 URL</a>
+> ## <a href='#cp21' id='ccp21'>第二十章：Shiro 无状态 Web</a>
+> ## <a href='#cp22' id='ccp22'>第二十一章：Shiro 授予身份和切换身份</a>
+> ## <a href='#cp23' id='ccp23'>第二十二章：Shiro 集成验证码</a>
+> ## <a href='#cp24' id='ccp24'>第二十三章：Shiro 多项目</a>
+> ## <a href='#cp25' id='ccp25'>第二十四章：Shiro 在线会话管理</a>
 
 
 
