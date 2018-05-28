@@ -2723,3 +2723,19 @@ AccessControlFilter 提供了访问控制的基础功能；比如是否允许访
 isAccessAllowed：表示是否允许访问；mappedValue 就是\[urls\]配置中拦截器参数部分，如果允许访问返回 true，否则 false；
 onAccessDenied：表示当访问拒绝时是否已经处理了；如果返回 true 表示需要继续处理；如果返回 false 表示该拦截器实例已经处理了，将直接返回即可。
 onPreHandle 会自动调用这两个方法决定是否继续处理：
+
+    boolean onPreHandle(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
+        return isAccessAllowed(request, response, mappedValue) || onAccessDenied(request, response, mappedValue);
+    }
+    
+另外 AccessControlFilter 还提供了如下方法用于处理如登录成功后/重定向到上一个请求：
+
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)注：这是个经常使用但实现起来小有麻烦的功能
+
+    void setLoginUrl(String loginUrl) //身份验证时使用，默认/login.jsp
+    String getLoginUrl()
+    Subject getSubject(ServletRequest request, ServletResponse response) //获取Subject 实例
+    boolean isLoginRequest(ServletRequest request, ServletResponse response)//当前请求是否是登录请求
+    void saveRequestAndRedirectToLogin(ServletRequest request, ServletResponse response) throws IOException //将当前请求保存起来并重定向到登录页面
+    void saveRequest(ServletRequest request) //将请求保存起来，如登录成功后再重定向回该请求
+    void redirectToLogin(ServletRequest request, ServletResponse response) //重定向到登录页面
