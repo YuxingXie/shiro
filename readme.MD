@@ -416,7 +416,7 @@ securityManager 会按照 realms 指定的顺序进行身份认证。此处我�
     jdbcRealm.dataSource=$dataSource
     securityManager.realms=$jdbcRealm
 
-<a href="#">注：附上H2数据库在Intellij Idea中的配置如下图：</a>
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png) 附上H2数据库在Intellij Idea中的配置如下图：
 
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/sh-1.png)
 1. 变量名 = 全限定类名会自动创建一个类实例
@@ -2396,11 +2396,14 @@ url 模式匹配顺序是按照在配置中的声明顺序匹配，即从头开�
     /role=authc,roles[admin]
     /permission=authc,perms["user:create"]
 
-即访问这些地址时会首先判断用户有没有登录，如果没有登录默会跳转到登录页面，默认是 / login.jsp，可以通过在 [main] 部分通过如下配置修改：
+即访问这些地址时会首先判断用户有没有登录，如果没有登录默会跳转到登录页面，默认是 / login.jsp，可以通过在 \[main\] 部分通过如下配置修改：
 ```ini
 authc.loginUrl=/login
 ```
 ##### 登录 Servlet（com.github.zhangkaitao.shiro.chapter7.web.servlet.LoginServlet）
+
+(注：在方法进入servlet之前已经经过了shiro的各种过滤器链，这些过滤器的doFilter方法都在org.apache.shiro.web.servlet.OncePerRequestFilter中
+使用模板方法的设计模式抽象实现。有兴趣的同学可以研究下)
 
 ```java
 @WebServlet(name = "loginServlet", urlPatterns = "/login")
@@ -2479,7 +2482,7 @@ authcBasic.applicationName=please login
 把 shiroConfigLocations 改为 shiro-basicfilterlogin.ini 即可。
 
 ##### 测试
-输入 http://localhost:8080/role，会弹出之前的 Basic 验证对话框输入 “zhang/123” 即可登录成功进行访问。
+输入 http://localhost:8080/role ，会弹出之前的 Basic 验证对话框输入 “zhang/123” 即可登录成功进行访问。
 
 ##### 基于表单的拦截器身份验证
 
@@ -2533,7 +2536,7 @@ public class FormFilterLoginServlet extends HttpServlet {
 
 ##### 测试
 
-输入 http://localhost:8080/role，会跳转到 “/formfilterlogin” 登录表单，提交表单如果 authc 拦截器登录成功后，会直接重定向会之前的地址 “/role”；
+输入 http://localhost:8080/role ，会跳转到 “/formfilterlogin” 登录表单，提交表单如果 authc 拦截器登录成功后，会直接重定向会之前的地址 “/role”；
 假设我们直接访问 “/formfilterlogin” 的话登录成功将直接到默认的 successUrl。
 
 ##### 授权（角色 / 权限验证）
@@ -2585,7 +2588,7 @@ public class RoleServlet extends HttpServlet {
 
 ##### 测试
 
-首先访问 http://localhost:8080/login，使用帐号 “zhang/123” 进行登录，再访问 /role 或 /permission 时会跳转到成功页面（因为其授权成功了）；如果使用帐号
+首先访问 http://localhost:8080/login ，使用帐号 “zhang/123” 进行登录，再访问 /role 或 /permission 时会跳转到成功页面（因为其授权成功了）；如果使用帐号
  “wang/123” 登录成功后访问这两个地址会跳转到 “/unauthorized” 即没有授权页面。
 
 ##### 退出
@@ -2614,7 +2617,7 @@ public class LogoutServlet extends HttpServlet {
 
 ##### 测试
 
-首先访问 http://localhost:8080/login，使用帐号 “zhang/123” 进行登录，登录成功后访问 /logout 即可退出。
+首先访问 http://localhost:8080/login ，使用帐号 “zhang/123” 进行登录，登录成功后访问 /logout 即可退出。
 
 Shiro 也提供了 logout 拦截器用于退出，其是 org.apache.shiro.web.filter.authc.LogoutFilter 类型的实例，我们可以在 shiro.ini 配置文件中通过如下配置完成退出：
 ```ini
