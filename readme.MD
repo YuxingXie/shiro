@@ -2846,3 +2846,12 @@ public class MyIniWebEnvironment extends IniWebEnvironment {
     }
 }
 ```
+
+此处自己去实现注册 filter，及url 模式与 filter 之间的映射关系。可以通过定制 FilterChainResolver 或 FilterChainManager 来完成诸如动态 URL 匹配的实现。
+
+然后再 web.xml 中进行如下配置 Environment：
+```xml
+<context-param>
+<param-name>shiroEnvironmentClass</param-name> <param-value>com.github.zhangkaitao.shiro.chapter8.web.env.MyIniWebEnvironment</param-value>
+</context-param>
+```
