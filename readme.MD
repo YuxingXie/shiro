@@ -3128,3 +3128,153 @@ anyRoles=com.github.zhangkaitao.shiro.chapter8.web.filter.AnyRolesFilter
 <div id='cp9-4'></div>
 
 ### 默认拦截器 <a href='#ccp9-4'>目录</a>
+
+Shiro 内置了很多默认的拦截器，比如身份验证、授权等相关的。默认拦截器可以参考 org.apache.shiro.web.filter.mgt.DefaultFilter 中的枚举拦截器：
+
+<table><tbody><tr><td>
+<p>默认拦截器名</p>
+</td>
+<td>
+<p>拦截器类</p>
+</td>
+<td>
+<p>说明（括号里的表示默认值）</p>
+</td>
+</tr><tr><td>
+<p>身份验证相关的</p>
+</td>
+<td>
+<p> </p>
+</td>
+<td>
+<p> </p>
+</td>
+</tr><tr><td>
+<p>authc</p>
+</td>
+<td>
+<p>org.apache.shiro.web.filter.authc</p>
+<p>.FormAuthenticationFilter</p>
+</td>
+<td>
+<p>基于表单的拦截器；如 “`/**=authc`”，如果没有登录会跳到相应的登录页面登录；主要属性：usernameParam：表单提交的用户名参数名（ username）；  passwordParam：表单提交的密码参数名（password）； rememberMeParam：表单提交的密码参数名（rememberMe）；  loginUrl：登录页面地址（/login.jsp）；successUrl：登录成功后的默认重定向地址； failureKeyAttribute：登录失败后错误信息存储 key（shiroLoginFailure）；</p>
+</td>
+</tr><tr><td>
+<p>authcBasic</p>
+</td>
+<td>
+<p>org.apache.shiro.web.filter.authc</p>
+<p>.BasicHttpAuthenticationFilter</p>
+</td>
+<td>
+<p>Basic HTTP 身份验证拦截器，主要属性： applicationName：弹出登录框显示的信息（application）；</p>
+</td>
+</tr><tr><td>
+<p>logout</p>
+</td>
+<td>
+<p>org.apache.shiro.web.filter.authc</p>
+<p>.LogoutFilter</p>
+</td>
+<td>
+<p>退出拦截器，主要属性：redirectUrl：退出成功后重定向的地址（/）; 示例 “/logout=logout”</p>
+</td>
+</tr><tr><td>
+<p>user</p>
+</td>
+<td>
+<p>org.apache.shiro.web.filter.authc</p>
+<p>.UserFilter</p>
+</td>
+<td>
+<p>用户拦截器，用户已经身份验证 / 记住我登录的都可；示例 “/**=user”</p>
+</td>
+</tr><tr><td>
+<p>anon</p>
+</td>
+<td>
+<p>org.apache.shiro.web.filter.authc</p>
+<p>.AnonymousFilter</p>
+</td>
+<td>
+<p>匿名拦截器，即不需要登录即可访问；一般用于静态资源过滤；示例 “/static/**=anon”</p>
+</td>
+</tr><tr><td>
+<p><strong>授权相关的</strong></p>
+</td>
+<td>
+<p> </p>
+</td>
+<td>
+<p> </p>
+</td>
+</tr><tr><td>
+<p>roles</p>
+</td>
+<td>
+<p>org.apache.shiro.web.filter.authz</p>
+<p>.RolesAuthorizationFilter</p>
+</td>
+<td>
+<p>角色授权拦截器，验证用户是否拥有所有角色；主要属性： loginUrl：登录页面地址（/login.jsp）；unauthorizedUrl：未授权后重定向的地址；示例 “/admin/**=roles[admin]”</p>
+</td>
+</tr><tr><td>
+<p>perms</p>
+</td>
+<td>
+<p>org.apache.shiro.web.filter.authz</p>
+<p>.PermissionsAuthorizationFilter</p>
+</td>
+<td>
+<p>权限授权拦截器，验证用户是否拥有所有权限；属性和 roles 一样；示例 “/user/**=perms["user:create"]”</p>
+</td>
+</tr><tr><td>
+<p>port</p>
+</td>
+<td>
+<p>org.apache.shiro.web.filter.authz</p>
+<p>.PortFilter</p>
+</td>
+<td>
+<p>端口拦截器，主要属性：port（80）：可以通过的端口；示例 “/test= port[80]”，如果用户访问该页面是非 80，将自动将请求端口改为 80 并重定向到该 80 端口，其他路径 / 参数等都一样</p>
+</td>
+</tr><tr><td>
+<p>rest</p>
+</td>
+<td>
+<p>org.apache.shiro.web.filter.authz</p>
+<p>.HttpMethodPermissionFilter</p>
+</td>
+<td>
+<p>rest 风格拦截器，自动根据请求方法构建权限字符串（GET=read, POST=create,PUT=update,DELETE=delete,HEAD=read,TRACE=read,OPTIONS=read, MKCOL=create）构建权限字符串；示例 “/users=rest[user]”，会自动拼出“user:read,user:create,user:update,user:delete” 权限字符串进行权限匹配（所有都得匹配，isPermittedAll）；</p>
+</td>
+</tr><tr><td>
+<p>ssl</p>
+</td>
+<td>
+<p>org.apache.shiro.web.filter.authz</p>
+<p>.SslFilter</p>
+</td>
+<td>
+<p>SSL 拦截器，只有请求协议是 https 才能通过；否则自动跳转会 https 端口（443）；其他和 port 拦截器一样；</p>
+</td>
+</tr><tr><td>
+<p class="MsoNormal"><strong>其他</strong></p>
+</td>
+<td>
+<p> </p>
+</td>
+<td>
+<p> </p>
+</td>
+</tr><tr><td>
+<p>noSessionCreation</p>
+</td>
+<td>
+<p>org.apache.shiro.web.filter.session</p>
+<p>.NoSessionCreationFilter</p>
+</td>
+<td>
+<p>不创建会话拦截器，调用 subject.getSession(false) 不会有什么问题，但是如果 subject.getSession(true) 将抛出 DisabledSessionException 异常；</p>
+</td>
+</tr></tbody></table>
