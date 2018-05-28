@@ -2953,3 +2953,104 @@ myFilter3=com.github.zhangkaitao.shiro.chapter8.web.filter.MyPathMatchingFilter
 /**= myFilter3[config]
 ```
 /** 就是注册给 PathMatchingFilter 的 url 模式，config 就是拦截器的配置参数，多个之间逗号分隔，onPreHandle 使用 mappedValue 接收参数值。
+
+#### 4、扩展 AccessControlFilter
+
+AccessControlFilter 继承了 PathMatchingFilter，并扩展了了两个方法：
+```java
+public boolean onPreHandle(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
+    return isAccessAllowed(request, response, mappedValue)
+     || onAccessDenied(request, response, mappedValue);
+}
+```
+
+* isAccessAllowed：即是否允许访问，返回 true 表示允许；
+* onAccessDenied：表示访问拒绝时是否自己处理，如果返回 true 表示自己不处理且继续拦截器链执行，返回 false 表示自己已经处理了（比如重定向到另一个页面）。
+
+```java
+public class MyAccessControlFilter extends AccessControlFilter {
+    protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
+        System.out.println("access allowed");
+        return true;
+    }
+    protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
+        System.out.println("访问拒绝也不自己处理，继续拦截器链的执行");
+        return true;
+    }
+}
+```
+
+然后在 shiro.ini 中进行如下配置：
+(注：原文空，补上：)
+```ini
+[filters]
+myFilter4=com.github.zhangkaitao.shiro.chapter8.web.filter.MyAccessControlFilter
+[urls]
+/**= myFilter4
+```
+
+#### 5、基于表单登录拦截器
+
+之前我们已经使用过 Shiro 内置的基于表单登录的拦截器了，此处自己做一个类似的基于表单登录的拦截器。
+
+```java
+public class FormLoginFilter extends PathMatchingFilter {
+
+    private String loginUrl = "/WEB-INF/jsp/ch8/index.jsp";
+    private String successUrl = "/";
+
+    @Override
+    protected boolean onPreHandle(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
+        if(SecurityUtils.getSubject().isAuthenticated()) {
+            return true;//已经登录过
+        }
+        HttpServletRequest req = (HttpServletRequest) request;
+        HttpServletResponse resp = (HttpServletResponse) response;
+        if(isLoginRequest(req)) {
+            if("post".equalsIgnoreCase(req.getMethod())) {//form表单提交
+                boolean loginSuccess = login(req); //登录
+                if(loginSuccess) {
+                    return redirectToSuccessUrl(req, resp);
+                }
+            }
+            return true;//继续过滤器链
+        } else {//保存当前地址并重定向到登录界面
+            saveRequestAndRedirectToLogin(req, resp);
+            return false;
+        }
+    }
+
+    private boolean redirectToSuccessUrl(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        WebUtils.redirectToSavedRequest(req, resp, successUrl);
+        return false;
+    }
+
+    private void saveRequestAndRedirectToLogin(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        WebUtils.saveRequest(req);
+        WebUtils.issueRedirect(req, resp, loginUrl);
+    }
+
+    private boolean login(HttpServletRequest req) {
+        String username = req.getParameter("username");
+        String password = req.getParameter("password");
+        try {
+            SecurityUtils.getSubject().login(new UsernamePasswordToken(username, password));
+        } catch (Exception e) {
+            req.setAttribute("shiroLoginFailure", e.getClass());
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isLoginRequest(HttpServletRequest req) {
+        return pathsMatch(loginUrl, WebUtils.getPathWithinApplication(req));
+    }
+}
+```
+
+onPreHandle 主要流程：
+
+* 首先判断是否已经登录过了，如果已经登录过了继续拦截器链即可；
+* 如果没有登录，看看是否是登录请求，如果是 get 方法的登录页面请求，则继续拦截器链（到请求页面），否则如果是 get 方法的其他页面请求则保存当前请求并重定向到登录页面；
+* 如果是 post 方法的登录页面表单提交请求，则收集用户名 / 密码登录即可，如果失败了保存错误消息到 “shiroLoginFailure” 并返回到登录页面；
+* 如果登录成功了，且之前有保存的请求，则重定向到之前的这个请求，否则到默认的成功页面。
