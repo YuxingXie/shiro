@@ -51,6 +51,7 @@
 > ## <a href='#cp9' id='ccp9'>Shiro 拦截器机制</a>
 >> ### <a href='#cp9-1' id='ccp9-1'>拦截器机制</a>
 >> ### <a href='#cp9-2' id='ccp9-2'>拦截器链</a>
+>> ### <a href='#cp9-3' id='ccp9-3'>自定义拦截器</a>
 
 > ## <a href='#cp10' id='ccp10'>Shiro JSP 标签</a>
 > ## <a href='#cp11' id='ccp11'>Shiro 会话管理</a>
@@ -2876,4 +2877,14 @@ public class MyOncePerRequestFilter extends OncePerRequestFilter {
         chain.doFilter(request, response);
     }
 }
+```
+然后再 shiro.ini 配置文件中：
+
+```ini
+[main]
+myFilter1=com.github.zhangkaitao.shiro.chapter8.web.filter.MyOncePerRequestFilter
+\#[filters]
+\#myFilter1=com.github.zhangkaitao.shiro.chapter8.web.filter.MyOncePerRequestFilter
+[urls]
+/**=myFilter1
 ```
