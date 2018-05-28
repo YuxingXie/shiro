@@ -2793,3 +2793,56 @@ public enum DefaultFilter {
 ```
 
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)注：现在终于知道这些拦截器的命名怎么来的了
+
+下一节会介绍这些拦截器的作用。
+
+如果要注册自定义拦截器，IniSecurityManagerFactory/WebIniSecurityManagerFactory 在启动时会自动扫描 ini 配置文件中的 \[filters\]/\[main\] 部分并注册这些拦截器到 
+DefaultFilterChainManager；且创建相应的 url 模式与其拦截器关系链。如果使用 Spring 后续章节会介绍如果注册自定义拦截器。
+
+如果想自定义 FilterChainResolver，可以通过实现 WebEnvironment 接口完成：
+
+```java
+public class MyIniWebEnvironment extends IniWebEnvironment {
+    @Override
+    protected FilterChainResolver createFilterChainResolver() {
+        //在此处扩展自己的FilterChainResolver
+        return super.createFilterChainResolver();
+    }
+}
+```
+
+FilterChain 之间的关系。如果想动态实现 url -拦截器的注册，就可以通过实现此处的 FilterChainResolver 来完成，比如：
+
+```java
+public class MyIniWebEnvironment extends IniWebEnvironment {
+    @Override
+    protected FilterChainResolver createFilterChainResolver() {
+        //在此处扩展自己的FilterChainResolver
+        //1、创建FilterChainResolver
+        PathMatchingFilterChainResolver filterChainResolver =
+                new PathMatchingFilterChainResolver();
+        //2、创建FilterChainManager
+        DefaultFilterChainManager filterChainManager = new DefaultFilterChainManager();
+        //3、注册Filter
+        for(DefaultFilter filter : DefaultFilter.values()) {
+            filterChainManager.addFilter(filter.name(), (Filter) ClassUtils.newInstance(filter.getFilterClass()));
+        }
+        //4、注册URL-Filter的映射关系
+        filterChainManager.addToChain("/WEB-INF/jsp/ch8/login.jsp", "authc");
+        filterChainManager.addToChain("/WEB-INF/jsp/ch8/unauthorized.jsp", "anon");
+        filterChainManager.addToChain("/**", "authc");
+        filterChainManager.addToChain("/**", "roles", "admin");
+
+        //5、设置Filter的属性
+        FormAuthenticationFilter authcFilter =
+                (FormAuthenticationFilter)filterChainManager.getFilter("authc");
+        authcFilter.setLoginUrl("/WEB-INF/jsp/ch8/login.jsp");
+        RolesAuthorizationFilter rolesFilter = (RolesAuthorizationFilter)filterChainManager.getFilter("roles");
+        rolesFilter.setUnauthorizedUrl("/WEB-INF/jsp/ch8/unauthorized.jsp");
+
+        filterChainResolver.setFilterChainManager(filterChainManager);
+        return filterChainResolver;
+//        return super.createFilterChainResolver();
+    }
+}
+```
