@@ -4280,8 +4280,12 @@ http://jinnianshilongnian.iteye.com/blog/1850425
 
 #### 集成目标
 
-* 无xml配置
-* gradle构建
+* 无xml配置(中)
+* gradle取代maven构建(易)
+* thymeleaf取代jsp渲染(难)
+* jar包取代war包(易)
+* 集成spring-data-jpa(中)
+
 
 #### 集成步骤
 
