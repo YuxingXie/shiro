@@ -53,11 +53,12 @@
 >> ### <a href='#cp9-2' id='ccp9-2'>拦截器链</a>
 >> ### <a href='#cp9-3' id='ccp9-3'>自定义拦截器</a>
 >> ### <a href='#cp9-4' id='ccp9-4'>默认拦截器</a>
-
 > ## <a href='#cp10' id='ccp10'>第九章：Shiro JSP 标签</a>
 > ## <a href='#cp11' id='ccp11'>第十章：Shiro 会话管理</a>
 > ## <a href='#cp12' id='ccp12'>第十一章：Shiro 缓存机制</a>
 > ## <a href='#cp13' id='ccp13'>第十二章：Shiro Spring 集成</a>
+>> ### <a href='#cp13-1' id='ccp13-1'>与xml配置式Spring集成</a>
+>> ### <a href='#cp13-2' id='ccp13-2'>与spring-boot集成</a>
 > ## <a href='#cp14' id='ccp14'>第十三章：Shiro RememberMe</a>
 > ## <a href='#cp15' id='ccp15'>第十四章：Shiro SSL</a>
 > ## <a href='#cp16' id='ccp16'>第十五章：Shiro 单点登录</a>
@@ -4023,7 +4024,11 @@ activeSessionsCacheName 默认就是 shiro-activeSessionCache。
 
 ## 第十二章：Shiro Spring 集成 <a href='#ccp13'>目录</a>
 
-### 与 Spring集成
+
+<div id='cp13-1'></div>
+
+
+### xml配置式Spring集成<a href='#ccp13-1'>目录</a>
 
 Shiro 的组件都是 JavaBean/POJO 式的组件，所以非常容易使用 Spring 进行组件管理，可以非常方便的从 ini 配置迁移到 Spring 进行管理，且支持 JavaSE 应用及 Web 应用的集成。
 
@@ -4031,7 +4036,7 @@ Shiro 的组件都是 JavaBean/POJO 式的组件，所以非常容易使用 Spri
 
 spring-beans.xml 配置文件提供了基础组件如 DataSource、DAO、Service 组件的配置。
 
-### JavaSE 应用
+#### JavaSE 应用
 
 spring-shiro.xml 提供了普通 JavaSE 独立应用的 Spring 配置：
 ```xml
@@ -4105,7 +4110,7 @@ DefaultSecurityManager 实现了 Destroyable。具体可以查看它们的继承
 
 测试用例请参考 com.github.zhangkaitao.shiro.chapter12.ShiroTest。
 
-### Web 应用
+#### Web 应用
 
 Web 应用和普通 JavaSE 应用的某些配置是类似的，此处只提供一些不一样的配置，详细配置可以参考 spring-shiro-web.xml。
 
@@ -4206,7 +4211,7 @@ DelegatingFilterProxy 会自动到 Spring 容器中查找名字为 shiroFilter �
 
 其他配置请参考源代码。
 
-### Shiro 权限注解
+#### Shiro 权限注解
 
 Shiro 提供了相应的注解用于权限控制，如果使用这些注解就需要使用 AOP 的功能来进行判断，如 Spring AOP；Shiro 提供了 Spring AOP 集成用于权限注解的解析和验证。
 
@@ -4250,7 +4255,7 @@ public ModelAndView processUnauthenticatedException(NativeWebRequest request, Un
 如果集成 Struts2，需要注意《Shiro+Struts2+Spring3 加上 @RequiresPermissions 后 @Autowired 失效》问题：
 http://jinnianshilongnian.iteye.com/blog/1850425
 
-#### 权限注解
+##### 权限注解
 
     @RequiresAuthentication
 表示当前 Subject 已经通过 login 进行了身份验证；即 Subject.isAuthenticated() 返回 true。
@@ -4266,3 +4271,7 @@ http://jinnianshilongnian.iteye.com/blog/1850425
 
     @RequiresPermissions (value={“user:a”, “user:b”}, logical= Logical.OR)
 表示当前 Subject 需要权限 user：a 或 user：b。
+
+<div id='cp13-2'></div>
+
+### 与spring-boot集成 <a href='#ccp13-2'>目录</a>
