@@ -4276,7 +4276,7 @@ http://jinnianshilongnian.iteye.com/blog/1850425
 
 ### 与spring-boot集成 <a href='#ccp13-2'>目录</a>
 
-注：本小节未完成，见谅！
+注：本小节未完成，请见谅！
 
 #### 集成目标
 
@@ -4288,6 +4288,8 @@ http://jinnianshilongnian.iteye.com/blog/1850425
 ##### 1、新建gradle项目
 
 虽然原则上开发不应该依赖于特定工具，但为方便讲解，本小节使用集成开发环境intellij IDEA。
+
+本人操作系统为macOS High Sierra 10.13.4 (17E202)
 
 1. file-->new Module ,or file-->new Project
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/sh-3.png)
@@ -4301,20 +4303,51 @@ http://jinnianshilongnian.iteye.com/blog/1850425
 ##### 2、添加gradle依赖
 
 gradle比maven配置简单，比如spring-boot-start-web实际是跟spring web集成相关的一组依赖。
+
 ```groovy
-group 'com.lingyun.shiro'
-version '1.0-SNAPSHOT'
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.9.RELEASE")
+    }
+}
+
+allprojects {
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+        }
+    }
+}
 
 apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
 
 sourceCompatibility = 1.8
-
+jar {
+    baseName = 'lingyun-shiro'
+    version =  '0.1.0'
+}
 repositories {
     mavenCentral()
 }
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+    compile("org.springframework.boot:spring-boot-starter-actuator")
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
+    compile group: 'org.springframework.boot', name: 'spring-boot-devtools'
+    compile group: 'org.apache.shiro', name: 'shiro-all', version: '1.3.2'
+    compile group: 'log4j', name: 'log4j', version: '1.2.17'
+    compile group: 'org.apache.shiro', name: 'shiro-ehcache', version: '1.4.0'
+    compile group: 'com.h2database', name: 'h2', version: '1.4.196'
 }
 ```
 
