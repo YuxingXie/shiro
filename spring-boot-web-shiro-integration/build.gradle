@@ -27,6 +27,7 @@ jar {
     version =  '0.1.0'
 }
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -35,6 +36,7 @@ dependencies {
     testCompile("org.springframework.boot:spring-boot-starter-test")
     compile("org.springframework.boot:spring-boot-starter-actuator")
     compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework.boot:spring-boot-starter-data-jpa")
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
     compile group: 'org.springframework.boot', name: 'spring-boot-devtools'
     compile group: 'org.apache.shiro', name: 'shiro-all', version: '1.3.2'

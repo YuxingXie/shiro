@@ -4308,6 +4308,8 @@ http://jinnianshilongnian.iteye.com/blog/1850425
 
 gradle比maven配置简单，比如spring-boot-start-web实际是跟spring web集成相关的一组依赖。
 
+在Project或Module根目录中找到build.gradle，拷贝如下内容：
+
 ```groovy
 buildscript {
     repositories {
@@ -4354,5 +4356,40 @@ dependencies {
     compile group: 'com.h2database', name: 'h2', version: '1.4.196'
 }
 ```
+是不是比maven配置简单得多呢？书写简化，自动最新version，等等。
+
+具体的gradle构建的技术细节本人也未深入研究，所以就先依样画葫芦吧。
 
 ##### 3、从.xml到java code配置
+
+###### 程序入口
+
+spring-boot-web与传统web相比，简直天翻地覆。首先WebRoot--WEB-INF--web.xml这种结构不见了，甚至连web容器都不见了。它现在就是一个jar程序。在终端使用
+
+    java -jar xxxxx.jar
+启动。首先我们要为程序构造一个入口。
+
+com.lingyun.demos.shiro.config.Application:
+
+```java
+@SpringBootApplication()
+@EnableJpaRepositories(basePackages = {"com.lingyun.demos.**.repository"})
+@EnableAutoConfiguration
+@EntityScan(basePackages ={"com.lingyun.demos.**.entity"})
+@ServletComponentScan("com.lingyun.demos.**.filter")
+public class Application implements ApplicationListener<ContextRefreshedEvent> {
+
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+        
+    }
+}
+```
+说明：
+* 这不是一个最小配置
+
+
