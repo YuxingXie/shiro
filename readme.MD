@@ -4302,7 +4302,20 @@ http://jinnianshilongnian.iteye.com/blog/1850425
 
 gradle比maven配置简单，比如spring-boot-start-web实际是跟spring web集成相关的一组依赖。
 ```groovy
+group 'com.lingyun.shiro'
+version '1.0-SNAPSHOT'
 
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
 ```
 
 ##### 3、从.xml到java code配置
