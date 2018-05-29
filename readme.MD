@@ -4373,23 +4373,93 @@ com.lingyun.demos.shiro.config.Application:
 
 ```java
 @SpringBootApplication()
-@EnableJpaRepositories(basePackages = {"com.lingyun.demos.**.repository"})
-@EnableAutoConfiguration
-@EntityScan(basePackages ={"com.lingyun.demos.**.entity"})
-@ServletComponentScan("com.lingyun.demos.**.filter")
-public class Application implements ApplicationListener<ContextRefreshedEvent> {
-
+public class Application{
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
-
-    @Override
-    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        
-    }
 }
 ```
-说明：
-* 这不是一个最小配置
+
+没错，这是spring-boot的最小配置，如此简单一个web程序可以启动了，启动方法如下：
+![](https://github.com/YuxingXie/shiro/raw/master/doc/sh-5.png)
+
+甚至在该文件右键菜单点击 Run 'Application'即可启动。
+
+浏览器地址栏输入 http://localhost:8080 访问，可以看到 Whitelabel Error Page 页，因为没有设置网站根路由，所以会返回一个错误页。我们在/src/main/resources
+下新建一个public目录，新建一个index.html,重启一下程序，发现根路由可以访问了。
+
+因为本小节不是gradle和spring-boot教学，所以简单入门就讲到这里。下面正式开讲shiro和spring-boot集成。
+
+
+###### 集成spring-data-jpa
+
+根据集成目标需要集成spring-data-jpa，我们在Application加上类注解
+    
+    @EnableJpaRepositories(basePackages = {"com.lingyun.demos.**.repository"})
+    
+@EnableJpaRepositories注解会让程序会自动检测包中的jpa repository。
+
+再加上
+
+    @EntityScan(basePackages ={"com.lingyun.demos.**.entity"})
+
+@EntityScan注解用于检测jpa实体类。
+
+现在我们建立几个实体类用于映射关系型数据库表字段。当然我们也可以先建表再建实体类。因为jpa框架有从实体类自动生成建表DDL并执行
+的能力，我倾向于从实体类依靠框架生成数据库表结构。如果您喜欢先建表再把表映射为实体，我推荐使用google的一个脚手架工具code-generator。
+
+
+###### 配置jpa参数
+
+为了能够让jpa自动映射建表，我们需要新建一个在resources资源文件夹下的application.properties文件。这似乎与零配置的的构建目标违背，但我们的目标是让xml配置消失，
+这并没有违背。application.properties文件如下：
+```properties
+spring.jpa.show-sql=true
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.hibernate.dialect=org.hibernate.dialect.H2Dialect
+```
+spring-boot默认应用读取此文件中的配置。我们还可以配合@Profile注解，以便在不同的环境(开发环境，生产环境)建立
+application-dev.properties,application-prod.properties应用不同的配置。
+
+注：hibernate是jpa的一个具体实现，所以jpa配置中出现了hibernate的身影，我认为这是一个历史遗留问题。
+
+###### 配置数据源
+
+在Application中加入如下方法：
+
+```java
+    @Bean
+    public DataSource dataSourceH2() {
+        DriverManagerDataSource ds=new DriverManagerDataSource();
+        ds.setDriverClassName("org.h2.Driver");
+        ds.setUrl("jdbc:h2:~/shiro;MVCC=TRUE");
+        return ds;
+    }
+```
+
+###### 自动映射建表
+
+到此，我们启动spring-boot程序后，程序会自动建表了，下面是控制台的部分打印：
+```text
+Hibernate: drop table sys_permissions if exists
+Hibernate: drop table sys_role_permission if exists
+Hibernate: drop table sys_roles if exists
+Hibernate: drop table sys_user_role if exists
+Hibernate: drop table sys_users if exists
+Hibernate: create table sys_permissions (id varchar(255) not null, available boolean, description varchar(255), permission varchar(255), primary key (id))
+Hibernate: create table sys_role_permission (role_id varchar(255) not null, permission_id varchar(255) not null)
+Hibernate: create table sys_roles (id varchar(255) not null, available boolean, description varchar(255), role varchar(255), primary key (id))
+Hibernate: create table sys_user_role (user_id varchar(255) not null, role_id varchar(255) not null, primary key (user_id, role_id))
+Hibernate: create table sys_users (id varchar(255) not null, locked boolean, password varchar(255), salt varchar(255), username varchar(255), primary key (id))
+Hibernate: alter table sys_role_permission add constraint UK_8n7kjpptsuop8jvkeh4ls34ct unique (permission_id)
+Hibernate: alter table sys_role_permission add constraint FKnnsgqepyiht19by484jaugwkq foreign key (permission_id) references sys_permissions
+Hibernate: alter table sys_role_permission add constraint FKncm6su7kk6wkk3n94u1txphrm foreign key (role_id) references sys_roles
+Hibernate: alter table sys_user_role add constraint FK57npuokwjk6p6v3tbfxp3d65i foreign key (role_id) references sys_roles
+Hibernate: alter table sys_user_role add constraint FKe2itwtwrl60nromvh4kqr5y97 foreign key (user_id) references sys_users
+```
+
+可以看到，我们并未创建SYS_USER_ROLE和SYS_ROLE_PERMISSION表映射实体，但通过@OneToMany和@ManyToMany注解映射生成了这两张表。
+
+
 
 
