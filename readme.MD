@@ -4408,6 +4408,76 @@ public class Application{
 现在我们建立几个实体类用于映射关系型数据库表字段。当然我们也可以先建表再建实体类。因为jpa框架有从实体类自动生成建表DDL并执行
 的能力，我倾向于从实体类依靠框架生成数据库表结构。如果您喜欢先建表再把表映射为实体，我推荐使用google的一个脚手架工具code-generator。
 
+###### 编写Entity
+
+com.lingyun.demos.shiro.entity.User:
+
+```java
+@Entity
+@Table(name = "sys_users")
+public class User {
+    @Id
+    @GenericGenerator(name ="system-uuid", strategy = "uuid")
+    @GeneratedValue(generator ="system-uuid")
+    private String id;
+    @Column
+    private String username;
+    @Column
+    private String password;
+
+    @Column
+    private String salt;
+
+    @Column
+    private Boolean locked;
+
+    @ManyToMany(targetEntity = Role.class, cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @JoinTable(name = "sys_user_role", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id") , inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id") )
+    private Set<Role> roles;
+
+    //省略getter和setter
+    
+}
+```
+com.lingyun.demos.shiro.entity.Role:
+```java
+@Entity
+@Table(name = "sys_roles")
+public class Role {
+    @Id
+    @GenericGenerator(name ="system-uuid", strategy = "uuid")
+    @GeneratedValue(generator ="system-uuid")
+    private String id;
+    @Column
+    private String role;
+    @Column
+    private String description;
+    @Column
+    private Boolean available;
+    @OneToMany(targetEntity = Permission.class, cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @JoinTable(name = "sys_role_permission", joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id") , inverseJoinColumns = @JoinColumn(name = "permission_id", referencedColumnName = "id", unique = true) )
+    private List<Permission> permissions;
+    //省略getter和setter
+}
+```
+com.lingyun.demos.shiro.entity.Permission:
+```java
+@Entity
+@Table(name = "sys_permissions")
+public class Permission {
+    @Id
+    @GenericGenerator(name ="system-uuid", strategy = "uuid")
+    @GeneratedValue(generator ="system-uuid")
+    private String id;
+    @Column
+    private String permission;
+    @Column
+    private String description;
+    @Column
+    private Boolean available;
+    //省略getter和setter
+}
+```
 
 ###### 配置jpa参数
 
@@ -4437,7 +4507,7 @@ application-dev.properties,application-prod.properties应用不同的配置。
     }
 ```
 
-###### 自动映射建表
+###### 自动映射建建表
 
 到此，我们启动spring-boot程序后，程序会自动建表了，下面是控制台的部分打印：
 ```text
