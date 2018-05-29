@@ -4023,7 +4023,7 @@ activeSessionsCacheName 默认就是 shiro-activeSessionCache。
 <div id='cp13'></div>
 
 ## 第十二章：Shiro Spring 集成 <a href='#ccp13'>目录</a>
-
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)注：除了原作者讲述的使用配置式spring集成外，本人添加了一节《与spring-boot集成》。
 
 <div id='cp13-1'></div>
 
