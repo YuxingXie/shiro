@@ -4275,3 +4275,34 @@ http://jinnianshilongnian.iteye.com/blog/1850425
 <div id='cp13-2'></div>
 
 ### 与spring-boot集成 <a href='#ccp13-2'>目录</a>
+
+注：本小节未完成，见谅！
+
+#### 集成目标
+
+* 无xml配置
+* gradle构建
+
+#### 集成步骤
+
+##### 1、新建gradle项目
+
+虽然原则上开发不应该依赖于特定工具，但为方便讲解，本小节使用集成开发环境intellij IDEA。
+
+1. file-->new Module ,or file-->new Project
+![](https://github.com/YuxingXie/shiro/raw/master/doc/sh-3.png)
+
+2.choose "gradle" in  dialog box,then click "next" button
+![](https://github.com/YuxingXie/shiro/raw/master/doc/sh-4.png)
+
+3. fill groupId and artifactId and click "next" button
+
+
+##### 2、添加gradle依赖
+
+gradle比maven配置简单，比如spring-boot-start-web实际是跟spring web集成相关的一组依赖。
+```groovy
+
+```
+
+##### 3、从.xml到java code配置
