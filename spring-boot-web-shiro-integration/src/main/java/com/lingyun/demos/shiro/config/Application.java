@@ -13,7 +13,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
 
-@SpringBootApplication()
+@SpringBootApplication(scanBasePackages = {"com.lingyun.demos.**.controller", "com.lingyun.demos.**.service"})
 @EnableJpaRepositories(basePackages = {"com.lingyun.demos.**.repository"})
 @EnableAutoConfiguration
 @EntityScan(basePackages ={"com.lingyun.demos.**.entity"})

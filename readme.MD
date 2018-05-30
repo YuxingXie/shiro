@@ -4276,7 +4276,7 @@ http://jinnianshilongnian.iteye.com/blog/1850425
 
 ### 与spring-boot集成 <a href='#ccp13-2'>目录</a>
 
-注：本小节未完成，请见谅！
+注：本小节正在努力完成，请见谅！
 
 #### 集成目标
 
@@ -4529,6 +4529,10 @@ Hibernate: alter table sys_user_role add constraint FKe2itwtwrl60nromvh4kqr5y97 
 ```
 
 可以看到，我们并未创建SYS_USER_ROLE和SYS_ROLE_PERMISSION表映射实体，但通过@OneToMany和@ManyToMany注解映射生成了这两张表。
+
+###### 构建service和controller
+
+
 
 
 
