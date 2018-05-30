@@ -59,6 +59,10 @@
 > ## <a href='#cp13' id='ccp13'>第十二章：Shiro Spring 集成</a>
 >> ### <a href='#cp13-1' id='ccp13-1'>与xml配置式Spring集成</a>
 >> ### <a href='#cp13-2' id='ccp13-2'>与spring-boot集成</a>
+>>> #### <a href='#cp13-2-1' id='ccp13-2-1'>集成目标</a>
+>>> #### <a href='#cp13-2-2' id='ccp13-2-2'>前置步骤</a>
+>>> #### <a href='#cp13-2-3' id='ccp13-2-3'>整合shiro</a>
+
 > ## <a href='#cp14' id='ccp14'>第十三章：Shiro RememberMe</a>
 > ## <a href='#cp15' id='ccp15'>第十四章：Shiro SSL</a>
 > ## <a href='#cp16' id='ccp16'>第十五章：Shiro 单点登录</a>
@@ -4278,7 +4282,11 @@ http://jinnianshilongnian.iteye.com/blog/1850425
 
 注：本小节正在努力完成，请见谅！
 
-#### 集成目标
+
+<div id='cp13-2-1'></div>
+
+#### 集成目标 <a href='#ccp13-2-1'>目录</a>
+
 
 * 无xml配置(中)
 * gradle取代maven构建(易)
@@ -4286,8 +4294,10 @@ http://jinnianshilongnian.iteye.com/blog/1850425
 * jar包取代war包(易)
 * 集成spring-data-jpa(中)
 
+<div id='cp13-2-2'></div>
 
-#### 集成步骤
+#### 前置步骤 <a href='#ccp13-2-2'>目录</a>
+
 
 ##### 1、新建gradle项目
 
@@ -4605,7 +4615,7 @@ welcome to user index !
 ```
 启动spring-boot程序，浏览器中输入 http://localhost:8080/user ，可以看到控制台打印和浏览器的响应都如我们的预期。
 
-控制台：
+控制台打印：
 ```text
 Hibernate: select user0_.id as id1_4_, user0_.locked as locked2_4_, user0_.password as password3_4_, user0_.salt as salt4_4_, user0_.username as username5_4_ from sys_users user0_
 find 0 users
@@ -4613,7 +4623,9 @@ find 0 users
 
 浏览器显示：welcome to user index !
 
+<div id='cp13-2-3'></div>
 
+#### 整合shiro <a href='#ccp13-2-3'>目录</a>
 
 
 
