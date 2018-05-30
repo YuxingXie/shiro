@@ -4291,9 +4291,7 @@ http://jinnianshilongnian.iteye.com/blog/1850425
 
 ##### 1、新建gradle项目
 
-虽然原则上开发不应该依赖于特定工具，但为方便讲解，本小节使用集成开发环境intellij IDEA。
-
-本人操作系统为macOS High Sierra 10.13.4 (17E202)
+虽然原则上开发不应该依赖于特定工具，但为方便讲解，本小节使用集成开发环境intellij IDEA，操作系统macOS。
 
 1. file-->new Module ,or file-->new Project
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/sh-3.png)
@@ -4409,6 +4407,8 @@ public class Application{
 的能力，我倾向于从实体类依靠框架生成数据库表结构。如果您喜欢先建表再把表映射为实体，我推荐使用google的一个脚手架工具code-generator。
 
 ###### 编写Entity
+
+编写三张表sys_users，sys_roles，sys_permissions的实体映射。为什么不需要映射sys_user_role和sys_role_permission稍后说明。
 
 com.lingyun.demos.shiro.entity.User:
 
@@ -4530,7 +4530,89 @@ Hibernate: alter table sys_user_role add constraint FKe2itwtwrl60nromvh4kqr5y97 
 
 可以看到，我们并未创建SYS_USER_ROLE和SYS_ROLE_PERMISSION表映射实体，但通过@OneToMany和@ManyToMany注解映射生成了这两张表。
 
-###### 构建service和controller
+###### 构建service、repository和controller
+
+Application的注解@SpringBootApplication()改为
+```java
+@SpringBootApplication(scanBasePackages = {"com.lingyun.demos.**.controller", "com.lingyun.demos.**.service", "com.lingyun.demos.**.repository"})
+```
+
+spring-boot会自动检测花括号内的这些包，如果包内包含@Controller和@Service的类会自动注册为spring Bean。
+
+新建com.lingyun.demos.shiro.repository.UserRepository接口如下：
+
+```java
+public interface UserRepository extends JpaRepository<User,String>{
+}
+```
+不需要任何注解，spring-data-jpa自动识别该接口为数据访问层接口，自动实现接口中的一些简单CRUD方法。如果要实现复杂的自定义方法，我们只需2步：
+
+1. 建一个该接口名+Impl后缀为类名的类，编写一个自定义方法，类似于:
+```java
+public class UserRepositoryImpl {
+    @PersistenceContext
+    private EntityManager em;
+    
+    public void testSelectAll(){
+        String jpql="select user from User user";
+        List<User> userList=em.createQuery(jpql, User.class).getResultList();
+        if(userList==null){
+            System.out.println("no user find");
+
+        }else {
+            System.out.println("find "+userList.size()+" users");
+        }
+    }
+}
+```
+注意UserRepositoryImpl不需要implements UserRepository。
+
+2. 在UserRepository中定义该方法
+```java
+public interface UserRepository extends JpaRepository<User,String>{
+    void testSelectAll();
+}
+```
+接下来我们在控制器中调用该方法。为了简单，本人省略了service层编写，controller直接调用repository方法。
+
+现在编写控制器
+com.lingyun.demos.shiro.controller.UserController
+```java
+@Controller
+@RequestMapping("/user")
+public class UserController {
+    @Autowired
+    private UserRepository userRepository;
+    @RequestMapping("/")
+    public String userIndex(){
+        userRepository.testSelectAll();
+        return "forward:/user/index.html";
+    }
+}
+```
+新建一个spring-boot-web-shiro-integration/src/main/resources/public/user/index.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+welcome to user index !
+</body>
+</html>
+```
+启动spring-boot程序，浏览器中输入 http://localhost:8080/user ，可以看到控制台打印和浏览器的响应都如我们的预期。
+
+控制台：
+```text
+Hibernate: select user0_.id as id1_4_, user0_.locked as locked2_4_, user0_.password as password3_4_, user0_.salt as salt4_4_, user0_.username as username5_4_ from sys_users user0_
+find 0 users
+```
+
+浏览器显示：welcome to user index !
+
 
 
 
