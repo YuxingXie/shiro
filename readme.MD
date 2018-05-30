@@ -15,9 +15,6 @@
 
 # 目录
 > ## <a href='#cp1' id='ccp1'>Shiro 关于</a>
->> ### <a href='#cp1-1' id='ccp1-1'>Shiro 关于</a>
->> ### <a href='#cp1-2' id='ccp1-2'>适用人群</a>
->> ### <a href='#cp1-3' id='ccp1-2'>学习前提</a>
 > ## <a href='#cp2' id='ccp2'>第一章：Shiro 简介</a>
 >> ### <a href='#cp2-1' id='ccp2-1'>Shiro 简介</a>
 > ## <a href='#cp3' id='ccp3'>第二章：Shiro 身份验证</a>
