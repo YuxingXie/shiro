@@ -8,6 +8,7 @@
 * 为了显示语法高亮，文中源码片段增加了类或接口名；
 * jdbc连接改为使用H2数据库，并使用spring-jdbc api;
 * 某些难度不大的章节(不代表不重要)没有源代码分析，可从原文项目gitHub下载；
+* 增加了与spring-boot集成自编章节；
 * 排版略做改动,并修正一些错误；
 * 如果知识点有心得或疑问，在源代码中TODO注释或在本文档中用 ![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png) 图标表示。
 
@@ -4559,16 +4560,19 @@ public class UserRepositoryImpl {
     @PersistenceContext
     private EntityManager em;
     
-    public void testSelectAll(){
-        String jpql="select user from User user";
-        List<User> userList=em.createQuery(jpql, User.class).getResultList();
-        if(userList==null){
-            System.out.println("no user find");
-
-        }else {
-            System.out.println("find "+userList.size()+" users");
+    public User findByUsername(String username){
+            String jpql="select user from User user where user.username = ?1";
+            TypedQuery<User> query=em.createQuery(jpql, User.class);
+            query.setParameter(1,username);
+            List<User> userList=query.getResultList();
+            assert userList==null||userList.size()<=1;
+            if(userList==null|userList.size()==0){
+                System.out.println("no user find");
+            }else {
+                System.out.println("find "+userList.size()+" users");
+            }
+            return userList==null||userList.size()==0?null:userList.get(0);
         }
-    }
 }
 ```
 注意UserRepositoryImpl不需要implements UserRepository。
@@ -4576,7 +4580,7 @@ public class UserRepositoryImpl {
 2. 在UserRepository中定义该方法
 ```java
 public interface UserRepository extends JpaRepository<User,String>{
-    void testSelectAll();
+    User findByUsername(String username);
 }
 ```
 接下来我们在控制器中调用该方法。为了简单，本人省略了service层编写，controller直接调用repository方法。
@@ -4591,7 +4595,7 @@ public class UserController {
     private UserRepository userRepository;
     @RequestMapping("/")
     public String userIndex(){
-        userRepository.testSelectAll();
+        User user=userRepository.findByUsername("zhang");
         return "forward:/user/index.html";
     }
 }
@@ -4613,8 +4617,8 @@ welcome to user index !
 
 控制台打印：
 ```text
-Hibernate: select user0_.id as id1_4_, user0_.locked as locked2_4_, user0_.password as password3_4_, user0_.salt as salt4_4_, user0_.username as username5_4_ from sys_users user0_
-find 0 users
+Hibernate: select user0_.id as id1_4_, user0_.locked as locked2_4_, user0_.password as password3_4_, user0_.salt as salt4_4_, user0_.username as username5_4_ from sys_users user0_ where user0_.username=?
+no user find
 ```
 
 浏览器显示：welcome to user index !
@@ -4623,7 +4627,172 @@ find 0 users
 
 #### 整合shiro <a href='#ccp13-2-3'>目录</a>
 
+现在只需要把shiro和spring-boot进行整合了。为了达成整合目标，我们不能使用xml和ini配置，也不能使用jsp标签。
+
+首先我们编写一个AuthorizingRealm扩展类MyShiroRealm:
+```java
+public class MyShiroRealm extends AuthorizingRealm {
+
+    @Autowired
+    private UserRepository userRepository;
 
 
+    @Override
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token)
+            throws AuthenticationException {
+        //获取用户的输入的账号.
+        String username = ((UsernamePasswordToken) token).getUsername();
+        String password = new String(((UsernamePasswordToken) token).getPassword());
+        User user = userRepository.findByUsername(username);
+
+        System.out.println(user+"dsdas");
+        if(user == null){
+            return null;
+        }
+        //ByteSource salt = ByteSource.Util.bytes(user.getId());
+        //交给AuthenticatingRealm使用CredentialsMatcher进行密码匹配，如果觉得人家的不好可以自定义实现
+        SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(user.getUsername(),user.getPassword(),this.getClass().getName());
+        return authenticationInfo;
+    }
+
+    
+    @Override
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
+        return null;
+    }
+
+}
+```
+
+然后我们要把配置移到java类中，我们编写一个ShiroConfiguration类：
+```java
+@Configuration
+public class ShiroConfiguration {
+
+
+    @Bean(name = "shiroFilter")
+    public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager) {
+
+        ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
+        // 必须设置 SecurityManager
+        shiroFilterFactoryBean.setSecurityManager(securityManager);
+
+        Map<String, String> filterChainDefinitionMap = new LinkedHashMap<String, String>();
+        // 配置退出过滤器,其中的具体的退出代码Shiro已经替我们实现了
+        filterChainDefinitionMap.put("/user/logout", "anon");
+//        //配置记住我或认证通过可以访问的地址
+
+
+        filterChainDefinitionMap.put("/user", "anon");
+        filterChainDefinitionMap.put("/**", "anon");
+
+        // 如果不设置默认会自动寻找Web工程根目录下的"/login.jsp"页面
+        shiroFilterFactoryBean.setLoginUrl("/user/login");
+        // 登录成功后要跳转的链接
+        shiroFilterFactoryBean.setSuccessUrl("/index");
+        // 未授权界面
+        shiroFilterFactoryBean.setUnauthorizedUrl("/errorView/403_error.html");//不生效(详情原因看MyExceptionResolver)
+        shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
+        return shiroFilterFactoryBean;
+    }
+
+    @Bean
+    public SecurityManager securityManager() {
+        DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
+        // 设置realm.
+        securityManager.setRealm(myShiroRealm());
+        //注入缓存管理器;
+        //注意:开发时请先关闭，如不关闭热启动会报错
+        //securityManager.setCacheManager(ehCacheManager());//这个如果执行多次，也是同样的一个对象;
+        //注入记住我管理器;
+        securityManager.setRememberMeManager(rememberMeManager());
+        return securityManager;
+    }
+
+    /**
+     * 身份认证realm; (这个需要自己写，账号密码校验；权限等)
+     */
+    @Bean
+    public MyShiroRealm myShiroRealm() {
+        MyShiroRealm myShiroRealm = new MyShiroRealm();
+        //使用MD5加密进行密码验证
+       myShiroRealm.setCredentialsMatcher(hashedCredentialsMatcher());
+        return myShiroRealm;
+    }
+
+    /**
+     * 凭证匹配器 （由于我们的密码校验交给Shiro的SimpleAuthenticationInfo进行处理了
+     * 所以我们需要修改下doGetAuthenticationInfo中的代码; @return
+     */
+    @Bean
+    public HashedCredentialsMatcher hashedCredentialsMatcher() {
+        HashedCredentialsMatcher hashedCredentialsMatcher = new HashedCredentialsMatcher();
+        hashedCredentialsMatcher.setHashAlgorithmName("md5");// 散列算法:这里使用MD5算法;
+        hashedCredentialsMatcher.setHashIterations(1);// 散列的次数，比如散列两次，相当于md5(md5(""));
+        hashedCredentialsMatcher.setStoredCredentialsHexEncoded(true);//表示是否存储散列后的密码为16进制，需要和生成密码时的一样，默认是base64；
+        return hashedCredentialsMatcher;
+    }
+
+    /**
+     * 开启shiro aop注解支持. 使用代理方式;所以需要开启代码支持;
+     * @param securityManager
+     * @return
+     */
+    @Bean
+    public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(SecurityManager securityManager) {
+        AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
+        authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);
+        return authorizationAttributeSourceAdvisor;
+    }
+    /**
+     * shiro缓存管理器;
+     * 需要注入对应的其它的实体类中：
+     * 1、安全管理器：securityManager
+     * 可见securityManager是整个shiro的核心；
+     *
+     * @return
+     */
+    @Bean
+    public EhCacheManager ehCacheManager(){
+        EhCacheManager cacheManager = new EhCacheManager();
+        //cacheManager.setCacheManagerConfigFile("classpath:ehcache-shiro.xml");
+        return cacheManager;
+    }
+    /**
+     * cookie对象;
+     * @return
+     * */
+    @Bean
+    public SimpleCookie rememberMeCookie(){
+        //System.out.println("ShiroConfiguration.rememberMeCookie()");
+        //这个参数是cookie的名称，对应前端的checkbox的name = rememberMe
+        SimpleCookie simpleCookie = new SimpleCookie("rememberMe");
+        //<!-- 记住我cookie生效时间30天 ,单位秒;-->
+        simpleCookie.setMaxAge(259200);
+        return simpleCookie;
+    }
+    /**
+     * cookie管理对象;
+     * @return
+     */
+    @Bean
+    public CookieRememberMeManager rememberMeManager(){
+        //System.out.println("ShiroConfiguration.rememberMeManager()");
+        CookieRememberMeManager cookieRememberMeManager = new CookieRememberMeManager();
+        cookieRememberMeManager.setCookie(rememberMeCookie());
+        return cookieRememberMeManager;
+    }
+
+
+}
+```
+为了使配置生效，需要在Application.java的@SpringBootApplication注解的scanBasePackages加上ShiroConfiguration.java的包名：
+```java
+@SpringBootApplication(scanBasePackages = {
+        "com.lingyun.demos.**.controller",
+        "com.lingyun.demos.**.config",
+        "com.lingyun.demos.**.service",
+        "com.lingyun.demos.**.repository"})
+```
 
 
