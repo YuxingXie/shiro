@@ -137,8 +137,9 @@ Shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 J
 
 也就是说对于我们而言，最简单的一个 Shiro 应用：
 
-* ：应用代码通过 Subject 来进行认证和授权，而 Subject 又委托给 SecurityManager；
-* ：我们需要给 Shiro 的 SecurityManager 注入 Realm，从而让 SecurityManager 能得到合法的用户及其权限进行判断。
+* 应用代码通过 Subject 来进行认证和授权，而 Subject 又委托给 SecurityManager；
+
+* 我们需要给 Shiro 的 SecurityManager 注入 Realm，从而让 SecurityManager 能得到合法的用户及其权限进行判断。
 
 
 从以上也可以看出，Shiro 不提供维护用户 / 权限，而是通过 Realm 让开发人员自己注入。
@@ -169,7 +170,7 @@ Shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 J
 
 <div id="cp3"></div>
 
-## Shiro 身份验证 <a href='#ccp3'>目录</a>
+## 第二章：Shiro 身份验证 <a href='#ccp3'>目录</a>
 
 <div id="cp3-1"></div>
 
@@ -214,6 +215,7 @@ Shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 J
 
 ### 登录 / 退出 <a href='#ccp3-3'>目录</a>
 1、首先准备一些用户身份 / 凭据（shiro.ini）
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png) 注：可以理解为一种.ini形式的realm?
 
     
     [users]
