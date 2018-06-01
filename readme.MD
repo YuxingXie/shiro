@@ -309,15 +309,19 @@ Shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 J
 Realm：域，Shiro 从从 Realm 获取安全数据（如用户、角色、权限），就是说 SecurityManager 要验证用户身份，那么它需要从 Realm 获取相应的用户进行比较以确定用户身份是否合法；也需要从 Realm 得到用户相应的角色 / 权限进行验证用户是否能进行操作；可以把 Realm 看成 DataSource，即安全数据源。如我们之前的 ini 配置方式将使用 org.apache.shiro.realm.text.IniRealm。
 
 org.apache.shiro.realm.Realm 接口如下：
+```java
 
-    tring getName(); //返回一个唯一的Realm名字
+public interface Realm {
+    String getName(); //返回一个唯一的Realm名字
     boolean supports(AuthenticationToken token); //判断此Realm是否支持此Token
-    AuthenticationInfo getAuthenticationInfo(AuthenticationToken token)
-     throws AuthenticationException;  //根据Token获取认证信息
+    AuthenticationInfo getAuthenticationInfo(AuthenticationToken token)throws AuthenticationException;  //根据Token获取认证信息
+}
+```
+
 #### 单 Realm 配置
 1、自定义 Realm 实现（com.github.zhangkaitao.shiro.chapter2.realm.MyRealm1）：
-
-    import org.apache.shiro.authc.*;
+```java
+import org.apache.shiro.authc.*;
     import org.apache.shiro.realm.Realm;
     
     public class MyRealm1 implements Realm {
@@ -344,6 +348,8 @@ org.apache.shiro.realm.Realm 接口如下：
             return new SimpleAuthenticationInfo(username, password, getName());
         }
     }
+```
+    
 2、ini 配置文件指定自定义 Realm 实现 (shiro-realm.ini,注：原文书写错误已勘误)
 
     #声明一个realm
