@@ -21,6 +21,7 @@
 >> ### <a href='#cp3-1' id='ccp3-1'>身份验证</a>
 >> ### <a href='#cp3-2' id='ccp3-2'>环境准备</a>
 >> ### <a href='#cp3-3' id='ccp3-3'>登录/退出</a>
+>> ### <a href='#cp3-4' id='ccp3-4'>身份认证流程</a> 
 > ## <a href='#cp4' id='ccp4'>第三章：Shiro 授权</a>
 >> ### <a href='#cp4-1' id='ccp4-1'>何谓授权</a>
 >> ### <a href='#cp4-2' id='ccp4-2'>角色</a>
@@ -282,9 +283,9 @@ Shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 J
 
 2.用户身份 Token 可能不仅仅是用户名 / 密码，也可能还有其他的，如登录时允许用户名 / 邮箱 / 手机号同时登录。
 
-<div id='cp3-2'>目录</div>
+<div id='cp3-4'></div>
 
-### 身份认证流程 <a href='#ccp3-3'>目录</a>
+### 身份认证流程 <a href='#ccp3-4'>目录</a>
 
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/4.png)
 
