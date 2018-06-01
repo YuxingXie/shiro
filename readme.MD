@@ -268,6 +268,9 @@ Shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 J
 * 如果身份验证失败请捕获 AuthenticationException 或其子类，常见的如： DisabledAccountException（禁用的帐号）、LockedAccountException（锁定的帐号）、UnknownAccountException（错误的帐号）、ExcessiveAttemptsException（登录失败次数过多）、IncorrectCredentialsException （错误的凭证）、ExpiredCredentialsException（过期的凭证）等，具体请查看其继承关系；对于页面的错误消息展示，最好使用如 “用户名 / 密码错误” 而不是 “用户名错误”/“密码错误”，防止一些恶意用户非法扫描帐号库；
 * 最后可以调用 subject.logout 退出，其会自动委托给 SecurityManager.logout 方法退出。
 
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png) 注：我们看到shiro为我们实现了登录和退出的功能，
+我们仔细思考，shiro背后到底做了哪些工作呢？首先登录的时候的用户名密码验证是shiro完成的，其次登录状态的保持也是shiro实现的，猜想应该
+是用到了Session机制，另外还实现了退出功能。其中登录和退出显示调用login和logout方法，shiro自动保存和清除了会话状态。
 
 <b>从如上代码可总结出身份验证的步骤：</b>
 
