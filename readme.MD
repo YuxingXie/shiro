@@ -224,8 +224,8 @@ Shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 J
 此处使用 ini 配置文件，通过 \[users] 指定了两个主体：zhang/123、wang/123。
 
 2、测试用例（com.github.zhangkaitao.shiro.chapter2.LoginLogoutTest）
-
-    /*
+```java
+/*
     import org.apache.shiro.SecurityUtils;
     import org.apache.shiro.authc.AuthenticationException;
     import org.apache.shiro.authc.UsernamePasswordToken;
@@ -257,6 +257,8 @@ Shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 J
         //6、退出
         subject.logout();
     }
+```
+    
     
 * 首先通过 new IniSecurityManagerFactory 并指定一个 ini 配置文件来创建一个 SecurityManager 工厂；
 * 接着获取 SecurityManager 并绑定到 SecurityUtils，这是一个全局设置，设置一次即可；
