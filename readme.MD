@@ -333,10 +333,13 @@ public interface AuthenticationInfo extends Serializable {
     Object getCredentials();
 }
 ```
-它们分别代表身份验证时使用的令牌和验证信息。
+它们分别代表身份验证时使用的令牌和验证信息，从API设计来看，一个AuthenticationToken持有一个Object类型的Principal以及
+Object类型的Credentials，注意是复数，表明令牌可以持有多个证明。AuthenticationInfo因为表示用户登录后的信息，则需要持有用户的
+所有身份(PrincipalCollection)和所有凭证(Object)。
 
 
 #### 单 Realm 配置
+
 1、自定义 Realm 实现（com.github.zhangkaitao.shiro.chapter2.realm.MyRealm1）：
 ```java
 import org.apache.shiro.authc.*;
@@ -369,6 +372,10 @@ import org.apache.shiro.authc.*;
 ```
  ![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
 注：上面的代码我们看到了AuthenticationInfo的具体实现SimpleAuthenticationInfo，以及AuthenticationToken的具体实现UsernamePasswordToken。
+另外上面的代码还包括几个重要信息：
+* 考虑应用场景，大部分程序可能会从数据库读取用户信息再和令牌对比，所以ini配置的Realm比较少见,需要自定义Realm;
+* 在自定义的Realm中实现令牌和Realm对比，正确时返回AuthenticationInfo，否则抛出异常；
+* 在IOC框架中，Realm应该可以作为bean注入数据访问层bean实现CRUD。
     
 2、ini 配置文件指定自定义 Realm 实现 (shiro-realm.ini,注：原文书写错误已勘误)
 
