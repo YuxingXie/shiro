@@ -367,6 +367,8 @@ import org.apache.shiro.authc.*;
         }
     }
 ```
+ ![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
+注：上面的代码我们看到了AuthenticationInfo的具体实现SimpleAuthenticationInfo，以及AuthenticationToken的具体实现UsernamePasswordToken。
     
 2、ini 配置文件指定自定义 Realm 实现 (shiro-realm.ini,注：原文书写错误已勘误)
 
