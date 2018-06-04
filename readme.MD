@@ -391,6 +391,9 @@ securityManager.realms=$myRealm1
 
 3、测试用例请参考
 com.github.zhangkaitao.shiro.chapter2.LoginLogoutTest 的 testCustomRealm 测试方法，只需要把之前的 shiro.ini 配置文件改成 shiro-realm.ini 即可。
+ 
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
+注：如果在ini中指定了\[roles\]和\[users\]，则该配置可以充当一个Realm，否则需要在ini中指定securityManager.realms。
 
 #### 多 Realm 配置
 
@@ -444,43 +447,45 @@ securityManager 会按照 realms 指定的顺序进行身份认证。此处我�
 
  ![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
 注:H2数据库更简单所以读者使用H2数据库,并且作者关于mysql的所有配置和代码改为h2的配置及代码，依赖如下
-    
-    <dependency>
-        <groupId>com.h2database</groupId>
-        <artifactId>h2</artifactId>
-        <version>1.4.196</version>
-    </dependency>
-    <dependency>
-        <groupId>com.alibaba</groupId>
-        <artifactId>druid</artifactId>
-        <version>0.2.23</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-jdbc</artifactId>
-      <version>4.3.13.RELEASE</version>
-    </dependency>
+```xml
+<dependency>
+    <groupId>com.h2database</groupId>
+    <artifactId>h2</artifactId>
+    <version>1.4.196</version>
+</dependency>
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>druid</artifactId>
+    <version>0.2.23</version>
+</dependency>
+<dependency>
+  <groupId>org.springframework</groupId>
+  <artifactId>spring-jdbc</artifactId>
+  <version>4.3.13.RELEASE</version>
+</dependency>
+```    
 
 本文将使用 mysql<a herf="#">(注：h2,以后不再提醒)</a> 数据库及druid(改为spring-jdbc)连接池；
 2、到数据库 shiro 下建三张表：users（用户名 / 密码）、user_roles（用户 / 角色）、roles_permissions（角色 / 权限），具体请参照 shiro-example-chapter2/sql/shiro.sql；并添加一个用户记录，用户名 / 密码为 zhang/123；
 
 3、ini 配置（shiro-jdbc-realm.ini）
-
-    jdbcRealm=org.apache.shiro.realm.jdbc.JdbcRealm
-    #dataSource=com.alibaba.druid.pool.DruidDataSource
-    dataSource=org.springframework.jdbc.datasource.DriverManagerDataSource
-    dataSource.driverClassName=org.h2.Driver
-    dataSource.url=jdbc:h2:~/shiro;MVCC=TRUE
-    #dataSource.username=
-    #dataSource.password=
-    jdbcRealm.dataSource=$dataSource
-    securityManager.realms=$jdbcRealm
+```ini
+jdbcRealm=org.apache.shiro.realm.jdbc.JdbcRealm
+#dataSource=com.alibaba.druid.pool.DruidDataSource
+dataSource=org.springframework.jdbc.datasource.DriverManagerDataSource
+dataSource.driverClassName=org.h2.Driver
+dataSource.url=jdbc:h2:~/shiro;MVCC=TRUE
+#dataSource.username=
+#dataSource.password=
+jdbcRealm.dataSource=$dataSource
+securityManager.realms=$jdbcRealm
+```
 
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png) 附上H2数据库在Intellij Idea中的配置如下图：
 
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/sh-1.png)
 1. 变量名 = 全限定类名会自动创建一个类实例
-2. 变量名. 属性 = 值 自动调用相应的 setter 方法进行赋值
+2. 变量名.属性 = 值 自动调用相应的 setter 方法进行赋值
 3. $ 变量名 引用之前的一个对象实例
 4. 测试代码请参照 com.github.zhangkaitao.shiro.chapter2.LoginLogoutTest 的 testJDBCRealm 方法，和之前的没什么区别。
 
