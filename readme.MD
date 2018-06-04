@@ -192,24 +192,26 @@ Shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 J
 
 ### 环境准备 <a href='#ccp3-2'>目录</a>
 本文使用 Maven 构建，因此需要一点 Maven 知识。首先准备环境依赖：
-    
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.9</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.1.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shiro</groupId>
-            <artifactId>shiro-core</artifactId>
-            <version>1.2.2</version>
-        </dependency>
-    </dependencies>
+```xml
+<dependencies>
+    <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.9</version>
+    </dependency>
+    <dependency>
+        <groupId>commons-logging</groupId>
+        <artifactId>commons-logging</artifactId>
+        <version>1.1.3</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.shiro</groupId>
+        <artifactId>shiro-core</artifactId>
+        <version>1.2.2</version>
+    </dependency>
+</dependencies>
+```    
+
 添加 junit、common-logging 及 shiro-core 依赖即可。
 
 <div id="cp3-3"></div>
