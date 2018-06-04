@@ -426,18 +426,18 @@ securityManager 会按照 realms 指定的顺序进行身份认证。此处我�
 #### JDBC Realm 使用 
 
 1、数据库及依赖
-
-    <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
-                <version>5.1.25</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>druid</artifactId>
-                <version>0.2.23</version>
-            </dependency>
-            
+```xml
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>5.1.25</version>
+</dependency>
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>druid</artifactId>
+    <version>0.2.23</version>
+</dependency>
+```
 
  ![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
 注:H2数据库更简单所以读者使用H2数据库,并且作者关于mysql的所有配置和代码改为h2的配置及代码，依赖如下
