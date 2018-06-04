@@ -333,6 +333,8 @@ public interface AuthenticationInfo extends Serializable {
     Object getCredentials();
 }
 ```
+它们分别代表身份验证时使用的令牌和验证信息。
+
 
 #### 单 Realm 配置
 1、自定义 Realm 实现（com.github.zhangkaitao.shiro.chapter2.realm.MyRealm1）：
