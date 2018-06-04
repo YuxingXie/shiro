@@ -416,7 +416,7 @@ securityManager 会按照 realms 指定的顺序进行身份认证。此处我�
 
 <b>org.apache.shiro.realm.jdbc.JdbcRealm</b>：通过 sql 查询相应的信息，如 “select password from users where username = ?” 获取用户密码，“select password, password_salt from users where username = ?” 获取用户密码及盐；“select role_name from user_roles where username = ?” 获取用户角色；“select permission from roles_permissions where role_name = ?” 获取角色对应的权限信息；也可以调用相应的 api 进行自定义 sql；
 
-注：AuthenticatingRealm抽象类中定义了2个抽象方法：
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)注：AuthenticatingRealm抽象类中定义了2个抽象方法：
 ```java
 
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals);
