@@ -318,6 +318,22 @@ public interface Realm {
 }
 ```
 
+ ![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
+注：这里看到了Realm接口使用的两个小配件：AuthenticationToken和AuthenticationInfo，有必要了解一下：
+```java
+public interface AuthenticationToken extends Serializable {
+    Object getPrincipal();
+    Object getCredentials();
+}
+```
+
+```java
+public interface AuthenticationInfo extends Serializable {
+    PrincipalCollection getPrincipals();
+    Object getCredentials();
+}
+```
+
 #### 单 Realm 配置
 1、自定义 Realm 实现（com.github.zhangkaitao.shiro.chapter2.realm.MyRealm1）：
 ```java
