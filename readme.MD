@@ -219,11 +219,12 @@ Shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 J
 ### 登录 / 退出 <a href='#ccp3-3'>目录</a>
 1、首先准备一些用户身份 / 凭据（shiro.ini）
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png) 注：可以理解为一种.ini形式的realm?
+```ini
+[users]
+zhang=123
+wang=123
+```
 
-    
-    [users]
-    zhang=123
-    wang=123
 此处使用 ini 配置文件，通过 \[users] 指定了两个主体：zhang/123、wang/123。
 
 2、测试用例（com.github.zhangkaitao.shiro.chapter2.LoginLogoutTest）
