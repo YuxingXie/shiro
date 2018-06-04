@@ -378,12 +378,12 @@ import org.apache.shiro.authc.*;
 * 在IOC框架中，Realm应该可以作为bean注入数据访问层bean实现CRUD。
     
 2、ini 配置文件指定自定义 Realm 实现 (shiro-realm.ini,注：原文书写错误已勘误)
-
-    #声明一个realm
-    myRealm1=com.github.zhangkaitao.shiro.chapter2.realm.MyRealm1
-    #指定securityManager的realms实现
-    securityManager.realms=$myRealm1
-    
+```ini
+#声明一个realm
+myRealm1=com.github.zhangkaitao.shiro.chapter2.realm.MyRealm1
+#指定securityManager的realms实现
+securityManager.realms=$myRealm1
+```
 通过 $name 来引入之前的 realm 定义
 
 3、测试用例请参考
@@ -392,19 +392,19 @@ com.github.zhangkaitao.shiro.chapter2.LoginLogoutTest 的 testCustomRealm 测试
 #### 多 Realm 配置
 
 1、ini 配置文件（shiro-multi-realm.ini）
-
-    #声明一个realm
-    myRealm1=com.github.zhangkaitao.shiro.chapter2.realm.MyRealm1
-    myRealm2=com.github.zhangkaitao.shiro.chapter2.realm.MyRealm2
-    #指定securityManager的realms实现
-    securityManager.realms=$myRealm1,$myRealm2
-    
+```ini
+#声明一个realm
+myRealm1=com.github.zhangkaitao.shiro.chapter2.realm.MyRealm1
+myRealm2=com.github.zhangkaitao.shiro.chapter2.realm.MyRealm2
+#指定securityManager的realms实现
+securityManager.realms=$myRealm1,$myRealm2
+```
 securityManager 会按照 realms 指定的顺序进行身份认证。此处我们使用显示指定顺序的方式指定了 Realm 的顺序，如果删除 “securityManager.realms=$myRealm1,$myRealm2”，那么securityManager 会按照 realm 声明的顺序进行使用（即无需设置 realms 属性，其会自动发现），当我们显示指定 realm 后，其他没有指定 realm 将被忽略，如 “securityManager.realms=$myRealm1”，那么 myRealm2 不会被自动设置进去。
-
 
 2、测试用例请参考 com.github.zhangkaitao.shiro.chapter2.LoginLogoutTest 的 testCustomMultiRealm 测试方法。
  
 #### Shiro 默认提供的 Realm
+
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/5.png)
 
 以后一般继承 AuthorizingRealm（授权）即可；其继承了 AuthenticatingRealm（即身份验证），而且也间接继承了 CachingRealm（带有缓存实现）。其中主要默认实现如下：
