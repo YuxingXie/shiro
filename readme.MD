@@ -407,14 +407,23 @@ securityManager 会按照 realms 指定的顺序进行身份认证。此处我�
 
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/5.png)
 
-以后一般继承 AuthorizingRealm（授权）即可；其继承了 AuthenticatingRealm（即身份验证），而且也间接继承了 CachingRealm（带有缓存实现）。其中主要默认实现如下：
+以后一般继承 AuthorizingRealm（授权）即可；其继承了 AuthenticatingRealm（即身份验证），而且也间接继承了 CachingRealm
+（带有缓存实现）。其中主要默认实现如下：
 
-<b>org.apache.shiro.realm.text.IniRealm</b>：[users] 部分指定用户名 / 密码及其角色；[roles] 部分指定角色即权限信息；
+<b>org.apache.shiro.realm.text.IniRealm</b>：\[users\] 部分指定用户名 / 密码及其角色；\[roles\] 部分指定角色即权限信息；
 
 <b>org.apache.shiro.realm.text.PropertiesRealm</b>： user.username=password,role1,role2 指定用户名 / 密码及其角色；role.role1=permission1,permission2 指定角色及权限信息；
 
 <b>org.apache.shiro.realm.jdbc.JdbcRealm</b>：通过 sql 查询相应的信息，如 “select password from users where username = ?” 获取用户密码，“select password, password_salt from users where username = ?” 获取用户密码及盐；“select role_name from user_roles where username = ?” 获取用户角色；“select permission from roles_permissions where role_name = ?” 获取角色对应的权限信息；也可以调用相应的 api 进行自定义 sql；
 
+注：AuthenticatingRealm抽象类中定义了2个抽象方法：
+```java
+
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals);
+
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException;
+}
+```
 #### JDBC Realm 使用 
 
 1、数据库及依赖
