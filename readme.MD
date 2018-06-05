@@ -854,6 +854,9 @@ public class PermissionTest extends BaseTest {
 #### 字符串通配符权限
 规则：“资源标识符:操作:对象实例 ID” 即对哪个资源的哪个实例可以进行什么操作。其默认支持通配符权限字符串，“:”表示资源/操作/实例的分割；
 “,”表示操作的分割；“*”表示任意资源/操作/实例。
+
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png) 注：这里所说的实例又是什么鬼？
+
 #### 1、单个资源单个权限
 
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
