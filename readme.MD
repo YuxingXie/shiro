@@ -517,16 +517,17 @@ public interface Authenticator {
 }
 ```
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)注：前面提到过AuthenticationInfo是Realm的配件，当我们
-在Realm中自己实现验证成功后返回一个AuthenticationInfo实例，在这里我们看看如何通过Authenticator实现验证。
+在Realm中自己实现验证成功后返回一个AuthenticationInfo实例（SimpleAuthenticationInfo），在这里我们看看如何通过Authenticator实现验证。
 
 如果验证成功，将返回 AuthenticationInfo 验证信息；此信息中包含了身份及凭证；如果验证失败将抛出相应的 AuthenticationException 实现。
 
-SecurityManager 接口继承了 Authenticator，
-另外还有一个 ModularRealmAuthenticator 实现，其委托给多个 Realm 进行验证，验证规则通过 AuthenticationStrategy 接口指定，默认提供的实现：
+SecurityManager 接口继承了 Authenticator，另外还有一个 ModularRealmAuthenticator 实现，其委托给多个 Realm 进行验证，
+验证规则通过 AuthenticationStrategy 接口指定，默认提供的实现：
 
 <B>FirstSuccessfulStrategy</B>：只要有一个 Realm 验证成功即可，只返回第一个 Realm 身份验证成功的认证信息，其他的忽略；
 
-<B>AtLeastOneSuccessfulStrategy</B>：只要有一个 Realm 验证成功即可，和 FirstSuccessfulStrategy 不同，返回所有 Realm 身份验证成功的认证信息；
+<B>AtLeastOneSuccessfulStrategy</B>：只要有一个 Realm 验证成功即可，和 FirstSuccessfulStrategy 不同，返回所有 Realm 
+身份验证成功的认证信息；
 
 <B>AllSuccessfulStrategy</B>：所有 Realm 验证成功才算成功，且返回所有 Realm 身份验证成功的认证信息，如果有一个失败就失败了。
 
@@ -537,26 +538,27 @@ ModularRealmAuthenticator 默认使用 AtLeastOneSuccessfulStrategy 策略。
 
 假设我们有三个 realm：
 
-myRealm1： 用户名 / 密码为 zhang/123 时成功，且返回身份 / 凭据为 zhang/123；
+myRealm1： 用户名/密码为 zhang/123 时成功，且返回身份/凭据为 zhang/123；
 
-myRealm2： 用户名 / 密码为 wang/123 时成功，且返回身份 / 凭据为 wang/123；
+myRealm2： 用户名/密码为 wang/123 时成功，且返回身份/凭据为 wang/123；
 
-myRealm3： 用户名 / 密码为 zhang/123 时成功，且返回身份 / 凭据为 zhang@163.com/123，和 myRealm1 不同的是返回时的身份变了；
+myRealm3： 用户名/密码为 zhang/123 时成功，且返回身份/凭据为 zhang@163.com/123，和 myRealm1 不同的是返回时的身份变了；
 
 1、ini 配置文件 (shiro-authenticator-all-success.ini)
+```ini
+#指定securityManager的authenticator实现
+authenticator=org.apache.shiro.authc.pam.ModularRealmAuthenticator
+securityManager.authenticator=$authenticator
+#指定securityManager.authenticator的authenticationStrategy
+allSuccessfulStrategy=org.apache.shiro.authc.pam.AllSuccessfulStrategy
+securityManager.authenticator.authenticationStrategy=$allSuccessfulStrategy
 
-    #指定securityManager的authenticator实现
-    authenticator=org.apache.shiro.authc.pam.ModularRealmAuthenticator
-    securityManager.authenticator=$authenticator
-    #指定securityManager.authenticator的authenticationStrategy
-    allSuccessfulStrategy=org.apache.shiro.authc.pam.AllSuccessfulStrategy
-    securityManager.authenticator.authenticationStrategy=$allSuccessfulStrategy
-
-    myRealm1=com.github.zhangkaitao.shiro.chapter2.realm.MyRealm1
-    myRealm2=com.github.zhangkaitao.shiro.chapter2.realm.MyRealm2
-    myRealm3=com.github.zhangkaitao.shiro.chapter2.realm.MyRealm3
-    securityManager.realms=$myRealm1,$myRealm3
-    
+myRealm1=com.github.zhangkaitao.shiro.chapter2.realm.MyRealm1
+myRealm2=com.github.zhangkaitao.shiro.chapter2.realm.MyRealm2
+myRealm3=com.github.zhangkaitao.shiro.chapter2.realm.MyRealm3
+securityManager.realms=$myRealm1,$myRealm3
+```
+   
 2、测试代码（com.github.zhangkaitao.shiro.chapter2.AuthenticatorTest）
 
 * 首先通用化登录逻辑
@@ -579,6 +581,8 @@ public class AuthenticatorTest {
     //...other code...
 }
 ```
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png) 注：我们看到匹配令牌和realm的具体代码仍然在Realm中。    
+ 
 * 测试 AllSuccessfulStrategy 成功：
 ```java
 public class AuthenticatorTest {
@@ -608,9 +612,12 @@ public class AuthenticatorTest {
     //...other code...
 }
 ```
-shiro-authenticator-all-fail.ini 与 shiro-authenticator-all-success.ini 不同的配置是使用了 securityManager.realms=$myRealm1，$myRealm2；即 myRealm 验证失败。
+shiro-authenticator-all-fail.ini 与 shiro-authenticator-all-success.ini 不同的配置是使用了 
+securityManager.realms=$myRealm1,$myRealm2；即 myRealm 验证失败。
 
-对于 AtLeastOneSuccessfulStrategy 和 FirstSuccessfulStrategy 的区别，请参照 testAtLeastOneSuccessfulStrategyWithSuccess 和 testFirstOneSuccessfulStrategyWithSuccess 测试方法。唯一不同点一个是返回所有验证成功的 Realm 的认证信息；另一个是只返回第一个验证成功的 Realm 的认证信息。
+对于 AtLeastOneSuccessfulStrategy 和 FirstSuccessfulStrategy 的区别，请参照 testAtLeastOneSuccessfulStrategyWithSuccess
+和 testFirstOneSuccessfulStrategyWithSuccess 测试方法。唯一不同点一个是返回所有验证成功的 Realm 的认证信息；
+另一个是只返回第一个验证成功的 Realm 的认证信息。
 
 自定义 AuthenticationStrategy 实现，首先看其 API：
 ```java
@@ -629,9 +636,10 @@ public interface AuthenticationStrategy {
     AuthenticationInfo afterAllAttempts(AuthenticationToken var1, AuthenticationInfo var2) throws AuthenticationException;
 }
 ```
-因为每个 AuthenticationStrategy 实例都是无状态的，所有每次都通过接口将相应的认证信息传入下一次流程；通过如上接口可以进行如合并 / 返回第一个验证成功的认证信息。
+因为每个 AuthenticationStrategy 实例都是无状态的，所有每次都通过接口将相应的认证信息传入下一次流程；通过如上接口可以进行如合并/返回第一个验证成功的认证信息。
 
-自定义实现时一般继承 org.apache.shiro.authc.pam.AbstractAuthenticationStrategy 即可，具体可以参考代码 com.github.zhangkaitao.shiro.chapter2.authenticator.strategy 包下 OnlyOneAuthenticatorStrategy 和 AtLeastTwoAuthenticatorStrategy。
+自定义实现时一般继承 org.apache.shiro.authc.pam.AbstractAuthenticationStrategy 即可，具体可以参考代码
+com.github.zhangkaitao.shiro.chapter2.authenticator.strategy 包下 OnlyOneAuthenticatorStrategy 和 AtLeastTwoAuthenticatorStrategy。
 
 到此基本的身份验证就搞定了，对于 AuthenticationToken 、AuthenticationInfo 和 Realm 的详细使用后续章节再陆续介绍。
 
