@@ -489,6 +489,9 @@ securityManager.realms=$jdbcRealm
 3. $ 变量名 引用之前的一个对象实例
 4. 测试代码请参照 com.github.zhangkaitao.shiro.chapter2.LoginLogoutTest 的 testJDBCRealm 方法，和之前的没什么区别。
 
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png) 注：到此为止，所有的realm配置都依赖于ini配置，
+如何进行编程式或注解式配置呢？我们暂且留着这个问题继续学习。
+
 ### Authenticator 及 AuthenticationStrategy
 
 Authenticator 的职责是验证用户帐号，是 Shiro API 中身份验证核心的入口点：
@@ -498,6 +501,7 @@ public interface Authenticator {
     AuthenticationInfo authenticate(AuthenticationToken var1) throws AuthenticationException;
 }
 ```
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)注：前面提到过AuthenticationInfo是Realm的配件
 
 如果验证成功，将返回 AuthenticationInfo 验证信息；此信息中包含了身份及凭证；如果验证失败将抛出相应的 AuthenticationException 实现。
 
