@@ -779,7 +779,7 @@ Shiro 提供的 checkRole/checkRoles 和 hasRole/hasAllRoles 不同的地方是�
 到此基于角色的访问控制（即隐式角色）就完成了，这种方式的缺点就是如果很多地方进行了角色判断，但是有一天不需要了那么就需要修改相应代码把所有相关的地方进行删除；
 这就是粗粒度造成的问题。
 
-![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)注：如果到这里还不理解隠式角色的话，可以补充一句：隐式角色只定义了一个角色，但不定义角色可以干什么，
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)注：如果还不理解隠式角色的话，可以补充一句：隐式角色只定义了一个角色，但不定义角色可以干什么，
 需要在程序代码中判断角色去干什么或不能干什么。其实是一种不完整的定义。
 
 #### 基于资源的访问控制（显示角色）
@@ -795,7 +795,10 @@ Shiro 提供的 checkRole/checkRoles 和 hasRole/hasAllRoles 不同的地方是�
     role1=user:create,user:update
     role2=user:create,user:delete
     
-规则：“用户名=密码，角色 1，角色 2”“角色=权限 1，权限 2”，即首先根据用户名找到角色，然后根据角色再找到权限；即角色是权限集合；Shiro 同样不进行权限的维护，需要我们通过 Realm 返回相应的权限信息。只需要维护“用户——角色”之间的关系即可。
+规则：“用户名=密码，角色 1，角色 2”“角色=权限 1，权限 2”，即首先根据用户名找到角色，然后根据角色再找到权限；即角色是权限集合；Shiro 同样不进行权限的维护，需要我们通过 
+Realm 返回相应的权限信息。只需要维护“用户——角色”之间的关系即可。
+
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)注：和隐式角色相比较，显示角色规定了一个角色可以干什么(即权限，也即可以对何种资源进行何种操作)。
 
 2、测试用例（com.github.zhangkaitao.shiro.chapter3.PermissionTest）
 ```java
@@ -832,14 +835,18 @@ public class PermissionTest extends BaseTest {
 }
 ```
 
+
 但是失败的情况下会抛出 UnauthorizedException 异常。
 
-到此基于资源的访问控制（显示角色）就完成了，也可以叫基于权限的访问控制，这种方式的一般规则是“资源标识符：操作”，
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)注：无论是检查权限checkPermission，还是检查角色checkRole其方法主题都是Subject,
+而不是role.checkPermission。
+
+到此基于资源的访问控制（显示角色）就完成了，也可以叫基于权限的访问控制，这种方式的一般规则是“资源标识符:操作”，
 即是资源级别的粒度；这种方式的好处就是如果要修改基本都是一个资源级别的修改，不会对其他模块代码产生影响，粒度小。
-但是实现起来可能稍微复杂点，需要维护“用户——角色，角色——权限（资源：操作）”之间的关系。
+但是实现起来可能稍微复杂点，需要维护“用户——角色，角色——权限（资源:操作）”之间的关系。
 
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
-注：总结授权的三要素即Subject、Role、Permission，其中Permission=Resource+Operation
+注：总结授权的三要素即Subject、Role、Permission，其中Permission=Resource+Operation。那么问题来了，如何用字符串表示某个资源与某个操作呢？
 
 <div id='cp4-4'></div>
 
