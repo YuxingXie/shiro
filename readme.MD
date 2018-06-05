@@ -315,9 +315,15 @@ org.apache.shiro.realm.Realm 接口如下：
 ```java
 
 public interface Realm {
-    String getName(); //返回一个唯一的Realm名字
-    boolean supports(AuthenticationToken token); //判断此Realm是否支持此Token
-    AuthenticationInfo getAuthenticationInfo(AuthenticationToken token)throws AuthenticationException;  //根据Token获取认证信息
+    //返回一个唯一的Realm名字
+    String getName(); 
+    
+    //判断此Realm是否支持此Token
+    boolean supports(AuthenticationToken token); 
+    
+    //根据Token获取认证信息
+    AuthenticationInfo getAuthenticationInfo(AuthenticationToken token)throws AuthenticationException;  
+    
 }
 ```
 
@@ -359,7 +365,8 @@ import org.apache.shiro.authc.*;
             return token instanceof UsernamePasswordToken;
         }
         @Override
-        public AuthenticationInfo getAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+        public AuthenticationInfo getAuthenticationInfo(AuthenticationToken token) 
+            throws AuthenticationException {
             String username = (String)token.getPrincipal();  //得到用户名
             String password = new String((char[])token.getCredentials()); //得到密码
             if(!"zhang".equals(username)) {
@@ -390,7 +397,8 @@ securityManager.realms=$myRealm1
 通过 $name 来引入之前的 realm 定义
 
 3、测试用例请参考
-com.github.zhangkaitao.shiro.chapter2.LoginLogoutTest 的 testCustomRealm 测试方法，只需要把之前的 shiro.ini 配置文件改成 shiro-realm.ini 即可。
+com.github.zhangkaitao.shiro.chapter2.LoginLogoutTest 的 testCustomRealm 测试方法，只需要把之前的 shiro.ini 
+配置文件改成 shiro-realm.ini 即可。
  
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
 注：如果在ini中指定了\[roles\]和\[users\]，则该配置可以充当一个Realm，否则需要在ini中指定securityManager.realms。
@@ -405,7 +413,10 @@ myRealm2=com.github.zhangkaitao.shiro.chapter2.realm.MyRealm2
 #指定securityManager的realms实现
 securityManager.realms=$myRealm1,$myRealm2
 ```
-securityManager 会按照 realms 指定的顺序进行身份认证。此处我们使用显示指定顺序的方式指定了 Realm 的顺序，如果删除 “securityManager.realms=$myRealm1,$myRealm2”，那么securityManager 会按照 realm 声明的顺序进行使用（即无需设置 realms 属性，其会自动发现），当我们显示指定 realm 后，其他没有指定 realm 将被忽略，如 “securityManager.realms=$myRealm1”，那么 myRealm2 不会被自动设置进去。
+securityManager 会按照 realms 指定的顺序进行身份认证。此处我们使用显示指定顺序的方式指定了 Realm 的顺序，如果删除 
+“securityManager.realms=$myRealm1,$myRealm2”，那么securityManager 会按照 realm 声明的顺序进行使用
+（即无需设置 realms 属性，其会自动发现），当我们显示指定 realm 后，其他没有指定 realm 将被忽略，如 
+“securityManager.realms=$myRealm1”，那么 myRealm2 不会被自动设置进去。
 
 2、测试用例请参考 com.github.zhangkaitao.shiro.chapter2.LoginLogoutTest 的 testCustomMultiRealm 测试方法。
  
@@ -418,9 +429,13 @@ securityManager 会按照 realms 指定的顺序进行身份认证。此处我�
 
 <b>org.apache.shiro.realm.text.IniRealm</b>：\[users\] 部分指定用户名 / 密码及其角色；\[roles\] 部分指定角色即权限信息；
 
-<b>org.apache.shiro.realm.text.PropertiesRealm</b>： user.username=password,role1,role2 指定用户名 / 密码及其角色；role.role1=permission1,permission2 指定角色及权限信息；
+<b>org.apache.shiro.realm.text.PropertiesRealm</b>： user.username=password,role1,role2 指定用户名 / 密码及其角色；
+role.role1=permission1,permission2 指定角色及权限信息；
 
-<b>org.apache.shiro.realm.jdbc.JdbcRealm</b>：通过 sql 查询相应的信息，如 “select password from users where username = ?” 获取用户密码，“select password, password_salt from users where username = ?” 获取用户密码及盐；“select role_name from user_roles where username = ?” 获取用户角色；“select permission from roles_permissions where role_name = ?” 获取角色对应的权限信息；也可以调用相应的 api 进行自定义 sql；
+<b>org.apache.shiro.realm.jdbc.JdbcRealm</b>：通过 sql 查询相应的信息，如 “select password from users where 
+username = ?” 获取用户密码，“select password, password_salt from users where username = ?” 获取用户密码及盐；
+“select role_name from user_roles where username = ?” 获取用户角色；“select permission from roles_permissions 
+where role_name = ?” 获取角色对应的权限信息；也可以调用相应的 api 进行自定义 sql；
 
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)注：AuthenticatingRealm抽象类中定义了2个抽象方法,
 注意它们的返回类型，AuthenticationInfo 是我们见过的，它是Realm的一个配件：
@@ -446,7 +461,7 @@ securityManager 会按照 realms 指定的顺序进行身份认证。此处我�
 ```
 
  ![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
-注:H2数据库更简单所以读者使用H2数据库,并且作者关于mysql的所有配置和代码改为h2的配置及代码，依赖如下
+注:H2数据库更简单所以读者使用H2数据库,并且作者关于mysql的所有配置和代码改为h2的配置及代码，依赖如下：
 ```xml
 <dependency>
     <groupId>com.h2database</groupId>
@@ -501,7 +516,8 @@ public interface Authenticator {
     AuthenticationInfo authenticate(AuthenticationToken var1) throws AuthenticationException;
 }
 ```
-![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)注：前面提到过AuthenticationInfo是Realm的配件
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)注：前面提到过AuthenticationInfo是Realm的配件，当我们
+在Realm中自己实现验证成功后返回一个AuthenticationInfo实例，在这里我们看看如何通过Authenticator实现验证。
 
 如果验证成功，将返回 AuthenticationInfo 验证信息；此信息中包含了身份及凭证；如果验证失败将抛出相应的 AuthenticationException 实现。
 
