@@ -718,7 +718,7 @@ public class SomeClass{
 JSP/GSP 标签：在 JSP/GSP 页面通过相应的标签完成：
 ```html
 <shiro:hasRole name="admin">
-<!— 有权限 —>
+<!-— 有权限 -->
 </shiro:hasRole>
 ```
 
