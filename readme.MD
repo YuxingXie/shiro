@@ -1122,7 +1122,7 @@ public interface Authorizer {
 }
 
 ```
-这么多的方法在AuthorizingRealm中都实现了。
+这么多的方法在AuthorizingRealm中都实现了。而这些方法在也可以通过Subject调用,实际上Subject是委托SecurityManager实现的。
 
 
 如果 Realm 进行授权的话，应该继承 AuthorizingRealm，其流程是：
