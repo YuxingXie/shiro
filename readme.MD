@@ -151,17 +151,23 @@ Shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 J
 
 <b>Subject</b>：主体，可以看到主体可以是任何可以与应用交互的 “用户”；
 
-<b>SecurityManager</b>：相当于 SpringMVC 中的 DispatcherServlet 或者 Struts2 中的 FilterDispatcher；是 Shiro 的心脏；所有具体的交互都通过 SecurityManager 进行控制；它管理着所有 Subject、且负责进行认证和授权、及会话、缓存的管理。
+<b>SecurityManager</b>：相当于 SpringMVC 中的 DispatcherServlet 或者 Struts2 中的 FilterDispatcher；是 Shiro 的心脏；所有具体的交互都通过 SecurityManager 进行控制；
+它管理着所有 Subject、且负责进行认证和授权、及会话、缓存的管理。
 
 <b>Authenticator</b>：认证器，负责主体认证的，这是一个扩展点，如果用户觉得 Shiro 默认的不好，可以自定义实现；其需要认证策略（Authentication Strategy），即什么情况下算用户认证通过了；
 
 <b>Authrizer</b>：授权器，或者访问控制器，用来决定主体是否有权限进行相应的操作；即控制着用户能访问应用中的哪些功能；
 
-<b>Realm</b>：可以有 1 个或多个 Realm，可以认为是安全实体数据源，即用于获取安全实体的；可以是 JDBC 实现，也可以是 LDAP 实现，或者内存实现等等；由用户提供；注意：Shiro 不知道你的用户 / 权限存储在哪及以何种格式存储；所以我们一般在应用中都需要实现自己的 Realm；
+<b>Realm</b>：可以有 1 个或多个 Realm，可以认为是安全实体数据源，即用于获取安全实体的；可以是 JDBC 实现，也可以是 LDAP 实现，或者内存实现等等；由用户提供；注意：Shiro 
+不知道你的用户 / 权限存储在哪及以何种格式存储；所以我们一般在应用中都需要实现自己的 Realm；
 
-<b>SessionManager</b>：如果写过 Servlet 就应该知道 Session 的概念，Session 呢需要有人去管理它的生命周期，这个组件就是 SessionManager；而 Shiro 并不仅仅可以用在 Web 环境，也可以用在如普通的 JavaSE 环境、EJB 等环境；所有呢，Shiro 就抽象了一个自己的 Session 来管理主体与应用之间交互的数据；这样的话，比如我们在 Web 环境用，刚开始是一台 Web 服务器；接着又上了台 EJB 服务器；这时想把两台服务器的会话数据放到一个地方，这个时候就可以实现自己的分布式会话（如把数据放到 Memcached 服务器）；
+<b>SessionManager</b>：如果写过 Servlet 就应该知道 Session 的概念，Session 呢需要有人去管理它的生命周期，这个组件就是 SessionManager；而 Shiro 并不仅仅可以用在 Web 
+环境，也可以用在如普通的 JavaSE 环境、EJB 等环境；所有呢，Shiro 就抽象了一个自己的
+ Session 来管理主体与应用之间交互的数据；这样的话，比如我们在 Web 环境用，刚开始是一台 Web 服务器；接着又上了台 EJB 服务器；这时想把两台服务器的会话数据放到一个地方，
+ 这个时候就可以实现自己的分布式会话（如把数据放到 Memcached 服务器）；
 
-<b>SessionDAO</b>：DAO 大家都用过，数据访问对象，用于会话的 CRUD，比如我们想把 Session 保存到数据库，那么可以实现自己的 SessionDAO，通过如 JDBC 写到数据库；比如想把 Session 放到 Memcached 中，可以实现自己的 Memcached SessionDAO；另外 SessionDAO 中可以使用 Cache 进行缓存，以提高性能；
+<b>SessionDAO</b>：DAO 大家都用过，数据访问对象，用于会话的 CRUD，比如我们想把 Session 保存到数据库，那么可以实现自己的 SessionDAO，通过如 JDBC 写到数据库；
+比如想把 Session 放到 Memcached 中，可以实现自己的 Memcached SessionDAO；另外 SessionDAO 中可以使用 Cache 进行缓存，以提高性能；
 
 <b>CacheManager</b>：缓存控制器，来管理如用户、角色、权限等的缓存的；因为这些数据基本上很少去改变，放到缓存中后可以提高访问的性能
 
@@ -268,7 +274,10 @@ wang=123
 * 接着获取 SecurityManager 并绑定到 SecurityUtils，这是一个全局设置，设置一次即可；
 * 通过 SecurityUtils 得到 Subject，其会自动绑定到当前线程；如果在 web 环境在请求结束时需要解除绑定；然后获取身份验证的 Token，如用户名 / 密码；
 * 调用 subject.login 方法进行登录，其会自动委托给 SecurityManager.login 方法进行登录；
-* 如果身份验证失败请捕获 AuthenticationException 或其子类，常见的如： DisabledAccountException（禁用的帐号）、LockedAccountException（锁定的帐号）、UnknownAccountException（错误的帐号）、ExcessiveAttemptsException（登录失败次数过多）、IncorrectCredentialsException （错误的凭证）、ExpiredCredentialsException（过期的凭证）等，具体请查看其继承关系；对于页面的错误消息展示，最好使用如 “用户名 / 密码错误” 而不是 “用户名错误”/“密码错误”，防止一些恶意用户非法扫描帐号库；
+* 如果身份验证失败请捕获 AuthenticationException 或其子类，常见的如： DisabledAccountException（禁用的帐号）、LockedAccountException（锁定的帐号）、
+UnknownAccountException（错误的帐号）、ExcessiveAttemptsException（登录失败次数过多）、IncorrectCredentialsException （错误的凭证）、
+ExpiredCredentialsException（过期的凭证）等，具体请查看其继承关系；
+对于页面的错误消息展示，最好使用如 “用户名 / 密码错误” 而不是 “用户名错误”/“密码错误”，防止一些恶意用户非法扫描帐号库；
 * 最后可以调用 subject.logout 退出，其会自动委托给 SecurityManager.logout 方法退出。
 
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png) 注：我们看到shiro为我们实现了登录和退出的功能，
@@ -822,7 +831,7 @@ public class PermissionTest extends BaseTest {
 Shiro 提供了 isPermitted 和 isPermittedAll 用于判断用户是否拥有某个权限或所有权限，也没有提供如 isPermittedAny 用于判断拥有某一个权限的接口。
 
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
-注：原文作者念念不忘的isPermittedAny，hasAnyRole完全可以遍历所有的role或permission用hasRole或 hasPermission,其中一个返回true则isPermittedAny，hasAnyRole
+注：原文作者念念不忘的isPermittedAny，hasAnyRole完全可以遍历所有的role或permission用hasRole或 isPermitted,其中一个返回true则isPermittedAny，hasAnyRole
 返回true实现。
 
 ```java
@@ -841,7 +850,6 @@ public class PermissionTest extends BaseTest {
 }
 ```
 
-
 但是失败的情况下会抛出 UnauthorizedException 异常。
 
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)注：无论是检查权限checkPermission，还是检查角色checkRole其方法主题都是Subject,
@@ -852,12 +860,15 @@ public class PermissionTest extends BaseTest {
 但是实现起来可能稍微复杂点，需要维护“用户——角色，角色——权限（资源:操作）”之间的关系。
 
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
-注：总结授权的三要素即Subject、Role、Permission，其中Permission=Resource+Operation。那么问题来了，如何用字符串表示某个资源与某个操作呢？
+注：总结授权的三要素即Subject、Role、Permission，其中Permission=Resource+Operation。那么问题来了，如何用字符串表示某个资源与某个操作呢？其实资源和操作都是
+开发者定义的字符串，比如user资源，其实是开发者定义了一个字符串"user"表示某些资源，delete操作也是开发者定义的一个字符串"delete"表示某类操作，一般在数据库中以字符串存在。
 
 <div id='cp4-4'></div>
 
 ### Permission <a href='#ccp4-4'>目录</a>
+
 #### 字符串通配符权限
+
 规则：“资源标识符:操作:对象实例 ID” 即对哪个资源的哪个实例可以进行什么操作。其默认支持通配符权限字符串，“:”表示资源/操作/实例的分割；
 “,”表示操作的分割；“*”表示任意资源/操作/实例。
 
@@ -869,65 +880,81 @@ public class PermissionTest extends BaseTest {
 注：注意shiro的api设计，是Subject.checkPermissions而不是Role.checkPermissions,shiro并未设计一个Role类或接口，而是直接用字符串表示权限，
 但是，shiro抽象出一个org.apache.shiro.authz.Permission接口,使用通配符方式的Permission通过类WildcardPermission实现。
 
-
+```java
+subject().checkPermissions("system:user:update");
+```
     
-    subject().checkPermissions("system:user:update");
-    
-
-用户拥有资源“system:user”的“update”权限。
+用户拥有资源“system:user”的“update”操作权限。
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)注：如果没有理解我前面讲的"资源和操作都是开发者定义的字符串"，这里可能会被原作者搞糊涂，
+按照原作者的规则定义，system:user难道不应该是表示system资源的user操作吗？但设想如果我们定义的表示资源的字符串就是system:user，就可以想通了。按照这个理解，原则上
+字符串通配符中可以包含任意多个":"。
 
 #### 2、单个资源多个权限
-    role41=system:user:update,system:user:delete
+```ini
+role41=system:user:update,system:user:delete
+```
 
 然后通过如下代码判断
-
-    subject().checkPermissions("system:user:update", "system:user:delete");
+```java
+subject().checkPermissions("system:user:update", "system:user:delete");
+```
     
-用户拥有资源“system:user”的“update”和“delete”权限。如上可以简写成：
+用户拥有资源“system:user”的“update”和“delete”操作权限。如上可以简写成：
 
 ini 配置（表示角色4拥有 system:user 资源的 update 和 delete 权限）
-
-    role42="system:user:update,delete"
+```ini
+role42="system:user:update,delete"
+```
     
 接着可以通过如下代码判断
-
-    subject().checkPermissions("system:user:update,delete");
+```java
+subject().checkPermissions("system:user:update,delete");
+```
     
 通过“system:user:update,delete”验证“system:user:update, system:user:delete”是没问题的，但是反过来是规则不成立。
 
 #### 3、单个资源全部权限
 ini 配置
-
-    role51="system:user:create,update,delete,view"
+```ini
+role51="system:user:create,update,delete,view"
+```
+    
     
 然后通过如下代码判断
-
-    subject().checkPermissions("system:user:create,delete,update:view");
+```java
+subject().checkPermissions("system:user:create,delete,update:view");
+```
     
 用户拥有资源“system:user”的“create”、“update”、“delete”和“view”所有权限。如上可以简写成：
 
 ini 配置文件（表示角色 5 拥有 system:user 的所有权限）
-
-    role52=system:user:*
+```ini
+role52=system:user:*
+```
     
 也可以简写为（推荐上边的写法）：
-
-    role53=system:user
+```java
+role53=system:user
+```
     
 然后通过如下代码判断
-
+```java
     subject().checkPermissions("system:user:*");
     subject().checkPermissions("system:user");
+```
+    
 通过“system:user:*”验证“system:user:create,delete,update:view”可以，但是反过来是不成立的。
 
 #### 4、所有资源全部权限
 ini 配置
-
-    role61=*:view
+```ini
+role61=*:view
+```
     
 然后通过如下代码判断
-
-    subject().checkPermissions("user:view");
+```java
+subject().checkPermissions("user:view");
+```
     
 用户拥有所有资源的“view”所有权限。假设判断的权限是“"system:user:view”，那么需要“role5=::view”这样写才行
 
@@ -936,27 +963,34 @@ ini 配置
 * 单个实例单个权限
 
 ini 配置
-
-    role71=user:view:1
+```ini
+role71=user:view:1
+```
 
 对资源 user 的 1 实例拥有 view 权限。
 
 然后通过如下代码判断
-
-    subject().checkPermissions("user:view:1");
+```java
+subject().checkPermissions("user:view:1");
+```
     
 * 单个实例多个权限
 
 ini 配置
-
-    role72="user:update,delete:1"
+```ini
+role72="user:update,delete:1"
+```
     
 对资源 user 的 1 实例拥有 update、delete 权限。
 
-然后通过如下代码判断
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)注：到现在还没理解资源的实例代表什么。暂且理解为某个动态资源的ID吧。
 
-    subject().checkPermissions("user:delete,update:1");
-    subject().checkPermissions("user:update:1", "user:delete:1");
+然后通过如下代码判断
+```java
+subject().checkPermissions("user:delete,update:1");
+subject().checkPermissions("user:update:1", "user:delete:1");
+```
+    
 
 * 单个实例所有权限
 
@@ -964,39 +998,44 @@ ini 配置
 (注:一直不理解这里的实例代表的含义。如果表示某个Subject的Id，而Subject接口并未提供类似getInstanceId之类的方法，如何区分Subject是哪个实例？)
 
 ini 配置
-
-    role73=user:*:1
+```ini
+role73=user:*:1
+```
     
 对资源 user 的 1 实例拥有所有权限。
 
 然后通过如下代码判断
-
-    subject().checkPermissions("user:update:1", "user:delete:1", "user:view:1");
+```java
+ subject().checkPermissions("user:update:1", "user:delete:1", "user:view:1");
+```
 
 * 所有实例单个权限
 
 ini 配置
-
-    role74=user:auth:*
+```ini
+role74=user:auth:*
+```
 
 对资源 user 的 1 实例拥有所有权限。
 
 然后通过如下代码判断
-
-    subject().checkPermissions("user:auth:1", "user:auth:2");
-
+```java
+subject().checkPermissions("user:auth:1", "user:auth:2");
+```
 
 * 所有实例所有权限
 
 ini 配置
-
-    role75=user:*:*
+```ini
+role75=user:*:*
+```
 
 对资源 user 的 1 实例拥有所有权限。
 
 然后通过如下代码判断
-
-    subject().checkPermissions("user:view:1", "user:auth:2");
+```java
+subject().checkPermissions("user:view:1", "user:auth:2");
+```
     
 #### 6、Shiro 对权限字符串缺失部分的处理
 
@@ -1012,9 +1051,10 @@ ini 配置
 #### 7、WildcardPermission
 
 如下两种方式是等价的：
-
+```java
     subject().checkPermission("menu:view:1");
     subject().checkPermission(new WildcardPermission("menu:view:1"));
+```
     
 因此没什么必要的话使用字符串更方便。
 
@@ -2009,7 +2049,11 @@ public class UserRealm extends AuthorizingRealm {
 ```
 * UserRealm 父类 AuthorizingRealm 将获取 Subject 相关信息分成两步：获取身份验证信息（doGetAuthenticationInfo）及授权信息（doGetAuthorizationInfo）；
 
-* doGetAuthenticationInfo 获取身份验证相关信息：首先根据传入的用户名获取 User 信息；然后如果 user 为空，那么抛出没找到帐号异常 UnknownAccountException；如果 user 找到但锁定了抛出锁定异常 LockedAccountException；最后生成 AuthenticationInfo 信息，交给间接父类 AuthenticatingRealm 使用 CredentialsMatcher 进行判断密码是否匹配，如果不匹配将抛出密码错误异常 IncorrectCredentialsException；另外如果密码重试此处太多将抛出超出重试次数异常 ExcessiveAttemptsException；在组装 SimpleAuthenticationInfo 信息时，需要传入：身份信息（用户名）、凭据（密文密码）、盐（username+salt），CredentialsMatcher 使用盐加密传入的明文密码和此处的密文密码进行匹配。
+* doGetAuthenticationInfo 获取身份验证相关信息：首先根据传入的用户名获取 User 信息；然后如果 user 为空，那么抛出没找到帐号异常 UnknownAccountException；如果 
+user 找到但锁定了抛出锁定异常 LockedAccountException；最后生成 AuthenticationInfo 信息，交给间接父类 AuthenticatingRealm 使用 CredentialsMatcher 
+进行判断密码是否匹配，如果不匹配将抛出密码错误异常 IncorrectCredentialsException；另外如果密码重试此处太多将抛出超出重试次数异常 ExcessiveAttemptsException；
+在组装 SimpleAuthenticationInfo 信息时，需要传入：身份信息（用户名）、凭据（密文密码）、盐（username+salt），CredentialsMatcher 
+使用盐加密传入的明文密码和此处的密文密码进行匹配。
 
 * doGetAuthorizationInfo 获取授权信息：PrincipalCollection 是一个身份集合，因为我们现在就一个 Realm，所以直接调用 getPrimaryPrincipal 得到之前传入的用户名即可；
 然后根据用户名调用 UserService 接口获取角色及权限信息。
@@ -2055,7 +2099,9 @@ MergableAuthenticationInfo 用于提供在多 Realm 时合并 AuthenticationInfo
 
 比如 HashedCredentialsMatcher，在验证时会判断 AuthenticationInfo 是否是 SaltedAuthenticationInfo 子类，来获取盐信息。
 
-Account 相当于我们之前的 User，SimpleAccount 是其一个实现；在 IniRealm、PropertiesRealm 这种静态创建帐号信息的场景中使用，这些 Realm 直接继承了 SimpleAccountRealm，而 SimpleAccountRealm 提供了相关的 API 来动态维护 SimpleAccount；即可以通过这些 API 来动态增删改查 SimpleAccount；动态增删改查角色 / 权限信息。及如果您的帐号不是特别多，可以使用这种方式，具体请参考 SimpleAccountRealm Javadoc。
+Account 相当于我们之前的 User，SimpleAccount 是其一个实现；在 IniRealm、PropertiesRealm 这种静态创建帐号信息的场景中使用，这些 Realm 直接继承了 
+SimpleAccountRealm，而 SimpleAccountRealm 提供了相关的 API 来动态维护 SimpleAccount；即可以通过这些 API 来动态增删改查 SimpleAccount；
+动态增删改查角色 / 权限信息。及如果您的帐号不是特别多，可以使用这种方式，具体请参考 SimpleAccountRealm Javadoc。
 
 其他情况一般返回 SimpleAuthenticationInfo 即可。
 
@@ -2290,7 +2336,8 @@ isPermitted 进行权限验证，验证后返回 true/false；而 checkPermissio
     PrincipalCollection getPreviousPrincipals();
     PrincipalCollection releaseRunAs();
 
-RunAs 即实现 “允许 A 假设为 B 身份进行访问”；通过调用 subject.runAs(b) 进行访问；接着调用 subject.getPrincipals 将获取到 B 的身份；此时调用 isRunAs 将返回 true；而 a 的身份需要通过 subject. getPreviousPrincipals 获取；如果不需要 RunAs 了调用 subject. releaseRunAs 即可。
+RunAs 即实现 “允许 A 假设为 B 身份进行访问”；通过调用 subject.runAs(b) 进行访问；接着调用 subject.getPrincipals 将获取到 B 的身份；此时调用 isRunAs 将返回 
+true；而 a 的身份需要通过 subject. getPreviousPrincipals 获取；如果不需要 RunAs 了调用 subject. releaseRunAs 即可。
 
 ##### 8、多线程
 
@@ -2299,7 +2346,8 @@ RunAs 即实现 “允许 A 假设为 B 身份进行访问”；通过调用 sub
     <V> Callable<V> associateWith(Callable<V> callable);
     Runnable associateWith(Runnable runnable);
 
-实现线程之间的 Subject 传播，因为 Subject 是线程绑定的；因此在多线程执行中需要传播到相应的线程才能获取到相应的 Subject。最简单的办法就是通过 execute(runnable/callable 实例) 直接调用；或者通过 associateWith(runnable/callable 实例) 得到一个包装后的实例；它们都是通过：1、把当前线程的 Subject 绑定过去；2、在线程执行结束后自动释放。
+实现线程之间的 Subject 传播，因为 Subject 是线程绑定的；因此在多线程执行中需要传播到相应的线程才能获取到相应的 Subject。最简单的办法就是通过 execute(runnable/callable
+ 实例) 直接调用；或者通过 associateWith(runnable/callable 实例) 得到一个包装后的实例；它们都是通过：1、把当前线程的 Subject 绑定过去；2、在线程执行结束后自动释放。
 Subject 自己不会实现相应的身份验证 / 授权逻辑，而是通过 DelegatingSubject 委托给 SecurityManager 实现；及可以理解为 Subject 是一个面门。
 
 对于 Subject 的构建一般没必要我们去创建；一般通过 SecurityUtils.getSubject() 获取：
@@ -2348,14 +2396,16 @@ public class SecurityUtils{
 
 ### 与传统Web集成 <a href='#ccp8-1'>目录</a>
 
-Shiro 提供了与 Web 集成的支持，其通过一个 ShiroFilter 入口来拦截需要安全控制的 URL，然后进行相应的控制，ShiroFilter 类似于如 Strut2/SpringMVC 这种 web 框架的前端控制器，其是安全控制的入口点，其负责读取配置（如 ini 配置文件），然后判断 URL 是否需要登录 / 权限等工作。
+Shiro 提供了与 Web 集成的支持，其通过一个 ShiroFilter 入口来拦截需要安全控制的 URL，然后进行相应的控制，ShiroFilter 类似于如 Strut2/SpringMVC 这种 web 
+框架的前端控制器，其是安全控制的入口点，其负责读取配置（如 ini 配置文件），然后判断 URL 是否需要登录 / 权限等工作。
 
 <div id='cp8-1-1'></div>
 
 #### 准备环境 <a href='#ccp8-1-1'>目录</a>
 
 ##### 1、创建 webapp 应用
-此处我们使用了 jetty-maven-plugin 和 tomcat7-maven-plugin 插件；这样可以直接使用 “mvn jetty:run” 或“mvn tomcat7:run”直接运行 webapp 了。然后通过 URL http://localhost:8080 访问即可。
+此处我们使用了 jetty-maven-plugin 和 tomcat7-maven-plugin 插件；这样可以直接使用 “mvn jetty:run” 或“mvn tomcat7:run”直接运行 webapp 了。然后通过 URL
+ http://localhost:8080 访问即可。
 
 ##### 2、依赖
 Servlet3
@@ -2459,7 +2509,8 @@ shiroConfigLocations 默认是 “/WEB-INF/shiro.ini”，IniWebEnvironment 默�
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-DelegatingFilterProxy 作用是自动到 spring 容器查找名字为 shiroFilter（filter-name）的 bean 并把所有 Filter 的操作委托给它。然后将 ShiroFilter 配置到 spring 容器即可：
+DelegatingFilterProxy 作用是自动到 spring 容器查找名字为 shiroFilter（filter-name）的 bean 并把所有 Filter 的操作委托给它。然后将 ShiroFilter 配置到 
+spring 容器即可：
 
     <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
     <property name="securityManager" ref="securityManager"/>
@@ -2586,7 +2637,8 @@ public class LoginServlet extends HttpServlet {
 }
 ```
 1. doGet 请求时展示登录页面；
-2. doPost 时进行登录，登录时收集 username/password 参数，然后提交给 Subject 进行登录。如果有错误再返回到登录页面；否则跳转到登录成功页面（此处应该返回到访问登录页面之前的那个页面，或者没有上一个页面时访问主页）。
+2. doPost 时进行登录，登录时收集 username/password 参数，然后提交给 Subject 进行登录。如果有错误再返回到登录页面；否则跳转到登录成功页面
+（此处应该返回到访问登录页面之前的那个页面，或者没有上一个页面时访问主页）。
 3. JSP 页面请参考源码。
 
 ##### 测试
@@ -2616,7 +2668,8 @@ authcBasic.applicationName=please login
 
 ```
 
-1. authcBasic 是 org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter 类型的实例，其用于实现基于 Basic 的身份验证；applicationName 用于弹出的登录框显示信息使用，如图：
+1. authcBasic 是 org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter 类型的实例，其用于实现基于 Basic 的身份验证；applicationName 
+用于弹出的登录框显示信息使用，如图：
 
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/13.png)
 
@@ -2764,7 +2817,8 @@ public class LogoutServlet extends HttpServlet {
 
 首先访问 http://localhost:8080/login ，使用帐号 “zhang/123” 进行登录，登录成功后访问 /logout 即可退出。
 
-Shiro 也提供了 logout 拦截器用于退出，其是 org.apache.shiro.web.filter.authc.LogoutFilter 类型的实例，我们可以在 shiro.ini 配置文件中通过如下配置完成退出：
+Shiro 也提供了 logout 拦截器用于退出，其是 org.apache.shiro.web.filter.authc.LogoutFilter 类型的实例，我们可以在 shiro.ini 
+配置文件中通过如下配置完成退出：
 ```ini
 [main]
 logout.redirectUrl=/login
@@ -2797,7 +2851,8 @@ NameableFilter 给 Filter 起个名字，如果没有设置默认就是 FilterNa
 
 2. OncePerRequestFilter
 
-OncePerRequestFilter 用于防止多次执行 Filter 的；也就是说一次请求只会走一次拦截器链；另外提供 enabled 属性，表示是否开启该拦截器实例，默认 enabled=true 表示开启，如果不想让某个拦截器工作，可以设置为 false 即可。
+OncePerRequestFilter 用于防止多次执行 Filter 的；也就是说一次请求只会走一次拦截器链；另外提供 enabled 属性，表示是否开启该拦截器实例，默认 enabled=true 表示开启，
+如果不想让某个拦截器工作，可以设置为 false 即可。
 
 3. ShiroFilter
 
@@ -2915,7 +2970,8 @@ public enum DefaultFilter {
 
 下一节会介绍这些拦截器的作用。
 
-如果要注册自定义拦截器，IniSecurityManagerFactory/WebIniSecurityManagerFactory 在启动时会自动扫描 ini 配置文件中的 \[filters\]/\[main\] 部分并注册这些拦截器到 
+如果要注册自定义拦截器，IniSecurityManagerFactory/WebIniSecurityManagerFactory 在启动时会自动扫描 ini 配置文件中的 \[filters\]/
+\[main\] 部分并注册这些拦截器到 
 DefaultFilterChainManager；且创建相应的 url 模式与其拦截器关系链。如果使用 Spring 后续章节会介绍如果注册自定义拦截器。
 
 如果想自定义 FilterChainResolver，可以通过实现 WebEnvironment 接口完成：
@@ -3169,7 +3225,8 @@ public class FormLoginFilter extends PathMatchingFilter {
 onPreHandle 主要流程：
 
 * 首先判断是否已经登录过了，如果已经登录过了继续拦截器链即可；
-* 如果没有登录，看看是否是登录请求，如果是 get 方法的登录页面请求，则继续拦截器链（到请求页面），否则如果是 get 方法的其他页面请求则保存当前请求并重定向到登录页面；
+* 如果没有登录，看看是否是登录请求，如果是 get 方法的登录页面请求，则继续拦截器链（到请求页面），否则如果是 get 方法的其他页面请求则保存当前请求
+并重定向到登录页面；
 * 如果是 post 方法的登录页面表单提交请求，则收集用户名 / 密码登录即可，如果失败了保存错误消息到 “shiroLoginFailure” 并返回到登录页面；
 * 如果登录成功了，且之前有保存的请求，则重定向到之前的这个请求，否则到默认的成功页面。
 
@@ -3185,7 +3242,8 @@ formLogin=com.github.zhangkaitao.shiro.chapter8.web.filter.FormLoginFilter
 
 启动服务器输入 http://localhost:8080/ch8/test.jsp 测试时，会自动跳转到登录页面，登录成功后又会跳回到 test.jsp 页面。
 
-此处可以通过继承 AuthenticatingFilter 实现，其提供了很多登录相关的基础代码。另外可以参考 Shiro 内嵌的 FormAuthenticationFilter 的源码，思路是一样的。
+此处可以通过继承 AuthenticatingFilter 实现，其提供了很多登录相关的基础代码。另外可以参考 Shiro 内嵌的 FormAuthenticationFilter 的源码，
+思路是一样的。
 
 #### 6、任意角色授权拦截器
 
@@ -3240,7 +3298,8 @@ anyRoles=com.github.zhangkaitao.shiro.chapter8.web.filter.AnyRolesFilter
 /ch8/login.jsp=formLogin
 ```
 
-此处可以继承 AuthorizationFilter 实现，其提供了授权相关的基础代码。另外可以参考 Shiro 内嵌的 RolesAuthorizationFilter 的源码，只是实现 hasAllRoles 逻辑。
+此处可以继承 AuthorizationFilter 实现，其提供了授权相关的基础代码。另外可以参考 Shiro 内嵌的 RolesAuthorizationFilter 的源码，只是实现
+ hasAllRoles 逻辑。
 
 <div id='cp9-4'></div>
 
@@ -3274,7 +3333,9 @@ Shiro 内置了很多默认的拦截器，比如身份验证、授权等相关�
 <p>.FormAuthenticationFilter</p>
 </td>
 <td>
-<p>基于表单的拦截器；如 “`/**=authc`”，如果没有登录会跳到相应的登录页面登录；主要属性：usernameParam：表单提交的用户名参数名（ username）；  passwordParam：表单提交的密码参数名（password）； rememberMeParam：表单提交的密码参数名（rememberMe）；  loginUrl：登录页面地址（/login.jsp）；successUrl：登录成功后的默认重定向地址； failureKeyAttribute：登录失败后错误信息存储 key（shiroLoginFailure）；</p>
+<p>基于表单的拦截器；如 “`/**=authc`”，如果没有登录会跳到相应的登录页面登录；主要属性：usernameParam：表单提交的用户名参数名（ username）；
+  passwordParam：表单提交的密码参数名（password）； rememberMeParam：表单提交的密码参数名（rememberMe）；  loginUrl：登录页面地址
+ （/login.jsp）；successUrl：登录成功后的默认重定向地址； failureKeyAttribute：登录失败后错误信息存储 key（shiroLoginFailure）；</p>
 </td>
 </tr><tr><td>
 <p>authcBasic</p>
@@ -3333,7 +3394,8 @@ Shiro 内置了很多默认的拦截器，比如身份验证、授权等相关�
 <p>.RolesAuthorizationFilter</p>
 </td>
 <td>
-<p>角色授权拦截器，验证用户是否拥有所有角色；主要属性： loginUrl：登录页面地址（/login.jsp）；unauthorizedUrl：未授权后重定向的地址；示例 “/admin/**=roles[admin]”</p>
+<p>角色授权拦截器，验证用户是否拥有所有角色；主要属性： loginUrl：登录页面地址（/login.jsp）；unauthorizedUrl：未授权后重定向的地址；示例
+ “/admin/**=roles[admin]”</p>
 </td>
 </tr><tr><td>
 <p>perms</p>
@@ -3353,7 +3415,8 @@ Shiro 内置了很多默认的拦截器，比如身份验证、授权等相关�
 <p>.PortFilter</p>
 </td>
 <td>
-<p>端口拦截器，主要属性：port（80）：可以通过的端口；示例 “/test= port[80]”，如果用户访问该页面是非 80，将自动将请求端口改为 80 并重定向到该 80 端口，其他路径 / 参数等都一样</p>
+<p>端口拦截器，主要属性：port（80）：可以通过的端口；示例 “/test= port[80]”，如果用户访问该页面是非 80，将自动将请求端口改为 80 并重定向到该
+ 80 端口，其他路径 / 参数等都一样</p>
 </td>
 </tr><tr><td>
 <p>rest</p>
@@ -3363,7 +3426,9 @@ Shiro 内置了很多默认的拦截器，比如身份验证、授权等相关�
 <p>.HttpMethodPermissionFilter</p>
 </td>
 <td>
-<p>rest 风格拦截器，自动根据请求方法构建权限字符串（GET=read, POST=create,PUT=update,DELETE=delete,HEAD=read,TRACE=read,OPTIONS=read, MKCOL=create）构建权限字符串；示例 “/users=rest[user]”，会自动拼出“user:read,user:create,user:update,user:delete” 权限字符串进行权限匹配（所有都得匹配，isPermittedAll）；</p>
+<p>rest 风格拦截器，自动根据请求方法构建权限字符串（GET=read, POST=create,PUT=update,DELETE=delete,HEAD=read,TRACE=read,
+OPTIONS=read, MKCOL=create）构建权限字符串；示例 “/users=rest[user]”，会自动拼出“user:read,user:create,user:update,user:delete”
+ 权限字符串进行权限匹配（所有都得匹配，isPermittedAll）；</p>
 </td>
 </tr><tr><td>
 <p>ssl</p>
@@ -3392,11 +3457,13 @@ Shiro 内置了很多默认的拦截器，比如身份验证、授权等相关�
 <p>.NoSessionCreationFilter</p>
 </td>
 <td>
-<p>不创建会话拦截器，调用 subject.getSession(false) 不会有什么问题，但是如果 subject.getSession(true) 将抛出 DisabledSessionException 异常；</p>
+<p>不创建会话拦截器，调用 subject.getSession(false) 不会有什么问题，但是如果 subject.getSession(true) 将抛出 
+DisabledSessionException 异常；</p>
 </td>
 </tr></tbody></table>
 
-另外还提供了一个 org.apache.shiro.web.filter.authz.HostFilter，即主机拦截器，比如其提供了属性：authorizedIps：已授权的 ip 地址，deniedIps：表示拒绝的 ip 地址；
+另外还提供了一个 org.apache.shiro.web.filter.authz.HostFilter，即主机拦截器，比如其提供了属性：authorizedIps：已授权的 ip 地址，
+deniedIps：表示拒绝的 ip 地址；
 不过目前还没有完全实现，不可用。
 
 这些默认的拦截器会自动注册，可以直接在 ini 配置文件中通过 “拦截器名. 属性” 设置其属性：
@@ -3550,12 +3617,14 @@ hasAllRoles 表示拥有所有相关的角色；hasAllPermissions 表示拥有�
 
 ### 会话管理
 
-Shiro 提供了完整的企业级会话管理功能，不依赖于底层容器（如 web 容器 tomcat），不管 JavaSE 还是 JavaEE 环境都可以使用，提供了会话管理、会话事件监听、会话存储 / 持久化、
+Shiro 提供了完整的企业级会话管理功能，不依赖于底层容器（如 web 容器 tomcat），不管 JavaSE 还是 JavaEE 环境都可以使用，提供了会话管理、
+会话事件监听、会话存储 / 持久化、
 容器无关的集群、失效 / 过期支持、对 Web 的透明支持、SSO 单点登录的支持等特性。即直接使用 Shiro 的会话管理可以直接替换如 Web 容器的会话管理。
 
 ### 会话
 
-所谓会话，即用户访问应用时保持的连接关系，在多次交互中应用能够识别出当前访问的用户是谁，且可以在多次交互中保存一些数据。如访问一些网站时登录成功后，网站可以记住用户，
+所谓会话，即用户访问应用时保持的连接关系，在多次交互中应用能够识别出当前访问的用户是谁，且可以在多次交互中保存一些数据。如访问一些网站时登录成功后，
+网站可以记住用户，
 且在退出之前都可以识别当前用户是谁。
 
 Shiro 的会话支持不仅可以在普通的 JavaSE 应用中使用，也可以在 JavaEE 应用中使用，如 web 应用。且使用方式是一致的。
@@ -3590,7 +3659,8 @@ session.getStartTimestamp();
 session.getLastAccessTime();
 ```
 
-获取会话的启动时间及最后访问时间；如果是 JavaSE 应用需要自己定期调用 session.touch() 去更新最后访问时间；如果是 Web 应用，每次进入 ShiroFilter 都会自动调用 
+获取会话的启动时间及最后访问时间；如果是 JavaSE 应用需要自己定期调用 session.touch() 去更新最后访问时间；如果是 Web 应用，每次进入 
+ShiroFilter 都会自动调用 
 session.touch() 来更新最后访问时间。
 ```java
 session.touch();
@@ -3731,7 +3801,8 @@ sessionManager.sessionListeners=$sessionListener1,$sessionListener2
 
 Shiro 提供 SessionDAO 用于会话的 CRUD，即 DAO（Data Access Object）模式实现：
 ```java
-//如DefaultSessionManager在创建完session后会调用该方法；如保存到关系数据库/文件系统/NoSQL数据库；即可以实现会话的持久化；返回会话ID；主要此处返回的ID.equals(session.getId())；
+//如DefaultSessionManager在创建完session后会调用该方法；如保存到关系数据库/文件系统/NoSQL数据库；即可以实现会话的持久化；返回会话ID；
+// 主要此处返回的ID.equals(session.getId())；
 Serializable create(Session session);
 //根据会话ID获取会话
 Session readSession(Serializable sessionId) throws UnknownSessionException;
@@ -3782,7 +3853,8 @@ securityManager.cacheManager = $cacheManager
 * sessionDAO. activeSessionsCacheName：设置 Session 缓存名字，默认就是 shiro-activeSessionCache；
 * cacheManager：缓存管理器，用于管理缓存的，此处使用 Ehcache 实现；
 * cacheManager.cacheManagerConfigFile：设置 ehcache 缓存的配置文件；
-* securityManager.cacheManager：设置 SecurityManager 的 cacheManager，会自动设置实现了 CacheManagerAware 接口的相应对象，如 SessionDAO 的 cacheManager；
+* securityManager.cacheManager：设置 SecurityManager 的 cacheManager，会自动设置实现了 CacheManagerAware 接口的相应对象，如 
+SessionDAO 的 cacheManager；
 
 然后配置 ehcache.xml：
 ```xml
@@ -3847,7 +3919,8 @@ sessionDAO=com.github.zhangkaitao.shiro.chapter10.session.dao.MySessionDAO
 
 ### 会话验证
 
-Shiro 提供了会话验证调度器，用于定期的验证会话是否已过期，如果过期将停止会话；出于性能考虑，一般情况下都是获取会话时来验证会话是否过期并停止会话的；但是如在 web 环境中，
+Shiro 提供了会话验证调度器，用于定期的验证会话是否已过期，如果过期将停止会话；出于性能考虑，一般情况下都是获取会话时来验证会话是否过期并停止会话的；
+但是如在 web 环境中，
 如果用户不主动退出是不知道会话是否过期的，因此需要定期的检测会话是否过期，Shiro 提供了会话验证调度器 SessionValidationScheduler 来做这件事情。
 
 可以通过如下 ini 配置开启会话验证：
@@ -3884,8 +3957,8 @@ sessionValidationScheduler.sessionManager=$sessionManager
 </dependency>
 ```
 
-如上会话验证调度器实现都是直接调用 AbstractValidatingSessionManager 的 validateSessions 方法进行验证，其直接调用 SessionDAO 的 getActiveSessions 
-方法获取所有会话进行验证，如果会话比较多，会影响性能；可以考虑如分页获取会话并进行验证，
+如上会话验证调度器实现都是直接调用 AbstractValidatingSessionManager 的 validateSessions 方法进行验证，其直接调用 SessionDAO 的 
+getActiveSessions 方法获取所有会话进行验证，如果会话比较多，会影响性能；可以考虑如分页获取会话并进行验证，
 如 com.github.zhangkaitao.shiro.chapter10.session.scheduler.MySessionValidationScheduler：
 ```java
 //分页获取会话并验证
@@ -3922,8 +3995,8 @@ sessionManager.deleteInvalidSessions=false
 
 默认是开启的，在会话过期后会调用 SessionDAO 的 delete 方法删除会话：如会话时持久化存储的，可以调用此方法进行删除。
 
-如果是在获取会话时验证了会话已过期，将抛出 InvalidSessionException；因此需要捕获这个异常并跳转到相应的页面告诉用户会话已过期，让其重新登录，如可以在 web.xml 
-配置相应的错误页面：
+如果是在获取会话时验证了会话已过期，将抛出 InvalidSessionException；因此需要捕获这个异常并跳转到相应的页面告诉用户会话已过期，让其重新登录，
+如可以在 web.xml 配置相应的错误页面：
 ```xml
 <error-page>
     <exception-type>org.apache.shiro.session.InvalidSessionException</exception-type>

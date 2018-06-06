@@ -38,7 +38,6 @@ public class LoginLogoutTest {
 
             */
             subject.login(token);
-
             //TODO 注意这里打印subject.getPrincipal()为zhang,说明在login之前，shiro可能并不能确定这个Subject是谁
             System.out.println(subject.getPrincipal());
             //TODO 如何通过API获得realms ?
