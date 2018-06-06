@@ -1084,53 +1084,7 @@ ModularRealmAuthorizer 进行多 Realm 匹配流程：
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)注：在认证一章中，我们看到实际进行用户名/密码比对的工作是在Realm中完成的，权限检查也同样。
 我们看看Authorizer是如何定义的：
 ```java
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
-package org.apache.shiro.authz;
 
-import org.apache.shiro.subject.PrincipalCollection;
-
-import java.util.Collection;
-import java.util.List;
-
-/**
- * An <tt>Authorizer</tt> performs authorization (access control) operations for any given Subject
- * (aka 'application user').
- *
- * <p>Each method requires a subject principal to perform the action for the corresponding Subject/user.
- *
- * <p>This principal argument is usually an object representing a user database primary key or a String username or
- * something similar that uniquely identifies an application user.  The runtime value of the this principal
- * is application-specific and provided by the application's configured Realms.
- *
- * <p>Note that there are many *Permission methods in this interface overloaded to accept String arguments instead of
- * {@link Permission Permission} instances. They are a convenience allowing the caller to use a String representation of
- * a {@link Permission Permission} if desired.  Most implementations of this interface will simply convert these
- * String values to {@link Permission Permission} instances and then just call the corresponding type-safe method.
- * (Shiro's default implementations do String-to-Permission conversion for these methods using
- * {@link org.apache.shiro.authz.permission.PermissionResolver PermissionResolver}s.)
- *
- * <p>These overloaded *Permission methods <em>do</em> forego type-saftey for the benefit of convenience and simplicity,
- * so you should choose which ones to use based on your preferences and needs.
- *
- * @since 0.1
- */
 public interface Authorizer {
 
     boolean isPermitted(PrincipalCollection principals, String permission);
