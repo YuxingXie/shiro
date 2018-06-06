@@ -787,13 +787,15 @@ Shiro 提供的 checkRole/checkRoles 和 hasRole/hasAllRoles 不同的地方是�
 1、在 ini 配置文件配置用户拥有的角色及角色-权限关系（shiro-permission.ini）
 
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)(注:user被称为资源标识符，create、update、delete称为操作)
-
-    [users]
-    zhang=123,role1,role2
-    wang=123,role1
-    [roles]
-    role1=user:create,user:update
-    role2=user:create,user:delete
+```ini
+[users]
+zhang=123,role1,role2
+wang=123,role1
+[roles]
+role1=user:create,user:update
+role2=user:create,user:delete
+```
+    
     
 规则：“用户名=密码，角色 1，角色 2”“角色=权限 1，权限 2”，即首先根据用户名找到角色，然后根据角色再找到权限；即角色是权限集合；Shiro 同样不进行权限的维护，需要我们通过 
 Realm 返回相应的权限信息。只需要维护“用户——角色”之间的关系即可。
@@ -818,6 +820,10 @@ public class PermissionTest extends BaseTest {
 ```
 
 Shiro 提供了 isPermitted 和 isPermittedAll 用于判断用户是否拥有某个权限或所有权限，也没有提供如 isPermittedAny 用于判断拥有某一个权限的接口。
+
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
+注：原文作者念念不忘的isPermittedAny，hasAnyRole完全可以遍历所有的role或permission用hasRole或 hasPermission,其中一个返回true则isPermittedAny，hasAnyRole
+返回true实现。
 
 ```java
 public class PermissionTest extends BaseTest {
