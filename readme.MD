@@ -994,9 +994,6 @@ subject().checkPermissions("user:update:1", "user:delete:1");
 
 * 单个实例所有权限
 
-![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
-(注:一直不理解这里的实例代表的含义。如果表示某个Subject的Id，而Subject接口并未提供类似getInstanceId之类的方法，如何区分Subject是哪个实例？)
-
 ini 配置
 ```ini
 role73=user:*:1
