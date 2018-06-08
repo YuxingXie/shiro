@@ -1122,7 +1122,7 @@ public interface Authorizer {
 }
 
 ```
-这么多的方法在AuthorizingRealm中都实现了。而这些方法在也可以通过Subject调用,实际上Subject是委托SecurityManager实现的。
+这么多的方法在AuthorizingRealm中都实现了。而这些方法在也可以通过Subject调用,实际上Subject是委托SecurityManager实现的。前面接触过的JdbcRealm也继承自AuthorizingRealm。
 
 
 如果 Realm 进行授权的话，应该继承 AuthorizingRealm，其流程是：
@@ -1139,7 +1139,9 @@ PermissionResolver 解析为 Permission 实例；然后获取用户的角色，�
 
 ### Authorizer、PermissionResolver及RolePermissionResolver <a href='#ccp4-6'>目录</a>
 
-Authorizer 的职责是进行授权（访问控制），是 Shiro API 中授权核心的入口点，其提供了相应的角色/权限判断接口，具体请参考其 Javadoc。SecurityManager 继承了 Authorizer 接口，且提供了 ModularRealmAuthorizer 用于多 Realm 时的授权匹配。PermissionResolver 用于解析权限字符串到 Permission 实例，而 RolePermissionResolver 用于根据角色解析相应的权限集合。
+Authorizer 的职责是进行授权（访问控制），是 Shiro API 中授权核心的入口点，其提供了相应的角色/权限判断接口，具体请参考其 Javadoc。SecurityManager 继承了 Authorizer 
+接口，且提供了 ModularRealmAuthorizer 用于多 Realm 时的授权匹配。PermissionResolver 用于解析权限字符串到 Permission 实例，而 RolePermissionResolver 
+用于根据角色解析相应的权限集合。
 
 我们可以通过如下 ini 配置更改 Authorizer 实现：
 ```ini
