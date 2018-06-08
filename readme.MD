@@ -1152,14 +1152,16 @@ securityManager.authorizer=$authorizer
 对于实现自己的 authorizer 可以参考 ModularRealmAuthorizer 实现即可，在此就不提供示例了。
 
 设置 ModularRealmAuthorizer 的 permissionResolver，其会自动设置到相应的 Realm 上（其实现了 PermissionResolverAware 接口），如：
-
-    permissionResolver=org.apache.shiro.authz.permission.WildcardPermissionResolver
-    authorizer.permissionResolver=$permissionResolver
+```ini
+permissionResolver=org.apache.shiro.authz.permission.WildcardPermissionResolver
+authorizer.permissionResolver=$permissionResolver
+```
     
 设置 ModularRealmAuthorizer 的 rolePermissionResolver，其会自动设置到相应的 Realm 上（其实现了 RolePermissionResolverAware 接口），如：
-
-    rolePermissionResolver=com.github.zhangkaitao.shiro.chapter3.permission.MyRolePermissionResolver
-    authorizer.rolePermissionResolver=$rolePermissionResolver
+```ini
+rolePermissionResolver=com.github.zhangkaitao.shiro.chapter3.permission.MyRolePermissionResolver
+authorizer.rolePermissionResolver=$rolePermissionResolver
+```
 
 #### 示例
 
