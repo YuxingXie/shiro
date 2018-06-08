@@ -2452,7 +2452,7 @@ public class SecurityUtils{
 
 <div id='cp8-1'></div>
 
-### 与传统Web集成 <a href='#ccp8-1'>目录</a>
+### 第七章：与传统Web集成 <a href='#ccp8-1'>目录</a>
 
 Shiro 提供了与 Web 集成的支持，其通过一个 ShiroFilter 入口来拦截需要安全控制的 URL，然后进行相应的控制，ShiroFilter 类似于如 Strut2/SpringMVC 这种 web 
 框架的前端控制器，其是安全控制的入口点，其负责读取配置（如 ini 配置文件），然后判断 URL 是否需要登录 / 权限等工作。
