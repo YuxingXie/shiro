@@ -574,7 +574,7 @@ securityManager.realms=$myRealm1,$myRealm3
 
 ![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
 注：shiro默认的authenticator就是org.apache.shiro.authc.pam.ModularRealmAuthenticator,但这里为何要明文指出，是因为要设置
-securityManager.authenticator及securityManager.authenticator.authenticationStrategy属性。
+securityManager.authenticator及securityManager.authenticator.authenticationStrategy属性。另，后面的章节中配置authorizer也类似于authenticator。
    
 2、测试代码（com.github.zhangkaitao.shiro.chapter2.AuthenticatorTest）
 
