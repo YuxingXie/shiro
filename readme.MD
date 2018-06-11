@@ -571,6 +571,10 @@ myRealm2=com.github.zhangkaitao.shiro.chapter2.realm.MyRealm2
 myRealm3=com.github.zhangkaitao.shiro.chapter2.realm.MyRealm3
 securityManager.realms=$myRealm1,$myRealm3
 ```
+
+![](https://github.com/YuxingXie/shiro/raw/master/doc/notice.png)
+注：shiro默认的authenticator就是org.apache.shiro.authc.pam.ModularRealmAuthenticator,但这里为何要明文指出，是因为要设置
+securityManager.authenticator及securityManager.authenticator.authenticationStrategy属性。
    
 2、测试代码（com.github.zhangkaitao.shiro.chapter2.AuthenticatorTest）
 
@@ -2649,7 +2653,7 @@ url 模式匹配顺序是按照在配置中的声明顺序匹配，即从头开�
     /role=authc,roles[admin]
     /permission=authc,perms["user:create"]
 
-即访问这些地址时会首先判断用户有没有登录，如果没有登录默会跳转到登录页面，默认是 / login.jsp，可以通过在 \[main\] 部分通过如下配置修改：
+即访问这些地址时会首先判断用户有没有登录，如果没有登录默会跳转到登录页面，默认是 /login.jsp，可以通过在 \[main\] 部分通过如下配置修改：
 ```ini
 authc.loginUrl=/login
 ```
